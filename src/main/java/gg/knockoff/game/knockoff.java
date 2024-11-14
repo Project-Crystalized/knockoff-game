@@ -1,0 +1,43 @@
+package gg.knockoff.game;
+
+import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.logging.Level;
+
+public final class knockoff extends JavaPlugin {
+    public boolean is_force_starting = false;
+    public GameManager GameManager;
+
+    @Override
+    public void onEnable() {
+        getLogger().log(Level.INFO, "KnockOff Plugin Enabled!");
+
+        DebugCommands dc = new DebugCommands();
+        this.getCommand("force_start").setExecutor(dc);
+        new BukkitRunnable() {
+
+            @Override
+            public void run() {
+                if (GameManager != null) {
+                    return;
+                }
+
+                if (is_force_starting) {
+                    GameManager = new GameManager();
+                    is_force_starting = false;
+                    return;
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 1, 20);
+    }
+
+    @Override
+    public void onDisable() {
+        getLogger().log(Level.INFO, "KnockOff Plugin Disabled!");
+    }
+
+    public static knockoff getInstance() {
+        return getPlugin(knockoff.class);
+    }
+}

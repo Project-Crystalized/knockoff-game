@@ -1,0 +1,11 @@
+name: knockoff-game
+version: '0.0.1'
+main: gg.knockoff.game.knockoff
+api-version: '1.21'
+commands:
+  force_start:
+    description: "For debugging purposes, force_start the game"
+    usage: "/force_start"
+    aliases: []
+    permission: knockoff.command.game
+    permission-message: "you dont have permission to run the command"

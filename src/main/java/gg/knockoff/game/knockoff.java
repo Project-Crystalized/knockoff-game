@@ -4,6 +4,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.logging.Level;
+import org.bukkit.Bukkit;
+import org.bukkit.GameRule;
 
 public final class knockoff extends JavaPlugin {
 
@@ -15,6 +17,8 @@ public final class knockoff extends JavaPlugin {
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getLogger().log(Level.INFO, "KnockOff Plugin Enabled!");
+
+        Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);
 
         DebugCommands dc = new DebugCommands();
         this.getCommand("force_start").setExecutor(dc);

@@ -38,13 +38,10 @@ public class MapData {
             JsonArray sections = json.get("sections").getAsJsonArray();
             this.sections = json.get("sections").getAsJsonArray();
             int i = 0;
-            //int s = this.sections.size()/8 - 8;
             for (int s = this.sections.size()/8;;) {
-                i++;
                 if (i*8 == this.sections.size() == true) {
                     return;
                 } else {
-                    //String tempvalue = "section" + i;
                     sectionslist.add("section" + i);
                     sectionslist.add(sections.get(0 + i*8));
                     sectionslist.add(sections.get(1 + i*8));
@@ -55,7 +52,9 @@ public class MapData {
                     sectionslist.add(sections.get(6 + i*8));
                     sectionslist.add(sections.get(7 + i*8));
                 }
+                i++;
                 Bukkit.getLogger().log(Level.WARNING, "" + sectionslist);
+                Bukkit.getLogger().log(Level.INFO, "" + this.sections.size() + " " + i);
             }
             // for statement above should generate something similar to this
             // ["section1", -18, 19, 34, 46, -6, -29, "waxed_copper_block, 1"]
@@ -93,15 +92,15 @@ public class MapData {
             currentsection.remove(8);
         }
         int n = (int)(Math.random() * sectionslist.size()/8 - 1);
-        currentsection.add(sectionslist.get(0 + n * 8));
-        currentsection.add(sectionslist.get(1 + n * 8));
-        currentsection.add(sectionslist.get(2 + n * 8));
-        currentsection.add(sectionslist.get(3 + n * 8));
-        currentsection.add(sectionslist.get(4 + n * 8));
-        currentsection.add(sectionslist.get(5 + n * 8));
-        currentsection.add(sectionslist.get(6 + n * 8));
-        currentsection.add(sectionslist.get(7 + n * 8));
-        currentsection.add(sectionslist.get(8 + n * 8));
+        currentsection.add(sectionslist.get(0 + n * 9));
+        currentsection.add(sectionslist.get(1 + n * 9));
+        currentsection.add(sectionslist.get(2 + n * 9));
+        currentsection.add(sectionslist.get(3 + n * 9));
+        currentsection.add(sectionslist.get(4 + n * 9));
+        currentsection.add(sectionslist.get(5 + n * 9));
+        currentsection.add(sectionslist.get(6 + n * 9));
+        currentsection.add(sectionslist.get(7 + n * 9));
+        currentsection.add(sectionslist.get(8 + n * 9));
 
         Bukkit.getLogger().log(Level.WARNING, "NEW: " + currentsection);
 

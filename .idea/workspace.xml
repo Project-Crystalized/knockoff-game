@@ -5,9 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e54e0578-4169-4871-83d4-a1b41445f098" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.8/checksums/checksums.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.8/checksums/checksums.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.8/checksums/md5-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.8/checksums/md5-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.8/checksums/sha1-checksums.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.8/checksums/sha1-checksums.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/libs/knockoff-game-0.0.1.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/knockoff-game-0.0.1.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/GameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/GameManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/MapData.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/MapData.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/Teams.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/Teams.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/knockoff.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/knockoff.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -57,9 +66,11 @@
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
     &quot;Gradle.C:/Users/Callum/Desktop/crystalized/knockoff-game [wrapper].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;main&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/Desktop/crystalized/knockoff-game&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;discord-application&quot;
   }
 }</component>

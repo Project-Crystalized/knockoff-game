@@ -162,8 +162,34 @@ public class Teams {
         Bukkit.getLogger().log(Level.INFO, "Successfully sorted every online player into Teams");
     }
 
-    //public static void GetPlayerTeam(Player player) {
-    //    Player player = player.getPlayer();
-    //    if (Bukkit.getPlayer())
-    //}
+
+
+    public static String GetPlayerTeam(Player player) {
+        Player p = player.getPlayer();
+        if (blue.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "blue";
+        } else if (cyan.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "cyan";
+        } else if (lemon.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "lemon";
+        } else if (lime.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "lime";
+        } else if (magenta.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "magenta";
+        } else if (orange.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "orange";
+        } else if (peach.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "peach";
+        } else if (purple.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "purple";
+        } else if (red.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "red";
+        } else if (white.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "white";
+        } else if (yellow.contains(Bukkit.getPlayer(String.valueOf(p)))) {
+            return "yellow";
+        } else {
+            return null;
+        }
+    }
 }

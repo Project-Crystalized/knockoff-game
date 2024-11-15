@@ -6,11 +6,14 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.logging.Level;
 
 public final class knockoff extends JavaPlugin {
+
+    public final MapData mapdata = new MapData();
     public boolean is_force_starting = false;
     public GameManager GameManager;
 
     @Override
     public void onEnable() {
+        this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         getLogger().log(Level.INFO, "KnockOff Plugin Enabled!");
 
         DebugCommands dc = new DebugCommands();

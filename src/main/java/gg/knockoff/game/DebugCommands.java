@@ -22,8 +22,11 @@ public class DebugCommands implements CommandExecutor {
     }
 
     private boolean run_force_start(String[] args, CommandSender commandSender) {
-        knockoff.getInstance().is_force_starting = true;
-        Bukkit.getServer().sendMessage(Component.text("Force starting the GAME!!!"));
+        if (knockoff.getInstance().GameManager == null) {
+            knockoff.getInstance().is_force_starting = true;
+        } else {
+            Bukkit.getServer().sendMessage(Component.text("A game is already in progress."));
+        }
         return true;
     }
 }

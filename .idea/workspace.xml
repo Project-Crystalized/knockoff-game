@@ -6,7 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="e54e0578-4169-4871-83d4-a1b41445f098" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/PlayerListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/PlayerListener.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/GameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/GameManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/Teams.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/Teams.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

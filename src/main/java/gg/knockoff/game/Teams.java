@@ -161,4 +161,9 @@ public class Teams {
         }
         Bukkit.getLogger().log(Level.INFO, "Successfully sorted every online player into Teams");
     }
+
+    //public static void GetPlayerTeam(Player player) {
+    //    Player player = player.getPlayer();
+    //    if (Bukkit.getPlayer())
+    //}
 }

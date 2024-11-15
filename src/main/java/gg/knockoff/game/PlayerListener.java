@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
@@ -10,22 +11,25 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import net.kyori.adventure.text.Component;
 
 public class PlayerListener implements Listener {
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        GameManager gameManager = knockoff.getInstance().GameManager;
+        if (knockoff.getInstance().GameManager == null) {
+            GameManager gameManager = knockoff.getInstance().GameManager;
 
-        player.teleport(knockoff.getInstance().mapdata.get_que_spawn(player.getWorld()));
-        player.getInventory().clear();
-        player.setHealth(20);
-        player.setFoodLevel(20);
-        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-        player.setGameMode(GameMode.ADVENTURE);
-
-
+            player.teleport(knockoff.getInstance().mapdata.get_que_spawn(player.getWorld()));
+            player.getInventory().clear();
+            player.setHealth(20);
+            player.setFoodLevel(20);
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+            player.setGameMode(GameMode.ADVENTURE);
+        } else {
+            player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
+        }
     }
 
     @EventHandler

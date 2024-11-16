@@ -33,12 +33,6 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockBreak(BlockBreakEvent event) {
-        // prevent blocks from getting broken
-        event.setCancelled(true);
-    }
-
-    @EventHandler
     public void onDamage(EntityDamageEvent e) {
         // if game isn't going, cancel event
         GameManager gc = knockoff.getInstance().GameManager;

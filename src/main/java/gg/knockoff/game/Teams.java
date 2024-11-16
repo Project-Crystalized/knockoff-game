@@ -165,31 +165,30 @@ public class Teams {
 
 
     public static String GetPlayerTeam(Player player) {
-        Player p = player.getPlayer();
-        Bukkit.getLogger().log(Level.INFO, "Figuring out " + p.displayName() + "'s Team...");
-        if (blue.contains(p)) {
+        //Bukkit.getLogger().log(Level.INFO, "Figuring out " + player.getName() + "'s Team...");
+        if (blue.contains(player.getName())) {
             return "blue";
-        } else if (cyan.contains(p)) {
+        } else if (cyan.contains(player.getName())) {
             return "cyan";
-        } else if (green.contains(p)) {
+        } else if (green.contains(player.getName())) {
             return "green";
-        } else if (lemon.contains(p)) {
+        } else if (lemon.contains(player.getName())) {
             return "lemon";
-        } else if (lime.contains(p)) {
+        } else if (lime.contains(player.getName())) {
             return "lime";
-        } else if (magenta.contains(p)) {
+        } else if (magenta.contains(player.getName())) {
             return "magenta";
-        } else if (orange.contains(p)) {
+        } else if (orange.contains(player.getName())) {
             return "orange";
-        } else if (peach.contains(p)) {
+        } else if (peach.contains(player.getName())) {
             return "peach";
-        } else if (purple.contains(p)) {
+        } else if (purple.contains(player.getName())) {
             return "purple";
-        } else if (red.contains(p)) {
+        } else if (red.contains(player.getName())) {
             return "red";
-        } else if (white.contains(p)) {
+        } else if (white.contains(player.getName())) {
             return "white";
-        } else if (yellow.contains(p)) {
+        } else if (yellow.contains(player.getName())) {
             return "yellow";
         } else {
             return null;

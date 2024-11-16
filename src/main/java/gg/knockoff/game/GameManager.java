@@ -44,32 +44,35 @@ public class GameManager {
     public static void GiveTeamItems(Player player) {
         ItemStack item = new ItemStack(Material.AMETHYST_BLOCK, 64);
         ItemMeta im = item.getItemMeta();
-        item.setItemMeta(im);
-        Bukkit.getLogger().log(Level.INFO, "[GAMEMANAGER] Player " + player + "Is in Team " + Teams.GetPlayerTeam(player));
+
+        Bukkit.getLogger().log(Level.INFO, "[GAMEMANAGER] Player " + player.getName() + "Is in Team " + Teams.GetPlayerTeam(player));
+
         if (Teams.GetPlayerTeam(player).equals("blue")) {
             im.setCustomModelData(1);
-        }
-        if (Teams.GetPlayerTeam(player).equals("cyan")) {
+        } else if (Teams.GetPlayerTeam(player).equals("cyan")) {
             im.setCustomModelData(2);
-        }
+        } else
         if (Teams.GetPlayerTeam(player).equals("green")) {
             im.setCustomModelData(3);
-        }
+        } else
         if (Teams.GetPlayerTeam(player).equals("lemon")) {
             im.setCustomModelData(4);
-        }
+        } else
         if (Teams.GetPlayerTeam(player).equals("lime")) {
             im.setCustomModelData(5);
-        }
+        } else
         if (Teams.GetPlayerTeam(player).equals("magenta")) {
             im.setCustomModelData(6);
-        }
+        } else
         if (Teams.GetPlayerTeam(player).equals("orange")) {
             im.setCustomModelData(7);
-        }
-        if (Teams.GetPlayerTeam(player).equals("orange")) {
+        } else
+        if (Teams.GetPlayerTeam(player).equals("peach")) {
             im.setCustomModelData(8);
         }
+
+        item.setItemMeta(im);
+
         player.getInventory().addItem(item);
 
         //player.getInventory().addItem(new ItemStack(Material.AMETHYST_BLOCK, 64));

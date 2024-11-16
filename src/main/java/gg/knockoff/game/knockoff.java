@@ -16,6 +16,7 @@ public final class knockoff extends JavaPlugin {
     @Override
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        this.getServer().getPluginManager().registerEvents(new CrystalBlocks(), this);
         getLogger().log(Level.INFO, "KnockOff Plugin Enabled!");
 
         Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);

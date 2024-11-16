@@ -79,18 +79,12 @@ public class MapData {
     }
 
     public JsonArray getrandommapsection() {
-        Bukkit.getLogger().log(Level.WARNING, "OLD: " + currentsection);
-        if (!currentsection.isEmpty()) {
+        Bukkit.getLogger().log(Level.INFO, "OLD: " + currentsection); //for debugging
+        while(currentsection.size()>0)
+        {
             currentsection.remove(0);
-            currentsection.remove(1);
-            currentsection.remove(2);
-            currentsection.remove(3);
-            currentsection.remove(4);
-            currentsection.remove(5);
-            currentsection.remove(6);
-            currentsection.remove(7);
-            currentsection.remove(8);
         }
+
         int n = (int)(Math.random() * sectionslist.size()/8 - 1);
         currentsection.add(sectionslist.get(0 + n * 9));
         currentsection.add(sectionslist.get(1 + n * 9));
@@ -102,7 +96,7 @@ public class MapData {
         currentsection.add(sectionslist.get(7 + n * 9));
         currentsection.add(sectionslist.get(8 + n * 9));
 
-        Bukkit.getLogger().log(Level.WARNING, "NEW: " + currentsection);
+        Bukkit.getLogger().log(Level.INFO, "NEW: " + currentsection); //for debugging
 
         return currentsection;
     }

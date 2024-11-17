@@ -6,7 +6,6 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -53,7 +52,7 @@ public class PlayerListener implements Listener {
         event.setCancelled(true);
         if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
             return;
-        } //TODO
+        } //TODO make lives system, when a player dies they lose 1 live, when they lose all lives they're permanently put in spectator for the rest of the game until it resets
         player.playSound(player, "minecraft:item.armor.equip_elytra", 50, 1);
     }
 }

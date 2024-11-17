@@ -184,7 +184,7 @@ public class Teams {
                 return;
             }
 
-            if (playerlist.size() > 11) { //If the player list is 12 (or greater but this isn't allowed as of now lol)
+            if (playerlist.size() > 11) { //If the player list is 12
                 if (yellow.isEmpty()) {
                     yellow.add(playerlist.get(11));
                     if (playerlist.size() > 23) {

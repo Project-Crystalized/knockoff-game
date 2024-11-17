@@ -12,8 +12,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.util.logging.Level;
-
 public class GameManager {
     public Teams teams = new Teams();
 
@@ -136,6 +134,7 @@ public class GameManager {
 
         }
 
+        im.itemName(Component.translatable("crystalized.item.nexusblock.name"));
         item.setItemMeta(im);
         player.getInventory().addItem(item);
 

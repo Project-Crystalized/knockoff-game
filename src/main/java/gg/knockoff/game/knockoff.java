@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -32,9 +33,14 @@ public final class knockoff extends JavaPlugin {
                 }
 
                 if (is_force_starting) {
-                    GameManager = new GameManager();
-                    is_force_starting = false;
-                    return;
+                    if (knockoff.getInstance().getServer().getOnlinePlayers().size() > 24) {//24 is the max player limit for now
+                        Bukkit.getServer().sendMessage(Component.text("Too many players to start a game (hardcoded limit is 24). Please kick players off or limit your player count in server.properties."));
+                        return;
+                    } else {
+                        GameManager = new GameManager();
+                        is_force_starting = false;
+                        return;
+                    }
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 1, 20);

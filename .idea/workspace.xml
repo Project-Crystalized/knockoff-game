@@ -12,10 +12,16 @@
       <change beforePath="$PROJECT_DIR$/.gradle/8.8/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.8/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/DebugCommands.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/DebugCommands.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/GameManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/GameManager.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/knockoff$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/knockoff$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/knockoff.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/knockoff.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/libs/knockoff-game-0.0.1.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/knockoff-game-0.0.1.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/DebugCommands.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/DebugCommands.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/GameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/GameManager.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/Teams.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/Teams.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/knockoff.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/knockoff.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

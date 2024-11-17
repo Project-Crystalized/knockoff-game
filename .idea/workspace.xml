@@ -11,19 +11,11 @@
       <change beforePath="$PROJECT_DIR$/.gradle/8.8/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.8/fileHashes/fileHashes.lock" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/8.8/fileHashes/resourceHashesCache.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/8.8/fileHashes/resourceHashesCache.bin" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/file-system.probe" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/GameManager.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/GameManager.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/PlayerListener.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/PlayerListener.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/Teams.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/Teams.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/knockoff$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/knockoff$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/knockoff.class" beforeDir="false" afterPath="$PROJECT_DIR$/build/classes/java/main/gg/knockoff/game/knockoff.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/build/libs/knockoff-game-0.0.1.jar" beforeDir="false" afterPath="$PROJECT_DIR$/build/libs/knockoff-game-0.0.1.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/compileTransaction/stash-dir/DebugCommands.class.uniqueId1" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" afterPath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/GameManager.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/GameManager.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/PlayerListener.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/PlayerListener.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/Teams.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/Teams.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/knockoff.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/knockoff.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/CrystalBlocks.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/gg/knockoff/game/CrystalBlocks.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,18 +62,18 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Gradle.C:/Users/Callum/Desktop/crystalized/knockoff-game [wrapper].executor": "Run",
-    "RunOnceActivity.OpenProjectViewOnStart": "true",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "git-widget-placeholder": "main",
-    "kotlin-language-version-configured": "true",
-    "last_opened_file_path": "C:/Users/Admin/Desktop/crystalized/knockoff-game",
-    "settings.editor.selected.configurable": "discord-application"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Gradle.C:/Users/Callum/Desktop/crystalized/knockoff-game [wrapper].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.OpenProjectViewOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/Admin/Desktop/crystalized/knockoff-game&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;discord-application&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration default="true" type="JetRunConfigurationType">
       <module name="mcdev-temp-root" />

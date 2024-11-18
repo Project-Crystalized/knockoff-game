@@ -114,17 +114,13 @@ public class PlayerListener implements Listener {
             }
             pd.takeawayLife(1); // takes away 1 life
         } else { //Player has no lives, so we make them unable to player and put them in spectator
+            if (pd.getLives() < 0) {
+                //we kick the player if their lives is less than 0. To prevent cheating and to possibly catch bugs where players may die twice
+                player.kick(Component.text("You're eliminated from the game but you have somehow died again. and/or your lives is measured in negative numbers! Please report this bug to the Crystalized devs.").color(NamedTextColor.RED));
+            }
+            pd.takeawayLife(1); // takes away 1 life
             player.sendMessage(Component.text("[!] You are eliminated from the game!")); // TODO make this a translatable text component
         }
-
-        if (pd.getLives() < 0) {
-            //we kick the player if their lives is less than 0. To prevent cheating and to possibly catch bugs where players may die twice
-            player.kick(Component.text("You're eliminated from the game but you have somehow died again. and/or your lives is measured in negative numbers! Please report this bug to the Crystalized devs.").color(NamedTextColor.RED));
-        }
-
-        //player.playSound(player, "minecraft:item.armor.equip_elytra", 50, 1);
-
-
         if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
             return;
         }

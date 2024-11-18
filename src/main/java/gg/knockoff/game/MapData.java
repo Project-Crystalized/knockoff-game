@@ -100,4 +100,8 @@ public class MapData {
 
         return currentsection;
     }
+
+    public JsonArray getCurrentsection() {
+        return currentsection;
+    }
 }

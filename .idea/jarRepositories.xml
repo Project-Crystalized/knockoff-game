@@ -26,5 +26,15 @@
       <option name="name" value="sonatype" />
       <option name="url" value="https://oss.sonatype.org/content/groups/public/" />
     </remote-repository>
+    <remote-repository>
+      <option name="id" value="worldedit" />
+      <option name="name" value="worldedit" />
+      <option name="url" value="https://maven.enginehub.org/repo/com/sk89q/worldedit/worldedit-core/7.4.0-SNAPSHOT/" />
+    </remote-repository>
+    <remote-repository>
+      <option name="id" value="enginehub-maven" />
+      <option name="name" value="enginehub-maven" />
+      <option name="url" value="https://maven.enginehub.org/repo/" />
+    </remote-repository>
   </component>
 </project>

@@ -1,10 +1,20 @@
 package gg.knockoff.game;
 
+import com.google.gson.JsonArray;
+import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.WorldEdit;
+import com.sk89q.worldedit.bukkit.BukkitAdapter;
+import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.extent.clipboard.Clipboard;
+import com.sk89q.worldedit.extent.clipboard.io.*;
+import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
+import com.sk89q.worldedit.function.operation.Operation;
+import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.math.BlockVector3;
+import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.session.ClipboardHolder;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -12,6 +22,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -32,10 +45,8 @@ public class GameManager {
         }
 
         //TODO section generation should start here
-
-        // broken because /clone doesn't run in unloaded chunks, near location or at z/x = 1000000
-        //Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clone " + knockoff.getInstance().mapdata.currentsection.get(1) + " " + knockoff.getInstance().mapdata.currentsection.get(2) + " " + knockoff.getInstance().mapdata.currentsection.get(3)
-        //       + " " + knockoff.getInstance().mapdata.currentsection.get(4) + " " + knockoff.getInstance().mapdata.currentsection.get(5) + " " + knockoff.getInstance().mapdata.currentsection.get(6) + " 10000000 0 1000000 replace");
+        //UNCOMMENT THIS WHEN DEBUGGING
+        //PlaceCurrentlySelectedSection();
 
         new BukkitRunnable() {
             @Override
@@ -190,5 +201,34 @@ public class GameManager {
         }
 
         return null;
+    }
+
+    private static void PlaceCurrentlySelectedSection() {
+        JsonArray data = knockoff.getInstance().mapdata.getCurrentsection();
+
+        World world = Bukkit.getWorld("world");
+
+        //TODO this breaks because you get [java.lang.NoClassDefFoundError: com/sk89q/worldedit/regions/Regions]
+        //Possibly a worldedit issue since it clearly does exist but just doesn't want to work
+        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+            //CuboidRegion region = new CuboidRegion(BukkitAdapter.adapt(world), data.get(1), data.get(2), data.get(3), data.get(4), data.get(5), data.get(6));
+            CuboidRegion region = new CuboidRegion(BukkitAdapter.adapt(world), BlockVector3.at(data.get(1).getAsInt(), data.get(2).getAsInt(), data.get(3).getAsInt()), BlockVector3.at(data.get(4).getAsInt(), data.get(5).getAsInt(), data.get(6).getAsInt()));
+            BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
+
+            ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(
+                    BukkitAdapter.adapt(world), region, clipboard, region.getMinimumPoint()
+            );
+            // configure here
+            Operations.complete(forwardExtentCopy);
+
+            Operation operation = new ClipboardHolder(clipboard)
+                    .createPaste(editSession)
+                    .to(BlockVector3.at(1000000, 0, 1000000))
+                    .build();
+            Operations.complete(operation);
+        }  catch (Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+            e.printStackTrace();
+        }
     }
 }

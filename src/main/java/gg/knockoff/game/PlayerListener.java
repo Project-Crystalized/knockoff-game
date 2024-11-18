@@ -11,6 +11,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import net.kyori.adventure.text.Component;
+import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerListener implements Listener {
 
@@ -49,10 +50,83 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getPlayer();
+        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
         event.setCancelled(true);
+        player.setGameMode(GameMode.SPECTATOR);
+        if (pd.getLives() > 0) { //If the player has lives left this code runs
+            //TODO TP player to near the top of the current map section
+            if (pd.getLives() == 5 || pd.getLives() == 4) { //Couldn't use outside variables in bukkitrunnables which sucks. Next best thing I came up with is repeated code lol
+                new BukkitRunnable() {
+                    int timer = 5;
+                    public void run() {
+                        player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
+                        timer -= 1;
+                        if (timer == -1) {
+                            //TODO implement function to TP player on the current map section again, make a new spawnpoint like how the beginning of the game is
+                            player.setGameMode(GameMode.SURVIVAL);
+                            cancel();
+                        }
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 1, 20);
+            }
+            if (pd.getLives() == 3) {
+                new BukkitRunnable() {
+                    int timer = 10;
+                    public void run() {
+                        player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
+                        timer -= 1;
+                        if (timer == -1) {
+                            //TODO implement function to TP player on the current map section again, make a new spawnpoint like how the beginning of the game is
+                            player.setGameMode(GameMode.SURVIVAL);
+                            cancel();
+                        }
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 1, 20);
+            }
+            if (pd.getLives() == 2) {
+                new BukkitRunnable() {
+                    int timer = 15;
+                    public void run() {
+                        player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
+                        timer -= 1;
+                        if (timer == -1) {
+                            //TODO implement function to TP player on the current map section again, make a new spawnpoint like how the beginning of the game is
+                            player.setGameMode(GameMode.SURVIVAL);
+                            cancel();
+                        }
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 1, 20);
+            }
+            if (pd.getLives() == 1) {
+                new BukkitRunnable() {
+                    int timer = 15;
+                    public void run() {
+                        player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
+                        timer -= 1;
+                        if (timer == -1) {
+                            //TODO implement function to TP player on the current map section again, make a new spawnpoint like how the beginning of the game is
+                            player.setGameMode(GameMode.SURVIVAL);
+                            player.sendMessage(Component.text("[!] You are on your last life! Be careful from now on")); // TODO make this a translatable text component
+                            cancel();
+                        }
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 1, 20);
+            }
+            pd.takeawayLife(1); // takes away 1 life
+        } else { //Player has no lives, so we make them unable to player and put them in spectator
+            player.sendMessage(Component.text("[!] You are eliminated from the game!")); // TODO make this a translatable text component
+        }
+
+        if (pd.getLives() < 0) {
+            //we kick the player if their lives is less than 0. To prevent cheating and to possibly catch bugs where players may die twice
+            player.kick(Component.text("You're eliminated from the game but you have somehow died again. and/or your lives is measured in negative numbers! Please report this bug to the Crystalized devs.").color(NamedTextColor.RED));
+        }
+
+        //player.playSound(player, "minecraft:item.armor.equip_elytra", 50, 1);
+
+
         if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
             return;
-        } //TODO make lives system, when a player dies they lose 1 live, when they lose all lives they're permanently put in spectator for the rest of the game until it resets
-        player.playSound(player, "minecraft:item.armor.equip_elytra", 50, 1);
+        }
     }
 }

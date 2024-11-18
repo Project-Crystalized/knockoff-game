@@ -43,23 +43,35 @@ public class CrystalBlocks implements Listener {
                     if (blockloc.getBlock().getBlockData() instanceof Directional) {
                         Directional dir = (Directional) blockloc.getBlock().getBlockData();
 
-                        // could be optimised. Checks both hands because .getItemInHand() is deprecated in favour of the 2 separate methods
-                        if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 1 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 1
-                                || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 5 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 5
-                                || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 9 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 9) {
-                            dir.setFacing(BlockFace.EAST);
-                        } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 2 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 2
-                                || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 6 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 6
-                                || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 10 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 10) {
-                            dir.setFacing(BlockFace.NORTH);
-                        } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 3 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 3
-                                || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 7 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 7
-                                || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 11 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 11) {
-                            dir.setFacing(BlockFace.SOUTH);
-                        } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 4 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 4
-                                || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 8 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 8
-                                || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 12 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 12) {
-                            dir.setFacing(BlockFace.WEST);
+                        // could be optimised.
+                        if (player.getEquipment().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK)) {
+                            if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 1 || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 5 ||
+                                    player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 9) {
+                                dir.setFacing(BlockFace.EAST);
+                            } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 2 || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 6 ||
+                                    player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 10) {
+                                dir.setFacing(BlockFace.NORTH);
+                            } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 3 || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 7 ||
+                                    player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 11) {
+                                dir.setFacing(BlockFace.SOUTH);
+                            } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 4 || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 8 ||
+                                    player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 12) {
+                                dir.setFacing(BlockFace.WEST);
+                            }
+                        } else if (player.getEquipment().getItemInOffHand().getType().equals(Material.AMETHYST_BLOCK)) {
+                            if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 1 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 5 ||
+                                    player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 9) {
+                                dir.setFacing(BlockFace.EAST);
+                            } else if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 2 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 6 ||
+                                    player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 10) {
+                                dir.setFacing(BlockFace.NORTH);
+                            } else if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 3 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 7 ||
+                                    player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 11) {
+                                dir.setFacing(BlockFace.SOUTH);
+                            } else if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 4 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 8 ||
+                                    player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 12) {
+                                dir.setFacing(BlockFace.WEST);
+                            }
                         }
 
 

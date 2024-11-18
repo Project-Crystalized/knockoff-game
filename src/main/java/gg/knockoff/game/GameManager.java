@@ -12,11 +12,18 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+
+import static net.kyori.adventure.text.Component.text;
+
 public class GameManager {
+    public List<PlayerData> playerDatas;
     public Teams teams = new Teams();
 
     public GameManager() {//Start of the game
-        Bukkit.getServer().sendMessage(Component.text("Starting Game!"));
+        Bukkit.getServer().sendMessage(text("Starting Game!"));
         CopyRandomMapSection();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -30,12 +37,31 @@ public class GameManager {
         //Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "clone " + knockoff.getInstance().mapdata.currentsection.get(1) + " " + knockoff.getInstance().mapdata.currentsection.get(2) + " " + knockoff.getInstance().mapdata.currentsection.get(3)
         //       + " " + knockoff.getInstance().mapdata.currentsection.get(4) + " " + knockoff.getInstance().mapdata.currentsection.get(5) + " " + knockoff.getInstance().mapdata.currentsection.get(6) + " 10000000 0 1000000 replace");
 
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                playerDatas = new ArrayList<PlayerData>();
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    PlayerData p = new PlayerData(player);
+                    playerDatas.add(p);
+                }
+            }
+        }.runTaskLater(knockoff.getInstance(), 1);
+
         new BukkitRunnable() { //Probably not great optimization
             @Override
             public void run() {
-                Bukkit.getServer().sendActionBar(Component.text("[Debugging] Current Section loaded in memory: " + knockoff.getInstance().mapdata.currentsection));
+                //uncomment the line below for debugging
+                //Bukkit.getServer().sendActionBar(Component.text("[Debugging] Current Section loaded in memory: " + knockoff.getInstance().mapdata.currentsection));
+
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                    //p.getPlayer().sendActionBar(text("[Debugging] Your Stats. Lives: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
+                }
             }
         }.runTaskTimer(knockoff.getInstance(), 20 ,1);
+
+
     }
 
     private static void CopyRandomMapSection() {
@@ -148,5 +174,21 @@ public class GameManager {
         lam.setUnbreakable(true);
         i.setItemMeta(lam);
         return i;
+    }
+
+    public PlayerData getPlayerData(Player p) {
+        for (PlayerData pd : playerDatas) {
+            if (pd.player.equals(p.getName())) {
+                return pd;
+            }
+        }
+        Bukkit.getServer().sendMessage(text("error occured, a player didnt have associated data"));
+        Bukkit.getLogger().warning("player name: " + p.getName());
+
+        for (PlayerData pd : playerDatas) {
+            Bukkit.getLogger().warning(pd.player);
+        }
+
+        return null;
     }
 }

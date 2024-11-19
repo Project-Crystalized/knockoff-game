@@ -18,6 +18,10 @@ public class MapData {
     public final JsonArray sectionslist = new JsonArray();
     public static JsonArray currentsection = new JsonArray();
 
+    public int CurrentXLength = 0;
+    public int CurrentYLength = 0;
+    public int CurrentZLength = 0;
+
     public final String map_name;
     public final String game;
 
@@ -98,10 +102,104 @@ public class MapData {
 
         Bukkit.getLogger().log(Level.INFO, "NEW: " + currentsection); //for debugging
 
+        CurrentXLength = getNewCurrentXlength();
+        CurrentYLength = getNewCurrentYlength();
+        CurrentZLength = getNewCurrentZlength();
+
         return currentsection;
     }
 
     public JsonArray getCurrentsection() {
         return currentsection;
+    }
+
+    private int getNewCurrentXlength() {
+        int a = currentsection.get(1).getAsInt();
+        int b = currentsection.get(4).getAsInt();
+        int i = a;
+        int j = a;
+        int c = 0;
+        while (i != b || j != b) {
+            if (i == b) {
+                c = i;
+                return c;
+            }
+            else if (j == b) {
+                c = j;
+                return c;
+            } else {
+                i++;
+                j--;
+            }
+        }
+        return c;
+    }
+
+    private int getNewCurrentYlength() {
+        int a = currentsection.get(2).getAsInt();
+        int b = currentsection.get(5).getAsInt();
+        int i = a;
+        int j = a;
+        int c = 0;
+        while (i != b || j != b) {
+            if (i == b) {
+                c = i;
+                return c;
+            }
+            else if (j == b) {
+                c = j;
+                return c;
+            } else {
+                i++;
+                j--;
+            }
+        }
+        return c;
+    }
+
+    private int getNewCurrentZlength() {
+        int a = currentsection.get(3).getAsInt();
+        int b = currentsection.get(6).getAsInt();
+        int i = a;
+        int j = a;
+        int c = 0;
+        while (i != b || j != b) {
+            if (i == b) {
+                c = i;
+                return c;
+            }
+            else if (j == b) {
+                c = j;
+                return c;
+            } else {
+                i++;
+                j--;
+            }
+        }
+        return c;
+    }
+
+    public int getCurrentXLength() {
+        return CurrentXLength/2;
+    }
+    public int getCurrentYLength() {
+        return CurrentYLength/2;
+    }
+    public int getCurrentZLength() {
+        return CurrentZLength/2;
+    }
+
+
+    public int getCurrentMiddleXLength() {
+        int i = CurrentXLength/2;
+        return Math.round(i);
+    }
+    public int getCurrentMiddleYLength() {
+        int i = CurrentYLength/2;
+        return Math.round(i);
+    }
+    public int getCurrentMiddleZLength() {
+        int i = CurrentZLength/2;
+        return Math.round(i);
     }
 }

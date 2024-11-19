@@ -5,14 +5,14 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
-import com.sk89q.worldedit.extent.clipboard.Clipboard;
-import com.sk89q.worldedit.extent.clipboard.io.*;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
+import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.world.block.BlockState;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -22,9 +22,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -35,18 +32,39 @@ public class GameManager {
     public List<PlayerData> playerDatas;
     public Teams teams = new Teams();
 
+    public static int CurrentSectionX = 0;
+    public static int CurrentSectionY = 0;
+    public static int CurrentSectionZ = 0;
+    public static int SectionPlaceLocationX = 1000000;
+    public static int SectionPlaceLocationY = 0;
+    public static int SectionPlaceLocationZ = 1000000;
+
     public GameManager() {//Start of the game
-        Bukkit.getServer().sendMessage(text("Starting Game!"));
+        Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
         CopyRandomMapSection();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             GiveTeamItems(p);
             p.setGameMode(GameMode.SURVIVAL);
         }
+        // Sets the target area to air to prevent previous game's sections to interfere with the current game
+        // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
+        // Plus this lags the server anyways
+        JsonArray data = knockoff.getInstance().mapdata.getCurrentsection();
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(1000100, -30, 1000100), BlockVector3.at(1000000, 40, 1000000));
+        try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+            RandomPattern pat = new RandomPattern();
+            BlockState air = BukkitAdapter.adapt(Material.AIR.createBlockData());
+            pat.add(air, 1);
+            editSession.setBlocks(selection, pat);
+        }  catch (Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+            e.printStackTrace();
+        }
 
-        //TODO section generation should start here
-        //UNCOMMENT THIS WHEN DEBUGGING
-        //PlaceCurrentlySelectedSection();
+
+        PlaceCurrentlySelectedSection();
 
         new BukkitRunnable() {
             @Override
@@ -62,8 +80,10 @@ public class GameManager {
         new BukkitRunnable() { //Probably not great optimization
             @Override
             public void run() {
-                //uncomment the line below for debugging
-                //Bukkit.getServer().sendActionBar(Component.text("[Debugging] Current Section loaded in memory: " + knockoff.getInstance().mapdata.currentsection));
+                //for map debugging
+                Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection +
+                        ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength()
+                        + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
@@ -205,25 +225,19 @@ public class GameManager {
 
     private static void PlaceCurrentlySelectedSection() {
         JsonArray data = knockoff.getInstance().mapdata.getCurrentsection();
-
         World world = Bukkit.getWorld("world");
-
-        //TODO this breaks because you get [java.lang.NoClassDefFoundError: com/sk89q/worldedit/regions/Regions]
-        //Possibly a worldedit issue since it clearly does exist but just doesn't want to work
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
-            //CuboidRegion region = new CuboidRegion(BukkitAdapter.adapt(world), data.get(1), data.get(2), data.get(3), data.get(4), data.get(5), data.get(6));
             CuboidRegion region = new CuboidRegion(BukkitAdapter.adapt(world), BlockVector3.at(data.get(1).getAsInt(), data.get(2).getAsInt(), data.get(3).getAsInt()), BlockVector3.at(data.get(4).getAsInt(), data.get(5).getAsInt(), data.get(6).getAsInt()));
             BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 
             ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(
                     BukkitAdapter.adapt(world), region, clipboard, region.getMinimumPoint()
             );
-            // configure here
             Operations.complete(forwardExtentCopy);
 
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(editSession)
-                    .to(BlockVector3.at(1000000, 0, 1000000))
+                    .to(BlockVector3.at(SectionPlaceLocationX, SectionPlaceLocationY, SectionPlaceLocationZ))
                     .build();
             Operations.complete(operation);
         }  catch (Exception e) {

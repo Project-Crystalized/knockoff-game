@@ -1,6 +1,7 @@
 package gg.knockoff.game;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -23,6 +24,19 @@ public class Teams {
     public static List<String> red = new ArrayList<>();
     public static List<String> white = new ArrayList<>();
     public static List<String> yellow = new ArrayList<>();
+
+    public static final TextColor TEAM_BLUE = TextColor.color(0x0A42BB);
+    public static final TextColor TEAM_CYAN = TextColor.color(0x157D91);
+    public static final TextColor TEAM_GREEN = TextColor.color(0x0A971E);
+    public static final TextColor TEAM_LEMON = TextColor.color(0xFFC500);
+    public static final TextColor TEAM_LIME = TextColor.color(0x67E555);
+    public static final TextColor TEAM_MAGENTA = TextColor.color(0xDA50E0);
+    public static final TextColor TEAM_ORANGE = TextColor.color(0xFF7900);
+    public static final TextColor TEAM_PEACH = TextColor.color(0xFF8775);
+    public static final TextColor TEAM_PURPLE = TextColor.color(0x7525DC);
+    public static final TextColor TEAM_RED = TextColor.color(0xF74036);
+    public static final TextColor TEAM_WHITE = TextColor.color(0xFFFFFF);
+    public static final TextColor TEAM_YELLOW = TextColor.color(0xFBE059);
 
     public Teams() {
         List<String> playerlist = new ArrayList<>();

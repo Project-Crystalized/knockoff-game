@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 public class PlayerData {
 
     public String player;
+    public boolean isPlayerDead = false;
     private int lives = 5;
     private int kills = 0;
     private int deaths = 0;
@@ -13,9 +14,6 @@ public class PlayerData {
     public PlayerData(Player p) {
         player = p.getName();
     }
-
-
-
 
     public int getLives() {
         return this.lives;

@@ -21,6 +21,7 @@ public final class knockoff extends JavaPlugin {
     public final MapData mapdata = new MapData();
     public boolean is_force_starting = false;
     public GameManager GameManager;
+    public boolean DevMode = false;
 
     @Override
     public void onEnable() {
@@ -28,6 +29,7 @@ public final class knockoff extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new CrystalBlocks(), this);
 
         Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);
+        Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
 
         DebugCommands dc = new DebugCommands();
         this.getCommand("force_start").setExecutor(dc);
@@ -57,7 +59,7 @@ public final class knockoff extends JavaPlugin {
         // Plus this lags the server anyways
         getLogger().log(Level.INFO, "Making room for knockoff map, This may lag your server depending on how good it is");
         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-        CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(1000100, -30, 1000100), BlockVector3.at(1000000, 40, 1000000));
+        CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(1100, -30, 1100), BlockVector3.at(1000, 40, 1000));
         try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
             RandomPattern pat = new RandomPattern();
             BlockState air = BukkitAdapter.adapt(Material.AIR.createBlockData());

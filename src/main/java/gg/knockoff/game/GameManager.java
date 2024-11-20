@@ -8,11 +8,14 @@ import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.function.pattern.RandomPattern;
+import com.sk89q.worldedit.function.pattern.Pattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BaseBlock;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import net.kyori.adventure.text.Component;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -26,6 +29,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -34,12 +38,9 @@ public class GameManager {
     public List<PlayerData> playerDatas;
     public Teams teams = new Teams();
 
-    public static int CurrentSectionX = 0;
-    public static int CurrentSectionY = 0;
-    public static int CurrentSectionZ = 0;
-    public static int SectionPlaceLocationX = 1000000;
+    public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;
-    public static int SectionPlaceLocationZ = 1000000;
+    public static int SectionPlaceLocationZ = 1000;
 
     public GameManager() {//Start of the game
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
@@ -61,20 +62,27 @@ public class GameManager {
             p.setGameMode(GameMode.SURVIVAL);
             Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
             p.teleport(loc);
-            p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 2, 5, false, false, true));
+            p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 255, false, false, false));
         }
 
         new BukkitRunnable() { //Probably not great optimization
             @Override
             public void run() {
-                //for map debugging
-                Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection +
-                        ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength()
-                        + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
+                if (knockoff.getInstance().DevMode) {
+                    Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection +
+                            ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength()
+                            + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
+                }
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-                    //p.getPlayer().sendActionBar(text("[Debugging] Your Stats. Lives: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
+                    if (knockoff.getInstance().DevMode == false && !pd.isPlayerDead) {
+                        p.getPlayer().sendActionBar(text("Your Stats. Lives: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
+                    }
+
+                    if (p.getLocation().getX() == -30) { //instantly kills the player when they get knocked into the void
+                        p.setHealth(0);
+                    }
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 20 ,1);
@@ -227,9 +235,22 @@ public class GameManager {
                     .to(BlockVector3.at(SectionPlaceLocationX, SectionPlaceLocationY, SectionPlaceLocationZ))
                     .build();
             Operations.complete(operation);
-        }  catch (Exception e) {
+        } catch (Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
             e.printStackTrace();
+        }
+        if (!knockoff.getInstance().DevMode) {
+            try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+                Region region = new CuboidRegion(BlockVector3.at(SectionPlaceLocationX, SectionPlaceLocationY, SectionPlaceLocationZ),
+                        BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength(), knockoff.getInstance().mapdata.getCurrentYLength(), knockoff.getInstance().mapdata.getCurrentZLength()));
+                String a = knockoff.getInstance().mapdata.getCurrentsection().get(7).getAsString();
+                BlockType from = BlockTypes.get(a);
+                BlockType to = BlockTypes.AIR;
+                editSession.replaceBlocks(region, (Set<BaseBlock>) from, (Pattern) to);
+            } catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
         }
     }
 }

@@ -11,6 +11,8 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import net.kyori.adventure.text.Component;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerListener implements Listener {
@@ -27,6 +29,7 @@ public class PlayerListener implements Listener {
             player.setFoodLevel(20);
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
             player.setGameMode(GameMode.ADVENTURE);
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, Integer.MAX_VALUE, 1, false, false, true));
         } else {
             player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
         }

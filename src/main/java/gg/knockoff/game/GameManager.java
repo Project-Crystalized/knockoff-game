@@ -20,6 +20,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -42,30 +44,7 @@ public class GameManager {
     public GameManager() {//Start of the game
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
         CopyRandomMapSection();
-
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            GiveTeamItems(p);
-            p.setGameMode(GameMode.SURVIVAL);
-        }
-        // Sets the target area to air to prevent previous game's sections to interfere with the current game
-        // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
-        // Plus this lags the server anyways
-        JsonArray data = knockoff.getInstance().mapdata.getCurrentsection();
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-        CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(1000100, -30, 1000100), BlockVector3.at(1000000, 40, 1000000));
-        try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-            RandomPattern pat = new RandomPattern();
-            BlockState air = BukkitAdapter.adapt(Material.AIR.createBlockData());
-            pat.add(air, 1);
-            editSession.setBlocks(selection, pat);
-        }  catch (Exception e) {
-            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-            e.printStackTrace();
-        }
-
-
         PlaceCurrentlySelectedSection();
-
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -76,6 +55,14 @@ public class GameManager {
                 }
             }
         }.runTaskLater(knockoff.getInstance(), 1);
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            GiveTeamItems(p);
+            p.setGameMode(GameMode.SURVIVAL);
+            Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+            p.teleport(loc);
+            p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 2, 5, false, false, true));
+        }
 
         new BukkitRunnable() { //Probably not great optimization
             @Override

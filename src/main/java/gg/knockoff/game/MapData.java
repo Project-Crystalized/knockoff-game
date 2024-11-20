@@ -38,6 +38,11 @@ public class MapData {
             this.map_name = json.get("map_name").getAsString();
             this.game = json.get("game").getAsString();
 
+            if (!this.game.equals("knockoff")) {
+                Bukkit.getLogger().log(Level.SEVERE, "You've inserted a game config for \"" + this.game + "\", Please update the world file to be compatible with KnockOff");
+                throw new Exception();
+            }
+
             //this is a pain to figure out - Callum
             JsonArray sections = json.get("sections").getAsJsonArray();
             this.sections = json.get("sections").getAsJsonArray();
@@ -57,8 +62,6 @@ public class MapData {
                     sectionslist.add(sections.get(7 + i*8));
                 }
                 i++;
-                Bukkit.getLogger().log(Level.WARNING, "" + sectionslist);
-                Bukkit.getLogger().log(Level.INFO, "" + this.sections.size() + " " + i);
             }
             // for statement above should generate something similar to this
             // ["section1", -18, 19, 34, 46, -6, -29, "waxed_copper_block, 1"]
@@ -116,90 +119,42 @@ public class MapData {
     private int getNewCurrentXlength() {
         int a = currentsection.get(1).getAsInt();
         int b = currentsection.get(4).getAsInt();
-        int i = a;
-        int j = a;
-        int c = 0;
-        while (i != b || j != b) {
-            if (i == b) {
-                c = i;
-                return c;
-            }
-            else if (j == b) {
-                c = j;
-                return c;
-            } else {
-                i++;
-                j--;
-            }
-        }
-        return c;
+        return Math.abs(a - b);
     }
 
     private int getNewCurrentYlength() {
         int a = currentsection.get(2).getAsInt();
         int b = currentsection.get(5).getAsInt();
-        int i = a;
-        int j = a;
-        int c = 0;
-        while (i != b || j != b) {
-            if (i == b) {
-                c = i;
-                return c;
-            }
-            else if (j == b) {
-                c = j;
-                return c;
-            } else {
-                i++;
-                j--;
-            }
-        }
-        return c;
+        return Math.abs(a - b);
     }
 
     private int getNewCurrentZlength() {
         int a = currentsection.get(3).getAsInt();
         int b = currentsection.get(6).getAsInt();
-        int i = a;
-        int j = a;
-        int c = 0;
-        while (i != b || j != b) {
-            if (i == b) {
-                c = i;
-                return c;
-            }
-            else if (j == b) {
-                c = j;
-                return c;
-            } else {
-                i++;
-                j--;
-            }
-        }
-        return c;
+        return Math.abs(a - b);
     }
 
     public int getCurrentXLength() {
-        return CurrentXLength/2;
+        return GameManager.SectionPlaceLocationX + CurrentXLength;
     }
     public int getCurrentYLength() {
-        return CurrentYLength/2;
+        return GameManager.SectionPlaceLocationY + CurrentYLength;
     }
     public int getCurrentZLength() {
-        return CurrentZLength/2;
+        return GameManager.SectionPlaceLocationZ + CurrentZLength;
     }
 
 
     public int getCurrentMiddleXLength() {
-        int i = CurrentXLength/2;
+        int i = CurrentXLength/2 + GameManager.SectionPlaceLocationX;
         return Math.round(i);
     }
     public int getCurrentMiddleYLength() {
-        int i = CurrentYLength/2;
+        int i = CurrentYLength/2 + GameManager.SectionPlaceLocationY;
         return Math.round(i);
     }
     public int getCurrentMiddleZLength() {
-        int i = CurrentZLength/2;
+        int i = CurrentZLength/2 + GameManager.SectionPlaceLocationZ;
         return Math.round(i);
     }
 }

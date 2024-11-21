@@ -6,6 +6,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
+import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Material;
@@ -23,7 +24,7 @@ public final class knockoff extends JavaPlugin {
     public GameManager GameManager;
     public boolean DevMode = false;
 
-    @Override
+    @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new CrystalBlocks(), this);
@@ -64,7 +65,7 @@ public final class knockoff extends JavaPlugin {
             RandomPattern pat = new RandomPattern();
             BlockState air = BukkitAdapter.adapt(Material.AIR.createBlockData());
             pat.add(air, 1);
-            editSession.setBlocks(selection, pat);
+            editSession.setBlocks((Region) selection, pat);
         }  catch (Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
             e.printStackTrace();

@@ -1,6 +1,7 @@
 package gg.knockoff.game;
 
 import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -11,6 +12,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import net.kyori.adventure.text.Component;
 import org.bukkit.potion.PotionEffect;
@@ -69,22 +72,26 @@ public class PlayerListener implements Listener {
                     .append(player.displayName())
                     .append(Component.text(" was knocked off by "))
                     .append(player.getKiller().displayName()));
+            Player attacker = player.getKiller();
+            PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
+            pda.addKill(1);
+            //TODO buggy
+            //attacker.sendTitle("" + player.getName(), "", 10, 20, 10);
         }
-        if (pd.getLives() > 0) { //If the player has lives left this code runs
+        if (pd.getLives() > 0) { //If the player has lives left this code run
+            pd.addDeath(1);
             pd.isPlayerDead = true;
             Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
             player.teleport(loc);
             if (pd.getLives() == 5 || pd.getLives() == 4) { //Couldn't use outside variables in bukkitrunnables which sucks. Next best thing I came up with is repeated code lol
                 new BukkitRunnable() {
                     int timer = 5;
+
                     public void run() {
                         player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
                         timer -= 1;
                         if (timer == -1) {
-                            //TODO implement function to TP player on the current map section again, make a new spawnpoint like how the beginning of the game is
-                            //placeholder until I implement above
-                            Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-                            player.teleport(loc);
+                            tpPlayersBack(player);
 
                             player.setGameMode(GameMode.SURVIVAL);
                             pd.isPlayerDead = false;
@@ -96,14 +103,12 @@ public class PlayerListener implements Listener {
             if (pd.getLives() == 3) {
                 new BukkitRunnable() {
                     int timer = 10;
+
                     public void run() {
                         player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
                         timer -= 1;
                         if (timer == -1) {
-                            //TODO implement function to TP player on the current map section again, make a new spawnpoint like how the beginning of the game is
-                            //placeholder until I implement above
-                            Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-                            player.teleport(loc);
+                            tpPlayersBack(player);
 
                             pd.isPlayerDead = false;
                             player.setGameMode(GameMode.SURVIVAL);
@@ -115,14 +120,12 @@ public class PlayerListener implements Listener {
             if (pd.getLives() == 2) {
                 new BukkitRunnable() {
                     int timer = 15;
+
                     public void run() {
                         player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
                         timer -= 1;
                         if (timer == -1) {
-                            //TODO implement function to TP player on the current map section again, make a new spawnpoint like how the beginning of the game is
-                            //placeholder until I implement above
-                            Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-                            player.teleport(loc);
+                            tpPlayersBack(player);
 
                             pd.isPlayerDead = false;
                             player.setGameMode(GameMode.SURVIVAL);
@@ -134,14 +137,12 @@ public class PlayerListener implements Listener {
             if (pd.getLives() == 1) {
                 new BukkitRunnable() {
                     int timer = 15;
+
                     public void run() {
                         player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
                         timer -= 1;
                         if (timer == -1) {
-                            //TODO implement function to TP player on the current map section again, make a new spawnpoint like how the beginning of the game is
-                            //placeholder until I implement above
-                            Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-                            player.teleport(loc);
+                            tpPlayersBack(player);
 
                             player.setGameMode(GameMode.SURVIVAL);
                             pd.isPlayerDead = false;
@@ -158,7 +159,13 @@ public class PlayerListener implements Listener {
                 player.kick(Component.text("You're eliminated from the game but you have somehow died again. and/or your lives is measured in negative numbers! Please report this bug to the Crystalized devs.").color(NamedTextColor.RED));
             }
             pd.takeawayLife(1); // takes away 1 life
-            player.sendMessage(Component.text("[!] You are eliminated from the game!")); // TODO make this a translatable text component
+            //player.sendMessage(Component.text("[!] You are eliminated from the game!"));
+            Bukkit.getServer().sendMessage(text("[")
+                    .append(Component.text("\uE103").color(NamedTextColor.RED))
+                    .append(Component.text("] "))
+                    .append(Component.text(player.getName())
+                    .append(Component.text(" has been eliminated from the game!"))));  // TODO make this a translatable text component
+            player.getPlayer().sendActionBar(text("Your final stats: Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
             pd.isPlayerDead = true;
         }
         if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
@@ -167,7 +174,7 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onChat(AsyncChatEvent event){
+    public void onChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         event.setCancelled(true);
         if (knockoff.getInstance().GameManager == null) {
@@ -243,5 +250,73 @@ public class PlayerListener implements Listener {
                         .append(event.message()));
             }
         }
+    }
+
+    private static void tpPlayersBack(Player p) { //TODO temporary for now
+
+        int SectionPlaceLocationX = GameManager.SectionPlaceLocationX;
+        int SectionPlaceLocationZ = GameManager.SectionPlaceLocationZ;
+
+        if (Teams.GetPlayerTeam(p).equals("blue")) {
+            Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+            p.teleport(blueloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("cyan")) {
+            Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+            p.teleport(cyanloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("green")) {
+            Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+            p.teleport(greenloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("lemon")) {
+            Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+            p.teleport(greenloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("lime")) { //Yes im aware this has blueloc as its variable, I copy pasted the first 4 lol
+            Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+            p.teleport(blueloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("magenta")) {
+            Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+            p.teleport(cyanloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("orange")) {
+            Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+            p.teleport(greenloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("peach")) {
+            Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+            p.teleport(greenloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("purple")) {
+            Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
+            p.teleport(blueloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("red")) {
+            Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
+            p.teleport(cyanloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("white")) {
+            Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
+            p.teleport(greenloc);
+        }
+        else if (Teams.GetPlayerTeam(p).equals("yellow")) {
+            Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
+            p.teleport(greenloc);
+        }
+        else {
+            Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+            p.teleport(loc);
+        }
+    }
+
+    @EventHandler
+    public void PlayerDropItem(PlayerDropItemEvent event) {
+        event.setCancelled(true);
+    }
+
+    public void PlayerMoveInventoryItem(InventoryMoveItemEvent event) {
+        event.setCancelled(true);
     }
 }

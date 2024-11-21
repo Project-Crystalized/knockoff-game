@@ -8,15 +8,14 @@ import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
-import com.sk89q.worldedit.function.pattern.Pattern;
+import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.world.block.BaseBlock;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
+import com.sk89q.worldedit.world.block.BlockState;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -29,7 +28,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -57,11 +55,11 @@ public class GameManager {
             }
         }.runTaskLater(knockoff.getInstance(), 1);
 
+        SetupFirstSpawns();
+
         for (Player p : Bukkit.getOnlinePlayers()) {
             GiveTeamItems(p);
             p.setGameMode(GameMode.SURVIVAL);
-            Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-            p.teleport(loc);
             p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 255, false, false, false));
         }
 
@@ -77,11 +75,14 @@ public class GameManager {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
                     if (knockoff.getInstance().DevMode == false && !pd.isPlayerDead) {
-                        p.getPlayer().sendActionBar(text("Your Stats. Lives: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
+                        p.getPlayer().sendActionBar(text("Your Stats. Lives Left: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
                     }
 
-                    if (p.getLocation().getX() == -30) { //instantly kills the player when they get knocked into the void
+                    if (p.getLocation().getY() < -30 && p.getGameMode().equals(GameMode.SURVIVAL)) {//instantly kills the player when they get knocked into the void
+                        Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+                        p.teleport(loc);
                         p.setHealth(0);
+
                     }
                 }
             }
@@ -187,11 +188,12 @@ public class GameManager {
         }
 
         im.itemName(Component.translatable("crystalized.item.nexusblock.name"));
+        List<Component> lore = new ArrayList<>();
+        lore.add(Component.translatable("crystalized.item.nexusblock.desc").color(NamedTextColor.DARK_GRAY));
+        lore.add(Component.translatable("crystalized.item.nexusblock.desc2").color(NamedTextColor.DARK_GRAY));
+        im.lore(lore);
         item.setItemMeta(im);
         player.getInventory().addItem(item);
-
-
-
     }
 
     private static ItemStack colorArmor(Color c, ItemStack i) {
@@ -240,16 +242,252 @@ public class GameManager {
             e.printStackTrace();
         }
         if (!knockoff.getInstance().DevMode) {
-            try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+            //TODO this code below will produce a ClassCastException. As an alternative for now we will enter the commands needed in Console
+            //Could be optimised also
+            /*try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
                 Region region = new CuboidRegion(BlockVector3.at(SectionPlaceLocationX, SectionPlaceLocationY, SectionPlaceLocationZ),
                         BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength(), knockoff.getInstance().mapdata.getCurrentYLength(), knockoff.getInstance().mapdata.getCurrentZLength()));
                 String a = knockoff.getInstance().mapdata.getCurrentsection().get(7).getAsString();
                 BlockType from = BlockTypes.get(a);
                 BlockType to = BlockTypes.AIR;
-                editSession.replaceBlocks(region, (Set<BaseBlock>) from, (Pattern) to);
+                editSession.replaceBlocks(region, (Set<BaseBlock>) BlockTypes.get(a), (Pattern) to);
             } catch (Exception e) {
                 Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
                 e.printStackTrace();
+            }*/
+
+            String a = knockoff.getInstance().mapdata.getCurrentsection().get(7).getAsString().toLowerCase();
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + SectionPlaceLocationX + "," + SectionPlaceLocationY + "," + SectionPlaceLocationZ);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
+        }
+    }
+
+    @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
+    private static void SetupFirstSpawns() {
+        //TODO idk how to change the direction of glazed terracotta blocks, so regular amethyst crystals are used instead
+        if (!Teams.blue.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 5),
+                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 7));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.BLUE_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.cyan.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 5),
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 7));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.CYAN_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.green.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 5),
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 7));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.GREEN_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.lemon.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 5),
+                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 7));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.YELLOW_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.lime.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 5),
+                    BlockVector3.at(SectionPlaceLocationX + 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 7));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.LIME_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.magenta.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 5),
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 7));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.MAGENTA_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.orange.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 5),
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 7));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.ORANGE_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.peach.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 5),
+                    BlockVector3.at(SectionPlaceLocationX + 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 7));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.PINK_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.purple.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 15),
+                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 17));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.PURPLE_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.red.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 15),
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 17));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.RED_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.white.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 15),
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 17));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.WHITE_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+        if (!Teams.yellow.isEmpty()) {
+            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 15),
+                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 17));
+            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                RandomPattern pat = new RandomPattern();
+                BlockState a = BukkitAdapter.adapt(Material.YELLOW_STAINED_GLASS.createBlockData());
+                pat.add(a, 1);
+                editSession.setBlocks((Region) selection, pat);
+            }  catch (Exception e) {
+                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                e.printStackTrace();
+            }
+        }
+
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.GetPlayerTeam(p).equals("blue")) {
+                Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+                p.teleport(blueloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("cyan")) {
+                Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+                p.teleport(cyanloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("green")) {
+                Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+                p.teleport(greenloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("lemon")) {
+                Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+                p.teleport(greenloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("lime")) { //Yes im aware this has blueloc as its variable, I copy pasted the first 4 lol
+                Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+                p.teleport(blueloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("magenta")) {
+                Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+                p.teleport(cyanloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("orange")) {
+                Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+                p.teleport(greenloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("peach")) {
+                Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+                p.teleport(greenloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("purple")) {
+                Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
+                p.teleport(blueloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("red")) {
+                Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
+                p.teleport(cyanloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("white")) {
+                Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
+                p.teleport(greenloc);
+            } else
+            if (Teams.GetPlayerTeam(p).equals("yellow")) {
+                Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
+                p.teleport(greenloc);
+            } else {
+                Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+                p.teleport(loc);
             }
         }
     }

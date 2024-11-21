@@ -2,7 +2,7 @@ name: knockoff-game
 version: '0.0.1'
 main: gg.knockoff.game.knockoff
 api-version: '1.21'
-depend: [WorldEdit]
+depend: []
 commands:
   force_start:
     description: "For debugging purposes, force_start the game"

@@ -46,9 +46,9 @@ public class Teams {
         Collections.shuffle(playerlist);
 
         if (playerlist.size() > 13) {
-            Bukkit.getLogger().log(Level.INFO, "Sorting Players into teams (solo)...");
-        } else {
             Bukkit.getLogger().log(Level.INFO, "Sorting Players into teams (duos)...");
+        } else {
+            Bukkit.getLogger().log(Level.INFO, "Sorting Players into teams (solo)...");
         }
 
         if (Bukkit.getOnlinePlayers().isEmpty()) {
@@ -72,7 +72,7 @@ public class Teams {
                 if (cyan.isEmpty()) {
                     cyan.add(playerlist.get(1));
                     if (playerlist.size() > 13) {
-                        blue.add(playerlist.get(14));
+                        cyan.add(playerlist.get(14));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + cyan + " in Team Cyan");
                 }
@@ -85,7 +85,7 @@ public class Teams {
                 if (green.isEmpty()) {
                     green.add(playerlist.get(2));
                     if (playerlist.size() > 14) {
-                        blue.add(playerlist.get(15));
+                        green.add(playerlist.get(15));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + green + " in Team Green");
                 }
@@ -98,7 +98,7 @@ public class Teams {
                 if (lemon.isEmpty()) {
                     lemon.add(playerlist.get(3));
                     if (playerlist.size() > 15) {
-                        blue.add(playerlist.get(16));
+                        lemon.add(playerlist.get(16));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + lemon + " in Team Lemon");
                 }
@@ -111,7 +111,7 @@ public class Teams {
                 if (lime.isEmpty()) {
                     lime.add(playerlist.get(4));
                     if (playerlist.size() > 16) {
-                        blue.add(playerlist.get(17));
+                        lime.add(playerlist.get(17));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + lime + " in Team Lime");
                 }
@@ -124,7 +124,7 @@ public class Teams {
                 if (magenta.isEmpty()) {
                     magenta.add(playerlist.get(5));
                     if (playerlist.size() > 17) {
-                        blue.add(playerlist.get(18));
+                        magenta.add(playerlist.get(18));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + magenta + " in Team Magenta");
                 }
@@ -137,7 +137,7 @@ public class Teams {
                 if (orange.isEmpty()) {
                     orange.add(playerlist.get(6));
                     if (playerlist.size() > 18) {
-                        blue.add(playerlist.get(19));
+                        orange.add(playerlist.get(19));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + orange + " in Team Orange");
                 }
@@ -150,7 +150,7 @@ public class Teams {
                 if (peach.isEmpty()) {
                     peach.add(playerlist.get(7));
                     if (playerlist.size() > 19) {
-                        blue.add(playerlist.get(20));
+                        peach.add(playerlist.get(20));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + peach + " in Team Peach");
                 }
@@ -163,7 +163,7 @@ public class Teams {
                 if (purple.isEmpty()) {
                     purple.add(playerlist.get(8));
                     if (playerlist.size() > 20) {
-                        blue.add(playerlist.get(21));
+                        purple.add(playerlist.get(21));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + purple + " in Team Purple");
                 }
@@ -176,7 +176,7 @@ public class Teams {
                 if (red.isEmpty()) {
                     red.add(playerlist.get(9));
                     if (playerlist.size() > 21) {
-                        blue.add(playerlist.get(22));
+                        red.add(playerlist.get(22));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + red + " in Team Red");
                 }
@@ -189,7 +189,7 @@ public class Teams {
                 if (white.isEmpty()) {
                     white.add(playerlist.get(10));
                     if (playerlist.size() > 22) {
-                        blue.add(playerlist.get(23));
+                        white.add(playerlist.get(23));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + white + " in Team White");
                 }
@@ -202,7 +202,7 @@ public class Teams {
                 if (yellow.isEmpty()) {
                     yellow.add(playerlist.get(11));
                     if (playerlist.size() > 23) {
-                        blue.add(playerlist.get(24));
+                        yellow.add(playerlist.get(24));
                     }
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + yellow + " in Team Yellow");
                 }

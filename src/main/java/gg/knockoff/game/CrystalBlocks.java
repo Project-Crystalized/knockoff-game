@@ -81,9 +81,9 @@ public class CrystalBlocks implements Listener {
                 }, 1);
                 Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
                     if (player.getEquipment().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK)) {
-                        player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() + 1);
+                        player.getInventory().getItemInMainHand().setAmount(64);
                     } else if (player.getEquipment().getItemInOffHand().getType().equals(Material.AMETHYST_BLOCK)) {
-                        player.getInventory().getItemInOffHand().setAmount(player.getInventory().getItemInOffHand().getAmount() + 1);
+                        player.getInventory().getItemInOffHand().setAmount(64);
                     }
                 }, 2);
             }

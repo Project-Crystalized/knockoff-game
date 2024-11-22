@@ -14,9 +14,12 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockState;
+import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -42,6 +45,23 @@ public class GameManager {
 
     public GameManager() {//Start of the game
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
+
+        // Sets the target area to air to prevent previous game's sections to interfere with the current game
+        // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
+        // Plus this lags the server anyways
+        Bukkit.getLogger().log(Level.INFO, "Making room for knockoff map, This may lag your server depending on how good it is");
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(1100, -30, 1100), BlockVector3.at(1000, 40, 1000));
+        try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+            RandomPattern pat = new RandomPattern();
+            BlockState air = BukkitAdapter.adapt(Material.AIR.createBlockData());
+            pat.add(air, 1);
+            editSession.setBlocks((Region) selection, pat);
+        }  catch (Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+            e.printStackTrace();
+        }
+
         CopyRandomMapSection();
         PlaceCurrentlySelectedSection();
         new BukkitRunnable() {
@@ -83,6 +103,11 @@ public class GameManager {
                         p.teleport(loc);
                         p.setHealth(0);
 
+                    }
+                }
+                for (Entity e : Bukkit.getWorld("world").getEntities()) {
+                    if (e instanceof Item) {
+                        e.remove();
                     }
                 }
             }
@@ -489,6 +514,7 @@ public class GameManager {
                 Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                 p.teleport(loc);
             }
+            p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
         }
     }
 }

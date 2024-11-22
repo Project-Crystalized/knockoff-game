@@ -54,23 +54,6 @@ public final class knockoff extends JavaPlugin {
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 1, 20);
-
-        // Sets the target area to air to prevent previous game's sections to interfere with the current game
-        // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
-        // Plus this lags the server anyways
-        getLogger().log(Level.INFO, "Making room for knockoff map, This may lag your server depending on how good it is");
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-        CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(1100, -30, 1100), BlockVector3.at(1000, 40, 1000));
-        try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-            RandomPattern pat = new RandomPattern();
-            BlockState air = BukkitAdapter.adapt(Material.AIR.createBlockData());
-            pat.add(air, 1);
-            editSession.setBlocks((Region) selection, pat);
-        }  catch (Exception e) {
-            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-            e.printStackTrace();
-        }
-
         getLogger().log(Level.INFO, "KnockOff Plugin Enabled!");
     }
 

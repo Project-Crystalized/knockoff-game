@@ -102,12 +102,13 @@ public class CrystalBlocks implements Listener {
                     || block.getType().equals(Material.AMETHYST_BLOCK) || block.getType().equals(Material.PURPUR_BLOCK) || block.getType().equals(Material.PURPUR_SLAB) || block.getType().equals(Material.PURPUR_STAIRS)
                     || block.getType().equals(Material.PINK_STAINED_GLASS) || block.getType().equals(Material.PINK_STAINED_GLASS)) {
                     Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
-                    blockloc.getBlock().setType(Material.AIR);
+                    /*blockloc.getBlock().setType(Material.AIR);
                     if (blockloc.getBlock().getBlockData() instanceof Directional) {
                         Directional dir = (Directional) blockloc.getBlock().getBlockData();
                         blockloc.getBlock().setBlockData(dir);
                     }
-                    blockloc.getBlock().getState().update();
+                    blockloc.getBlock().getState().update();*/
+                    blockloc.getBlock().breakNaturally(true);
                 }
             }
         } else {

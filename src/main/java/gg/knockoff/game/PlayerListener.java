@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -309,6 +310,7 @@ public class PlayerListener implements Listener {
             Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
             p.teleport(loc);
         }
+        p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
     }
 
     @EventHandler
@@ -316,6 +318,7 @@ public class PlayerListener implements Listener {
         event.setCancelled(true);
     }
 
+    @EventHandler
     public void PlayerMoveInventoryItem(InventoryMoveItemEvent event) {
         event.setCancelled(true);
     }

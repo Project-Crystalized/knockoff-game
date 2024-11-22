@@ -21,13 +21,17 @@ public class CrystalBlocks implements Listener {
     public void WhenCrystalBlockPlaced(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         if (event.getHand() != EquipmentSlot.HAND) return;
+        Block block = player.getTargetBlock(null, 5);
+        Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
+        if (blockloc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength() || blockloc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength() || blockloc.getBlockX() < GameManager.SectionPlaceLocationX
+                || blockloc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength() || blockloc.getBlockZ() < GameManager.SectionPlaceLocationZ) {
+            event.setCancelled(true);
+            return;
+        }
         //could be optimised. I check both the main and offhand separately because .getItemInHand() is deprecated in favour of the 2 separate methods
         if (player.getEquipment().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK) || player.getEquipment().getItemInOffHand().getType().equals(Material.AMETHYST_BLOCK)) {
             if (player.getEquipment().getItemInMainHand().getItemMeta().hasCustomModelData() || player.getEquipment().getItemInOffHand().getItemMeta().hasCustomModelData()) {
                 Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
-
-                    Block block = player.getTargetBlock(null, 5);
-                    Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
                     if (!blockloc.getBlock().getType().equals(Material.AMETHYST_BLOCK)) {
                         return;
                     } // to prevent a bug where sometimes blocks that aren't crystals randomly get turned into coloured crystal blocks
@@ -88,7 +92,6 @@ public class CrystalBlocks implements Listener {
                 }, 2);
             }
         }
-
     }
 
     @EventHandler
@@ -102,12 +105,6 @@ public class CrystalBlocks implements Listener {
                     || block.getType().equals(Material.AMETHYST_BLOCK) || block.getType().equals(Material.PURPUR_BLOCK) || block.getType().equals(Material.PURPUR_SLAB) || block.getType().equals(Material.PURPUR_STAIRS)
                     || block.getType().equals(Material.PINK_STAINED_GLASS) || block.getType().equals(Material.PINK_STAINED_GLASS)) {
                     Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
-                    /*blockloc.getBlock().setType(Material.AIR);
-                    if (blockloc.getBlock().getBlockData() instanceof Directional) {
-                        Directional dir = (Directional) blockloc.getBlock().getBlockData();
-                        blockloc.getBlock().setBlockData(dir);
-                    }
-                    blockloc.getBlock().getState().update();*/
                     blockloc.getBlock().breakNaturally(true);
                 }
             }

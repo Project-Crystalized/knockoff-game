@@ -107,7 +107,11 @@ public class GameManager {
                 }
                 for (Entity e : Bukkit.getWorld("world").getEntities()) {
                     if (e instanceof Item) {
-                        e.remove();
+                        if (((Item) e).getItemStack().getType().equals(Material.COAL) || ((Item) e).getItemStack().getType().equals(Material.WIND_CHARGE)) {
+                            return; //do nothing, material.coal and wind charges is powerups so we dont clear them
+                        } else {
+                            e.remove();
+                        }
                     }
                 }
             }

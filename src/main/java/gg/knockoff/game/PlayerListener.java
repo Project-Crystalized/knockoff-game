@@ -13,6 +13,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -20,6 +22,8 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -166,7 +170,7 @@ public class PlayerListener implements Listener {
                     .append(Component.text("] "))
                     .append(Component.text(player.getName())
                     .append(Component.text(" has been eliminated from the game!"))));  // TODO make this a translatable text component
-            player.getPlayer().sendActionBar(text("Your final stats: Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
+            player.getPlayer().sendMessage(text("Your final stats: Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
             pd.isPlayerDead = true;
         }
         if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
@@ -320,6 +324,11 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void PlayerMoveInventoryItem(InventoryMoveItemEvent event) {
+        event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onMoveWithFKey(InventoryClickEvent event){
         event.setCancelled(true);
     }
 }

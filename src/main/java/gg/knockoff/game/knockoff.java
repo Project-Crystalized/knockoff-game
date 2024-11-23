@@ -9,7 +9,10 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.title.TitlePart;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -47,9 +50,46 @@ public final class knockoff extends JavaPlugin {
                         Bukkit.getServer().sendMessage(Component.text("Too many players to start a game (hardcoded limit is 24). Please kick players off or limit your player count in server.properties."));
                         return;
                     } else {
-                        GameManager = new GameManager();
                         is_force_starting = false;
-                        return;
+                        new BukkitRunnable() {
+                            int timer = 3;
+                            public void run() {
+                                switch (timer) {
+                                    case -2:
+                                        GameManager = new GameManager();
+                                        cancel();
+                                    case -1:
+                                        break; // should prevent the "GO!" from appearing twice
+                                    case 0:
+                                        for (Player p : Bukkit.getOnlinePlayers()) {
+                                            p.sendTitle("GO!", " ", 5, 20, 0);
+                                            p.playSound(p, "crystalized:effect.countdown_end", 50, 1);
+                                        }
+                                        break;
+                                    case 1:
+                                        for (Player p : Bukkit.getOnlinePlayers()) {
+                                            p.sendTitle("1", " ", 5, 20, 0);
+                                            p.playSound(p, "crystalized:effect.countdown", 50, 1);
+                                        }
+                                        break;
+                                    case 2:
+                                        for (Player p : Bukkit.getOnlinePlayers()) {
+                                            p.sendTitle("2", " ", 5, 20, 0);
+                                            p.playSound(p, "crystalized:effect.countdown", 50, 1);
+                                        }
+                                        break;
+                                    case 3:
+                                        for (Player p : Bukkit.getOnlinePlayers()) {
+                                            p.sendTitle("3", " ", 5, 20, 0);
+                                            p.playSound(p, "crystalized:effect.countdown", 50, 1);
+                                        }
+                                        break;
+                                    default:
+                                        break; //This shouldn't trigger
+                                }
+                                timer--;
+                            }
+                        }.runTaskTimer(knockoff.getInstance(), 1, 20);
                     }
                 }
             }

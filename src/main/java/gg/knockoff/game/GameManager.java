@@ -80,7 +80,6 @@ public class GameManager {
         for (Player p : Bukkit.getOnlinePlayers()) {
             GiveTeamItems(p);
             p.setGameMode(GameMode.SURVIVAL);
-            p.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, Integer.MAX_VALUE, 255, false, false, false));
         }
 
         new BukkitRunnable() { //Probably not great optimization

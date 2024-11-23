@@ -41,7 +41,11 @@ public class PlayerListener implements Listener {
             player.setFoodLevel(20);
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
             player.setGameMode(GameMode.ADVENTURE);
+            player.removePotionEffect(PotionEffectType.REGENERATION);
+            player.removePotionEffect(PotionEffectType.HUNGER);
+            player.removePotionEffect(PotionEffectType.RESISTANCE);
             player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, Integer.MAX_VALUE, 1, false, false, true));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, Integer.MAX_VALUE, 255, false, false, false));
         } else {
             player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
         }

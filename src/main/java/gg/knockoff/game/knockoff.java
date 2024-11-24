@@ -1,17 +1,6 @@
 package gg.knockoff.game;
 
-import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.WorldEdit;
-import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.function.pattern.RandomPattern;
-import com.sk89q.worldedit.math.BlockVector3;
-import com.sk89q.worldedit.regions.CuboidRegion;
-import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.world.block.BlockState;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.title.TitlePart;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -35,8 +24,8 @@ public final class knockoff extends JavaPlugin {
         Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);
         Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
 
-        DebugCommands dc = new DebugCommands();
-        this.getCommand("force_start").setExecutor(dc);
+        Commands dc = new Commands();
+        this.getCommand("knockoff").setExecutor(dc);
         new BukkitRunnable() {
 
             @Override

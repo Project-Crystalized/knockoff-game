@@ -4,9 +4,9 @@ main: gg.knockoff.game.knockoff
 api-version: '1.21'
 depend: []
 commands:
-  force_start:
-    description: "For debugging purposes, force_start the game"
-    usage: "/force_start"
-    aliases: []
+  knockoff:
+    description: "Commands for KnockOff"
+    usage: "/knockoff"
+    aliases: [ ]
     permission: knockoff.command.game
-    permission-message: "you dont have permission to run the command"
+    permission-message: "[!] You don't have permission to run the command"

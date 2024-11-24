@@ -5,6 +5,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.io.ObjectInputFilter;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
@@ -15,9 +16,11 @@ public final class knockoff extends JavaPlugin {
     public boolean is_force_starting = false;
     public GameManager GameManager;
     public boolean DevMode = false;
+    public ConfigData ConfigData;
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
+        ConfigData = new ConfigData();
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new CrystalBlocks(), this);
 
@@ -33,10 +36,10 @@ public final class knockoff extends JavaPlugin {
                 if (GameManager != null) {
                     return;
                 }
-
                 if (is_force_starting) {
                     if (knockoff.getInstance().getServer().getOnlinePlayers().size() > 24) {//24 is the max player limit for now
                         Bukkit.getServer().sendMessage(Component.text("Too many players to start a game (hardcoded limit is 24). Please kick players off or limit your player count in server.properties."));
+                        is_force_starting = false;
                         return;
                     } else {
                         is_force_starting = false;

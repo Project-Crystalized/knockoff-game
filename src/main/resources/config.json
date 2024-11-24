@@ -1,0 +1,19 @@
+{
+  "enable_tourney_mode":false,
+
+  "team_blue": [],
+  "team_cyan": [],
+  "team_green": [],
+  "team_lemon": [],
+  "team_lime": [],
+  "team_magenta": [],
+  "team_orange": [],
+  "team_peach": [],
+  "team_purple": [],
+  "team_red": [],
+  "team_white": [],
+  "team_yellow": [],
+
+  "enable_manual_hazard_control":false,
+  "enable_manual_map_control":false,
+}

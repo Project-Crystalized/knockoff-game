@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.io.ObjectInputFilter;
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
 import org.bukkit.GameRule;
@@ -16,12 +15,13 @@ public final class knockoff extends JavaPlugin {
     public boolean is_force_starting = false;
     public GameManager GameManager;
     public boolean DevMode = false;
-    public ConfigData ConfigData;
+    //public ConfigData ConfigData;
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
-        ConfigData = new ConfigData();
+        //ConfigData = new ConfigData();
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+        this.getServer().getPluginManager().registerEvents(new DamagePercentage(), this);
         this.getServer().getPluginManager().registerEvents(new CrystalBlocks(), this);
 
         Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);

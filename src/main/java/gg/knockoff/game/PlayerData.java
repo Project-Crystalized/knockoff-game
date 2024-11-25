@@ -2,14 +2,18 @@ package gg.knockoff.game;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
-public class PlayerData {
+public class PlayerData { //This class probably isn't optimised, but it works so who cares
 
     public String player;
     public boolean isPlayerDead = false;
     private int lives = 5;
     private int kills = 0;
     private int deaths = 0;
+    private int damagepercentage = 0;
+    public boolean DamagePercentageStopTimer = false;
 
     public PlayerData(Player p) {
         player = p.getName();
@@ -40,5 +44,52 @@ public class PlayerData {
     public void addDeath(int amt) {
         Player p = Bukkit.getPlayer(player);
         deaths += amt;
+    }
+
+    public int getDamagepercentage() {
+        return this.damagepercentage;
+    }
+
+    public void changepercentage(int amt) {
+        Player p = Bukkit.getPlayer(player);
+        DamagePercentageTimer();
+        damagepercentage += amt;
+    }
+
+    private void DamagePercentageTimer() {
+        if (damagepercentage > 0) {
+            new BukkitRunnable() {
+                int timer = 0;
+                @Override
+                public void run() {
+                    if (DamagePercentageStopTimer) {
+                        DamagePercentageStopTimer = false;
+                        cancel();
+                    }
+                    switch (timer) {
+                        case 4:
+                            SetDamagePrecentageTo0();
+                            cancel();
+                        default:
+                            //do nothing
+                    }
+                    timer++;
+                }
+            }.runTaskTimer(knockoff.getInstance(), 20 ,1);
+        }
+    }
+
+    private void SetDamagePrecentageTo0() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (DamagePercentageStopTimer || damagepercentage == 0) {
+                    DamagePercentageStopTimer = false;
+                    cancel();
+                } else {
+                    damagepercentage--;
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 20 ,1);
     }
 }

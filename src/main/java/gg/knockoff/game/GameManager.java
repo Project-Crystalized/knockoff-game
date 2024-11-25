@@ -94,7 +94,8 @@ public class GameManager {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
                     if (knockoff.getInstance().DevMode == false && !pd.isPlayerDead) {
-                        p.getPlayer().sendActionBar(text("Your Stats. Lives Left: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
+                        //p.getPlayer().sendActionBar(text("Your Stats. Lives Left: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
+                        p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
                     }
 
                     if (p.getLocation().getY() < -30 && p.getGameMode().equals(GameMode.SURVIVAL)) {//instantly kills the player when they get knocked into the void

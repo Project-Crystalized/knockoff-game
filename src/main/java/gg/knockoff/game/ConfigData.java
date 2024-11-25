@@ -17,8 +17,9 @@ public class ConfigData {
     public boolean enable_manual_hazard_control = false;
     public boolean enable_manual_map_control = false;
 
+    //TODO this is broken
     public ConfigData() {
-        File config = new File("./plugins/Knockoff", "config.json");
+        /*File config = new File("./plugins/Knockoff", "config.json");
         if (!config.exists()) {
             URL url = getClass().getResource("config.json");
             try {
@@ -51,6 +52,6 @@ public class ConfigData {
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }
+        }*/
     }
 }

@@ -2,7 +2,6 @@ package gg.knockoff.game;
 
 import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.event.player.AsyncChatEvent;
-import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -13,7 +12,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
@@ -22,8 +20,6 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -48,16 +44,6 @@ public class PlayerListener implements Listener {
             player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, Integer.MAX_VALUE, 255, false, false, false));
         } else {
             player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
-        }
-    }
-
-    @EventHandler
-    public void onDamage(EntityDamageEvent e) {
-        // if game isn't going, cancel event
-        GameManager gc = knockoff.getInstance().GameManager;
-        if (gc == null) {
-            e.setCancelled(true);
-            return;
         }
     }
 
@@ -323,16 +309,6 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void PlayerDropItem(PlayerDropItemEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void PlayerMoveInventoryItem(InventoryMoveItemEvent event) {
-        event.setCancelled(true);
-    }
-
-    @EventHandler
-    public void onMoveWithFKey(InventoryClickEvent event){
         event.setCancelled(true);
     }
 }

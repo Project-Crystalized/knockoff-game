@@ -41,8 +41,16 @@ public class GameManager {
     public static int SectionPlaceLocationY = 0;
     public static int SectionPlaceLocationZ = 1000;
 
+    //Can be "solo" or "team"
+    public String GameType = "Solo";
+
     public GameManager() {//Start of the game
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
+        if (Bukkit.getOnlinePlayers().size() > 13) {
+            GameType = "duos";
+        } else {
+            GameType = "solo";
+        }
 
         // Sets the target area to air to prevent previous game's sections to interfere with the current game
         // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
@@ -78,6 +86,7 @@ public class GameManager {
         for (Player p : Bukkit.getOnlinePlayers()) {
             GiveTeamItems(p);
             p.setGameMode(GameMode.SURVIVAL);
+            ScoreboardManager.SetPlayerScoreboard(p);
         }
 
         new BukkitRunnable() { //Probably not great optimization
@@ -88,11 +97,9 @@ public class GameManager {
                             ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength()
                             + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
                 }
-
+                //Should stop this bukkitrunnable once the game ends
+                if (knockoff.getInstance().GameManager == null) {cancel();}
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    //Should stop this bukkitrunnable once the game ends
-                    if (knockoff.getInstance().GameManager == null) {cancel();}
-
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
 
                     if (knockoff.getInstance().DevMode == false && !pd.isPlayerDead) {
@@ -124,7 +131,7 @@ public class GameManager {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + SectionPlaceLocationX + "," + SectionPlaceLocationY + "," + SectionPlaceLocationZ);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/fill air");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.kick(Component.text("Game over, thanks for playing!").color(NamedTextColor.RED));
         }

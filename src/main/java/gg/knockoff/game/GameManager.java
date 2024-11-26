@@ -25,8 +25,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
@@ -92,7 +90,11 @@ public class GameManager {
                 }
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    //Should stop this bukkitrunnable once the game ends
+                    if (knockoff.getInstance().GameManager == null) {cancel();}
+
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+
                     if (knockoff.getInstance().DevMode == false && !pd.isPlayerDead) {
                         //p.getPlayer().sendActionBar(text("Your Stats. Lives Left: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
@@ -116,8 +118,18 @@ public class GameManager {
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 20 ,1);
+    }
 
-
+    public static void EndGame() {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + SectionPlaceLocationX + "," + SectionPlaceLocationY + "," + SectionPlaceLocationZ);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/fill air");
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.kick(Component.text("Game over, thanks for playing!").color(NamedTextColor.RED));
+        }
+        knockoff.getInstance().GameManager.teams = null;
+        knockoff.getInstance().GameManager = null;
     }
 
     private static void CopyRandomMapSection() {

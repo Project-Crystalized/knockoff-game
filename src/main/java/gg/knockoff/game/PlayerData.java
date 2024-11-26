@@ -52,8 +52,10 @@ public class PlayerData { //This class probably isn't optimised, but it works so
 
     public void changepercentage(int amt) {
         Player p = Bukkit.getPlayer(player);
-        DamagePercentageTimer();
         damagepercentage += amt;
+        Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
+            DamagePercentageTimer();
+        }, 1);
     }
 
     private void DamagePercentageTimer() {
@@ -67,7 +69,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                         cancel();
                     }
                     switch (timer) {
-                        case 4:
+                        case 3:
                             SetDamagePrecentageTo0();
                             cancel();
                         default:
@@ -90,6 +92,6 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                     damagepercentage--;
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 20 ,1);
+        }.runTaskTimer(knockoff.getInstance(), 10 ,1);
     }
 }

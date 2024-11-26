@@ -45,7 +45,7 @@ public class Commands implements CommandExecutor {
                     }
                 } else if (args[0].equals("end")) {
                     if (knockoff.getInstance().GameManager != null) {
-                        player.sendMessage(Component.text("[!] not implemented yet").color(NamedTextColor.RED)); //TODO
+                        knockoff.getInstance().GameManager.EndGame();
                     } else {
                         player.sendMessage(Component.text("[!] This command cannot be used in the queue").color(NamedTextColor.RED));
                     }

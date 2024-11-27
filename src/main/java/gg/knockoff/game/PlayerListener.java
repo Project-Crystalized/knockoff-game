@@ -9,11 +9,8 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import net.kyori.adventure.text.Component;
@@ -71,7 +68,7 @@ public class PlayerListener implements Listener {
             PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
             pda.addKill(1);
             //TODO buggy
-            //attacker.sendTitle("" + player.getName(), "", 10, 20, 10);
+            //attacker.sendTitle(player.getName(), "", 7, 10, 7);
         }
         if (pd.getLives() > 0) { //If the player has lives left this code run
             pd.addDeath(1);
@@ -83,7 +80,9 @@ public class PlayerListener implements Listener {
                     int timer = 5;
 
                     public void run() {
-                        player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
+                        player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
+                                .append(Component.text(timer))
+                                .append(Component.translatable("crystalized.game.knockoff.respawn2")));
                         timer -= 1;
                         if (timer == -1) {
                             tpPlayersBack(player);
@@ -100,7 +99,9 @@ public class PlayerListener implements Listener {
                     int timer = 10;
 
                     public void run() {
-                        player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
+                        player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
+                                .append(Component.text(timer))
+                                .append(Component.translatable("crystalized.game.knockoff.respawn2")));
                         timer -= 1;
                         if (timer == -1) {
                             tpPlayersBack(player);
@@ -117,7 +118,9 @@ public class PlayerListener implements Listener {
                     int timer = 15;
 
                     public void run() {
-                        player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
+                        player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
+                                .append(Component.text(timer))
+                                .append(Component.translatable("crystalized.game.knockoff.respawn2")));
                         timer -= 1;
                         if (timer == -1) {
                             tpPlayersBack(player);
@@ -134,7 +137,9 @@ public class PlayerListener implements Listener {
                     int timer = 15;
 
                     public void run() {
-                        player.sendActionBar(Component.text("You will respawn in " + timer + " seconds.")); //TODO make this a translatable text component
+                        player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
+                                .append(Component.text(timer))
+                                .append(Component.translatable("crystalized.game.knockoff.respawn2")));
                         timer -= 1;
                         if (timer == -1) {
                             tpPlayersBack(player);

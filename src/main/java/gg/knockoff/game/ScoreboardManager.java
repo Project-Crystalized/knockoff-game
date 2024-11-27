@@ -22,7 +22,7 @@ public class ScoreboardManager {
             blue.addPlayer(player);
         }
 
-        Component title = text("\uE108 KnockOff (WIP)").color(NamedTextColor.GOLD);
+        Component title = text("\uE108 ").color(NamedTextColor.WHITE).append(text("KnockOff (WIP)").color(NamedTextColor.GOLD));
         Objective obj = scoreboard.registerNewObjective("main", Criteria.DUMMY, title);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
@@ -30,25 +30,25 @@ public class ScoreboardManager {
         obj.getScore("9").customName(text("     "));
 
         obj.getScore("8").setScore(8);
-        obj.getScore("8").customName(text("Team: "));
+        obj.getScore("8").customName(Component.translatable("crystalized.game.generic.team").append(text(": ")));
 
         obj.getScore("7").setScore(7);
         obj.getScore("7").customName(text("   "));
 
         obj.getScore("6").setScore(6);
-        obj.getScore("6").customName(text("Round "));
+        obj.getScore("6").customName(Component.translatable("crystalized.game.knockoff.round").append(text(": ")));
 
         obj.getScore("5").setScore(5);
-        obj.getScore("5").customName(text("Next round: "));
+        obj.getScore("5").customName(Component.translatable("crystalized.game.knockoff.nextround").append(text(": ")));
 
         obj.getScore("4").setScore(4);
         obj.getScore("4").customName(text("  "));
 
         obj.getScore("3").setScore(3);
-        obj.getScore("3").customName(text("Lives Left: "));
+        obj.getScore("3").customName(Component.translatable("crystalized.game.knockoff.lives").append(text(": ")));
 
         obj.getScore("2").setScore(2);
-        obj.getScore("2").customName(text("Kills: "));
+        obj.getScore("2").customName(Component.translatable("crystalized.game.generic.kills").append(text(": ")));
 
         obj.getScore("1").setScore(1);
         obj.getScore("1").customName(text(" "));
@@ -59,29 +59,29 @@ public class ScoreboardManager {
         Team TeamName = scoreboard.registerNewTeam("Team");
         TeamName.addEntry("8");
         if (Teams.GetPlayerTeam(player).equals("blue")) {
-            TeamName.suffix(text("Blue").color(Teams.TEAM_BLUE));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.blue").color(Teams.TEAM_BLUE));
         } else if (Teams.GetPlayerTeam(player).equals("cyan")) {
-            TeamName.suffix(text("Cyan").color(Teams.TEAM_CYAN));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.cyan").color(Teams.TEAM_CYAN));
         } else if (Teams.GetPlayerTeam(player).equals("green")) {
-            TeamName.suffix(text("Green").color(Teams.TEAM_GREEN));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.green").color(Teams.TEAM_GREEN));
         } else if (Teams.GetPlayerTeam(player).equals("lemon")) {
-            TeamName.suffix(text("Lemon").color(Teams.TEAM_LEMON));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.lemon").color(Teams.TEAM_LEMON));
         } else if (Teams.GetPlayerTeam(player).equals("lime")) {
-            TeamName.suffix(text("Lime").color(Teams.TEAM_LIME));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.lime").color(Teams.TEAM_LIME));
         } else if (Teams.GetPlayerTeam(player).equals("magenta")) {
-            TeamName.suffix(text("Magenta").color(Teams.TEAM_MAGENTA));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.magenta").color(Teams.TEAM_MAGENTA));
         } else if (Teams.GetPlayerTeam(player).equals("orange")) {
-            TeamName.suffix(text("Orange").color(Teams.TEAM_ORANGE));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.orange").color(Teams.TEAM_ORANGE));
         } else if (Teams.GetPlayerTeam(player).equals("peach")) {
-            TeamName.suffix(text("Peach").color(Teams.TEAM_PEACH));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.peach").color(Teams.TEAM_PEACH));
         } else if (Teams.GetPlayerTeam(player).equals("purple")) {
-            TeamName.suffix(text("Purple").color(Teams.TEAM_PURPLE));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.purple").color(Teams.TEAM_PURPLE));
         } else if (Teams.GetPlayerTeam(player).equals("red")) {
-            TeamName.suffix(text("Red").color(Teams.TEAM_RED));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.red").color(Teams.TEAM_RED));
         } else if (Teams.GetPlayerTeam(player).equals("white")) {
-            TeamName.suffix(text("White").color(Teams.TEAM_WHITE));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.white").color(Teams.TEAM_WHITE));
         } else if (Teams.GetPlayerTeam(player).equals("yellow")) {
-            TeamName.suffix(text("Yellow").color(Teams.TEAM_YELLOW));
+            TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.yellow").color(Teams.TEAM_YELLOW));
         } else {
             TeamName.suffix(text("Unknown").color(NamedTextColor.WHITE));
         }

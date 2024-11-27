@@ -2,11 +2,12 @@ name: knockoff-game
 version: '0.0.1'
 main: gg.knockoff.game.knockoff
 api-version: '1.21'
-depend: []
+depend: [FastAsyncWorldEdit]
+softdepend: [Crystalized_Essentials]
 commands:
   knockoff:
     description: "Commands for KnockOff"
-    usage: "/knockoff"
+    usage: "/knockoff [start/end/reload_config]"
     aliases: [ ]
     permission: knockoff.command.game
     permission-message: "[!] You don't have permission to run the command"

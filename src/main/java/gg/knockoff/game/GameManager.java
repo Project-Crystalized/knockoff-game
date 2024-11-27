@@ -33,13 +33,16 @@ import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
 
-public class GameManager {
+public class GameManager { //I honestly think this entire class could be optimised because of how long it is
     public List<PlayerData> playerDatas;
     public Teams teams = new Teams();
 
     public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;
     public static int SectionPlaceLocationZ = 1000;
+    public static int LastSectionPlaceLocationX = 0;
+    public static int LastSectionPlaceLocationY = 0;
+    public static int LastSectionPlaceLocationZ = 0;
 
     //Can be "solo" or "team"
     public String GameType = "Solo";
@@ -290,20 +293,7 @@ public class GameManager {
             e.printStackTrace();
         }
         if (!knockoff.getInstance().DevMode) {
-            //TODO this code below will produce a ClassCastException. As an alternative for now we will enter the commands needed in Console
-            //Could be optimised also
-            /*try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
-                Region region = new CuboidRegion(BlockVector3.at(SectionPlaceLocationX, SectionPlaceLocationY, SectionPlaceLocationZ),
-                        BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength(), knockoff.getInstance().mapdata.getCurrentYLength(), knockoff.getInstance().mapdata.getCurrentZLength()));
-                String a = knockoff.getInstance().mapdata.getCurrentsection().get(7).getAsString();
-                BlockType from = BlockTypes.get(a);
-                BlockType to = BlockTypes.AIR;
-                editSession.replaceBlocks(region, (Set<BaseBlock>) BlockTypes.get(a), (Pattern) to);
-            } catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }*/
-
+            //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this
             String a = knockoff.getInstance().mapdata.getCurrentsection().get(7).getAsString().toLowerCase();
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + SectionPlaceLocationX + "," + SectionPlaceLocationY + "," + SectionPlaceLocationZ);
@@ -311,6 +301,17 @@ public class GameManager {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
         }
     }
+
+    //TODO these 2 methods are for map scrolling
+    /*
+    private static void CloneNewMapSection() {
+        LastSectionPlaceLocationX = SectionPlaceLocationX;
+        LastSectionPlaceLocationY = SectionPlaceLocationY;
+        LastSectionPlaceLocationZ = SectionPlaceLocationZ;
+    }
+    private static void DecayMapSection() {
+
+    }*/
 
     @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     private static void SetupFirstSpawns() {

@@ -3,6 +3,7 @@ package gg.knockoff.game;
 import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -67,8 +68,8 @@ public class PlayerListener implements Listener {
             Player attacker = player.getKiller();
             PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
             pda.addKill(1);
-            //TODO buggy
-            //attacker.sendTitle(player.getName(), "", 7, 10, 7);
+            attacker.showTitle(Title.title(text(" "), text("" + player)));
+            attacker.playSound(attacker, "crystalized:effect.kill_streak_1", 50, 1);
         }
         if (pd.getLives() > 0) { //If the player has lives left this code run
             pd.addDeath(1);

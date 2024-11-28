@@ -13,6 +13,9 @@ public class DamagePercentage implements Listener {
         GameManager gc = knockoff.getInstance().GameManager;
         Player player = (((Player) event.getEntity()).getPlayer());
         Player damager = (((Player)event.getDamager()).getPlayer());
+        if (!(event.getDamager() instanceof Player)) {
+            return;
+        }
         if (gc == null) {
             event.setCancelled(true);
             return;
@@ -22,7 +25,6 @@ public class DamagePercentage implements Listener {
                         .equals(knockoff.getInstance().GameManager.teams.GetPlayerTeam(damager))) {
                     event.setCancelled(true);
                 } else {
-
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     pd.DamagePercentageStopTimer = true;
                     player.setVelocity(new Vector(player.getVelocity().getX(), player.getVelocity().getY(), player.getVelocity().getZ()));

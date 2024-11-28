@@ -19,6 +19,9 @@ repositories {
         name = "enginehub-maven"
         url = "https://maven.enginehub.org/repo/"
     }
+    maven {
+        url = uri("https://repo.opencollab.dev/main/")
+    }
 }
 
 dependencies {
@@ -26,6 +29,7 @@ dependencies {
     implementation(platform("com.intellectualsites.bom:bom-newest:1.50")) // Ref: https://github.com/IntellectualSites/bom
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit")
+    compileOnly('org.geysermc.floodgate:api:2.2.3-SNAPSHOT')
 }
 
 def targetJavaVersion = 21

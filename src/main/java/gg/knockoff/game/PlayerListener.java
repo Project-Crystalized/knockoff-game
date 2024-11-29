@@ -25,7 +25,7 @@ import static net.kyori.adventure.text.Component.text;
 
 public class PlayerListener implements Listener {
 
-    private int DeathTimer = 5;
+    private int DeathTimer = 4;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -89,16 +89,36 @@ public class PlayerListener implements Listener {
             DeathTimer = 10;
         } else if (pd.getLives() == 1) {
             DeathTimer = 12;
+        } else {
+            DeathTimer = 2;
         }
-
         if (pd.getLives() > 0) { //If the player has lives left this code runs
             new BukkitRunnable() {
                 public void run() {
                     player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
                             .append(Component.text(DeathTimer))
                             .append(Component.translatable("crystalized.game.knockoff.respawn2")));
-                    DeathTimer -= 1;
 
+                    if (DeathTimer == 2) {
+                        player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1);
+                    } else if (DeathTimer == 1) {
+                        player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1.25F);
+                    } else if (DeathTimer == 0) {
+                        player.playSound(player, "crystalized:effect.knockoff_countdown",50, 1.5F);
+                    } else if (DeathTimer == -1) {
+                        player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
+                        tpPlayersBack(player);
+                        player.setGameMode(GameMode.SURVIVAL);
+                        DeathTimer = 0;
+                        pd.isPlayerDead = false;
+                        cancel();
+                    }
+
+                    if (!pd.isPlayerDead) {
+                        cancel();
+                    }
+
+                    /*
                     switch (DeathTimer) {
                         case 2:
                             player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1);
@@ -112,11 +132,12 @@ public class PlayerListener implements Listener {
                         case -1:
                             player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
                             tpPlayersBack(player);
-
                             player.setGameMode(GameMode.SURVIVAL);
                             pd.isPlayerDead = false;
                             cancel();
                     }
+                     */
+                    DeathTimer -= 1;
                 }
             }.runTaskTimer(knockoff.getInstance(), 1, 20);
         } else {

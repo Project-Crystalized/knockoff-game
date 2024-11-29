@@ -19,9 +19,13 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.time.Duration;
+
 import static net.kyori.adventure.text.Component.text;
 
 public class PlayerListener implements Listener {
+
+    private int DeathTimer = 5;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -68,109 +72,66 @@ public class PlayerListener implements Listener {
             Player attacker = player.getKiller();
             PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
             pda.addKill(1);
-            attacker.showTitle(Title.title(text(" "), text("" + player)));
-            attacker.playSound(attacker, "crystalized:effect.kill_streak_1", 50, 1);
+            attacker.showTitle(Title.title(text(" "), text("[\uE103] " + player.getName()), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
+            attacker.playSound(attacker, "crystalized:effect.ally_kill", 50, 1);
         }
-        if (pd.getLives() > 0) { //If the player has lives left this code run
-            pd.addDeath(1);
-            pd.isPlayerDead = true;
-            Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-            player.teleport(loc);
-            if (pd.getLives() == 5 || pd.getLives() == 4) { //Couldn't use outside variables in bukkitrunnables which sucks. Next best thing I came up with is repeated code lol
-                new BukkitRunnable() {
-                    int timer = 5;
+        pd.addDeath(1);
+        pd.isPlayerDead = true;
+        Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+        player.teleport(loc);
 
-                    public void run() {
-                        player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
-                                .append(Component.text(timer))
-                                .append(Component.translatable("crystalized.game.knockoff.respawn2")));
-                        timer -= 1;
-                        if (timer == -1) {
+        pd.takeawayLife(1); // takes away 1 life
+        if (pd.getLives() == 4) {
+            DeathTimer = 4; // 4 seconds
+        } else if (pd.getLives() == 3) {
+            DeathTimer = 8;
+        } else if (pd.getLives() == 2) {
+            DeathTimer = 10;
+        } else if (pd.getLives() == 1) {
+            DeathTimer = 12;
+        }
+
+        if (pd.getLives() > 0) { //If the player has lives left this code runs
+            new BukkitRunnable() {
+                public void run() {
+                    player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
+                            .append(Component.text(DeathTimer))
+                            .append(Component.translatable("crystalized.game.knockoff.respawn2")));
+                    DeathTimer -= 1;
+
+                    switch (DeathTimer) {
+                        case 2:
+                            player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1);
+                            break;
+                        case 1:
+                            player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1.25F);
+                            break;
+                        case 0:
+                            player.playSound(player, "crystalized:effect.knockoff_countdown",50, 1.5F);
+                            break;
+                        case -1:
+                            player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
                             tpPlayersBack(player);
 
                             player.setGameMode(GameMode.SURVIVAL);
                             pd.isPlayerDead = false;
                             cancel();
-                        }
                     }
-                }.runTaskTimer(knockoff.getInstance(), 1, 20);
-            }
-            if (pd.getLives() == 3) {
-                new BukkitRunnable() {
-                    int timer = 10;
-
-                    public void run() {
-                        player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
-                                .append(Component.text(timer))
-                                .append(Component.translatable("crystalized.game.knockoff.respawn2")));
-                        timer -= 1;
-                        if (timer == -1) {
-                            tpPlayersBack(player);
-
-                            pd.isPlayerDead = false;
-                            player.setGameMode(GameMode.SURVIVAL);
-                            cancel();
-                        }
-                    }
-                }.runTaskTimer(knockoff.getInstance(), 1, 20);
-            }
-            if (pd.getLives() == 2) {
-                new BukkitRunnable() {
-                    int timer = 15;
-
-                    public void run() {
-                        player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
-                                .append(Component.text(timer))
-                                .append(Component.translatable("crystalized.game.knockoff.respawn2")));
-                        timer -= 1;
-                        if (timer == -1) {
-                            tpPlayersBack(player);
-
-                            pd.isPlayerDead = false;
-                            player.setGameMode(GameMode.SURVIVAL);
-                            cancel();
-                        }
-                    }
-                }.runTaskTimer(knockoff.getInstance(), 1, 20);
-            }
-            if (pd.getLives() == 1) {
-                new BukkitRunnable() {
-                    int timer = 15;
-
-                    public void run() {
-                        player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
-                                .append(Component.text(timer))
-                                .append(Component.translatable("crystalized.game.knockoff.respawn2")));
-                        timer -= 1;
-                        if (timer == -1) {
-                            tpPlayersBack(player);
-
-                            player.setGameMode(GameMode.SURVIVAL);
-                            pd.isPlayerDead = false;
-                            player.sendMessage(Component.text("[!] You are on your last life! Be careful from now on")); // TODO make this a translatable text component
-                            cancel();
-                        }
-                    }
-                }.runTaskTimer(knockoff.getInstance(), 1, 20);
-            }
-            pd.takeawayLife(1); // takes away 1 life
-        } else { //Player has no lives, so we make them unable to play and put them in spectator
+                }
+            }.runTaskTimer(knockoff.getInstance(), 1, 20);
+        } else {
             if (pd.getLives() < 0) {
                 //we kick the player if their lives is less than 0. To prevent cheating and to possibly catch bugs where players may die twice
                 player.kick(Component.text("You're eliminated from the game but you have somehow died again. and/or your lives is measured in negative numbers! Please report this bug to the Crystalized devs.").color(NamedTextColor.RED));
             }
             pd.takeawayLife(1); // takes away 1 life
-            //player.sendMessage(Component.text("[!] You are eliminated from the game!"));
             Bukkit.getServer().sendMessage(text("[")
                     .append(Component.text("\uE103").color(NamedTextColor.RED))
                     .append(Component.text("] "))
                     .append(Component.text(player.getName())
-                    .append(Component.text(" has been eliminated from the game!"))));  // TODO make this a translatable text component
+                            .append(Component.text(" has been eliminated from the game!"))));  // TODO make this a translatable text component
             player.getPlayer().sendMessage(text("Your final stats: Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
             pd.isPlayerDead = true;
-        }
-        if (event.getPlayer().getGameMode() != GameMode.SURVIVAL) {
-            return;
         }
     }
 

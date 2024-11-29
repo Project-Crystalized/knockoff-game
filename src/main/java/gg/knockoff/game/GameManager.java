@@ -55,6 +55,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             GameType = "solo";
         }
 
+        teams = new Teams();
+
         // Sets the target area to air to prevent previous game's sections to interfere with the current game
         // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
         // Plus this lags the server anyways
@@ -138,6 +140,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.kick(Component.text("Game over, thanks for playing!").color(NamedTextColor.RED));
         }
+
         knockoff.getInstance().GameManager.teams = null;
         knockoff.getInstance().GameManager = null;
     }

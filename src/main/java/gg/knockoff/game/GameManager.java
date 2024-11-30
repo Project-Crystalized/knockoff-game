@@ -73,8 +73,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             e.printStackTrace();
         }
 
-        CopyRandomMapSection();
-        PlaceCurrentlySelectedSection();
+        MapManager.CopyRandomMapSection();
+        MapManager.PlaceCurrentlySelectedSection();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -92,6 +92,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             GiveTeamItems(p);
             p.setGameMode(GameMode.SURVIVAL);
             ScoreboardManager.SetPlayerScoreboard(p);
+            Teams.SetPlayerDisplayNames(p);
         }
 
         new BukkitRunnable() { //Probably not great optimization
@@ -111,14 +112,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         //p.getPlayer().sendActionBar(text("Your Stats. Lives Left: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
 
-                        p.sendPlayerListHeader(
-                                text("\n")
-                                .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
-                                .append(text("\n"))
-                        );
-                        p.sendPlayerListFooter(
-                                text("TODO: team information goes here") //TODO
-                        );
+                        TabMenu.SendTabMenu(p);
                     }
 
                     if (p.getLocation().getY() < -30 && p.getGameMode().equals(GameMode.SURVIVAL)) {//instantly kills the player when they get knocked into the void
@@ -152,10 +146,6 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         knockoff.getInstance().GameManager.teams = null;
         knockoff.getInstance().GameManager = null;
-    }
-
-    private static void CopyRandomMapSection() {
-        knockoff.getInstance().mapdata.getrandommapsection();
     }
 
     public static void GiveTeamItems(Player player) {
@@ -282,48 +272,6 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         return null;
     }
-
-    private static void PlaceCurrentlySelectedSection() {
-        JsonArray data = knockoff.getInstance().mapdata.getCurrentsection();
-        World world = Bukkit.getWorld("world");
-        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
-            CuboidRegion region = new CuboidRegion(BukkitAdapter.adapt(world), BlockVector3.at(data.get(1).getAsInt(), data.get(2).getAsInt(), data.get(3).getAsInt()), BlockVector3.at(data.get(4).getAsInt(), data.get(5).getAsInt(), data.get(6).getAsInt()));
-            BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-
-            ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(
-                    BukkitAdapter.adapt(world), region, clipboard, region.getMinimumPoint()
-            );
-            Operations.complete(forwardExtentCopy);
-
-            Operation operation = new ClipboardHolder(clipboard)
-                    .createPaste(editSession)
-                    .to(BlockVector3.at(SectionPlaceLocationX, SectionPlaceLocationY, SectionPlaceLocationZ))
-                    .build();
-            Operations.complete(operation);
-        } catch (Exception e) {
-            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-            e.printStackTrace();
-        }
-        if (!knockoff.getInstance().DevMode) {
-            //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this
-            String a = knockoff.getInstance().mapdata.getCurrentsection().get(7).getAsString().toLowerCase();
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + SectionPlaceLocationX + "," + SectionPlaceLocationY + "," + SectionPlaceLocationZ);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
-        }
-    }
-
-    //TODO these 2 methods are for map scrolling
-    /*
-    private static void CloneNewMapSection() {
-        LastSectionPlaceLocationX = SectionPlaceLocationX;
-        LastSectionPlaceLocationY = SectionPlaceLocationY;
-        LastSectionPlaceLocationZ = SectionPlaceLocationZ;
-    }
-    private static void DecayMapSection() {
-
-    }*/
 
     @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     private static void SetupFirstSpawns() {
@@ -552,5 +500,74 @@ public class GameManager { //I honestly think this entire class could be optimis
             }
             p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
         }
+    }
+}
+
+class MapManager {
+    //TODO these 2 methods are for map scrolling
+    /*
+    private static void CloneNewMapSection() {
+        LastSectionPlaceLocationX = SectionPlaceLocationX;
+        LastSectionPlaceLocationY = SectionPlaceLocationY;
+        LastSectionPlaceLocationZ = SectionPlaceLocationZ;
+    }
+    private static void DecayMapSection() {
+
+    }*/
+
+    public static void CopyRandomMapSection() {
+        knockoff.getInstance().mapdata.getrandommapsection();
+    }
+
+    public static void PlaceCurrentlySelectedSection() {
+        JsonArray data = knockoff.getInstance().mapdata.getCurrentsection();
+        World world = Bukkit.getWorld("world");
+        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+            CuboidRegion region = new CuboidRegion(BukkitAdapter.adapt(world), BlockVector3.at(data.get(1).getAsInt(), data.get(2).getAsInt(), data.get(3).getAsInt()), BlockVector3.at(data.get(4).getAsInt(), data.get(5).getAsInt(), data.get(6).getAsInt()));
+            BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
+
+            ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(
+                    BukkitAdapter.adapt(world), region, clipboard, region.getMinimumPoint()
+            );
+            Operations.complete(forwardExtentCopy);
+
+            Operation operation = new ClipboardHolder(clipboard)
+                    .createPaste(editSession)
+                    .to(BlockVector3.at(GameManager.SectionPlaceLocationX, GameManager.SectionPlaceLocationY, GameManager.SectionPlaceLocationZ))
+                    .build();
+            Operations.complete(operation);
+        } catch (Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+            e.printStackTrace();
+        }
+        if (!knockoff.getInstance().DevMode) {
+            //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this
+            String a = knockoff.getInstance().mapdata.getCurrentsection().get(7).getAsString().toLowerCase();
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.SectionPlaceLocationX + "," + GameManager.SectionPlaceLocationY + "," + GameManager.SectionPlaceLocationZ);
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
+            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
+        }
+    }
+}
+
+class TabMenu {
+    public static void SendTabMenu(Player p) {
+        p.sendPlayerListHeader(
+                text("\n")
+                        .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
+                        .append(text("\n"))
+        );
+        p.sendPlayerListFooter(text("\n"));
+        /*
+        for (Player p : Bukkit.getOnlinePlayers()) {
+
+        }
+
+        p.sendPlayerListFooter(
+                text("")
+                        .append(text(""))
+        );
+         */
     }
 }

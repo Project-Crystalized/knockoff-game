@@ -81,7 +81,7 @@ public class PlayerListener implements Listener {
             Player attacker = player.getKiller();
             PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
             pda.addKill(1);
-            attacker.showTitle(Title.title(text(" "), text("[\uE103] " + player.getName()), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
+            attacker.showTitle(Title.title(text(" "), text("[\uE103] " + player.displayName()), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
             attacker.playSound(attacker, "crystalized:effect.ally_kill", 50, 1);
         }
         pd.addDeath(1);
@@ -151,79 +151,10 @@ public class PlayerListener implements Listener {
     public void onChat(AsyncChatEvent event) {
         Player player = event.getPlayer();
         event.setCancelled(true);
-        if (knockoff.getInstance().GameManager == null) {
-            Bukkit.getServer().sendMessage(Component.text("")
-                    .append(player.displayName())
-                    .append(Component.text(": "))
-                    .append(event.message()));
-        } else {
-            if (Teams.GetPlayerTeam(player).equals("blue")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_BLUE))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("cyan")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_CYAN))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("green")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_GREEN))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("lemon")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_LEMON))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("lime")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_LIME))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("magenta")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_MAGENTA))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("orange")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_ORANGE))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("peach")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_PEACH))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("purple")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_PURPLE))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("red")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_RED))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("white")) {
-                Bukkit.getServer().sendMessage(Component.text("") //bit pointless adding .color(Teams.TEAM_WHITE) here but whatever
-                        .append(player.displayName().color(Teams.TEAM_WHITE))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else if (Teams.GetPlayerTeam(player).equals("yellow")) {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName().color(Teams.TEAM_YELLOW))
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            } else {
-                Bukkit.getServer().sendMessage(Component.text("")
-                        .append(player.displayName())
-                        .append(Component.text(": "))
-                        .append(event.message()));
-            }
-        }
+        Bukkit.getServer().sendMessage(Component.text("")
+                .append(player.displayName())
+                .append(Component.text(": "))
+                .append(event.message()));
     }
 
     private static void tpPlayersBack(Player p) { //TODO temporary for now

@@ -110,6 +110,15 @@ public class GameManager { //I honestly think this entire class could be optimis
                     if (knockoff.getInstance().DevMode == false && !pd.isPlayerDead) {
                         //p.getPlayer().sendActionBar(text("Your Stats. Lives Left: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
+                        p.sendPlayerListHeaderAndFooter(
+                                //Header
+                                text("\n")
+                                        .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
+                                        .append(text("\n")),
+
+                                //Footer
+                                text("team information goes here")
+                        );
                     }
 
                     if (p.getLocation().getY() < -30 && p.getGameMode().equals(GameMode.SURVIVAL)) {//instantly kills the player when they get knocked into the void

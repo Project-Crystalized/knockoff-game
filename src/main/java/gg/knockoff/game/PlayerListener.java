@@ -32,7 +32,6 @@ public class PlayerListener implements Listener {
         Player player = event.getPlayer();
         if (knockoff.getInstance().GameManager == null) {
             GameManager gameManager = knockoff.getInstance().GameManager;
-
             player.teleport(knockoff.getInstance().mapdata.get_que_spawn(player.getWorld()));
             player.getInventory().clear();
             player.setHealth(20);
@@ -44,6 +43,16 @@ public class PlayerListener implements Listener {
             player.removePotionEffect(PotionEffectType.RESISTANCE);
             player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, Integer.MAX_VALUE, 1, false, false, true));
             player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, Integer.MAX_VALUE, 255, false, false, false));
+            player.sendPlayerListHeaderAndFooter(
+                    //Header
+                    text("\n")
+                            .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
+                            .append(text("\n")),
+
+                    //Footer
+                    text("\n Expect bugs since this is an early version and isn't complete. \n If you find any please report to TotallyNoCallum on the Crystalized Discord ")
+                            .append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY))
+            );
         } else {
             player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
         }
@@ -117,26 +126,6 @@ public class PlayerListener implements Listener {
                     if (!pd.isPlayerDead) {
                         cancel();
                     }
-
-                    /*
-                    switch (DeathTimer) {
-                        case 2:
-                            player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1);
-                            break;
-                        case 1:
-                            player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1.25F);
-                            break;
-                        case 0:
-                            player.playSound(player, "crystalized:effect.knockoff_countdown",50, 1.5F);
-                            break;
-                        case -1:
-                            player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
-                            tpPlayersBack(player);
-                            player.setGameMode(GameMode.SURVIVAL);
-                            pd.isPlayerDead = false;
-                            cancel();
-                    }
-                     */
                     DeathTimer -= 1;
                 }
             }.runTaskTimer(knockoff.getInstance(), 1, 20);

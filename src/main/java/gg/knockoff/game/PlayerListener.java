@@ -25,7 +25,7 @@ import static net.kyori.adventure.text.Component.text;
 
 public class PlayerListener implements Listener {
 
-    private int DeathTimer = 4;
+    //private int DeathTimer = 4;
 
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
@@ -90,35 +90,37 @@ public class PlayerListener implements Listener {
         player.teleport(loc);
 
         pd.takeawayLife(1); // takes away 1 life
-        if (pd.getLives() == 4) {
-            DeathTimer = 4; // 4 seconds
-        } else if (pd.getLives() == 3) {
-            DeathTimer = 8;
-        } else if (pd.getLives() == 2) {
-            DeathTimer = 10;
-        } else if (pd.getLives() == 1) {
-            DeathTimer = 12;
-        } else {
-            DeathTimer = 2;
-        }
         if (pd.getLives() > 0) { //If the player has lives left this code runs
+
+            if (pd.getLives() == 4) {
+                pd.setDeathtimer(4);
+            } else if (pd.getLives() == 3) {
+                pd.setDeathtimer(8);
+            } else if (pd.getLives() == 2) {
+                pd.setDeathtimer(10);
+            } else if (pd.getLives() == 1) {
+                pd.setDeathtimer(12);
+            } else {
+                pd.setDeathtimer(4); //fallback value in case somehow all of above statements are false
+            }
+
             new BukkitRunnable() {
                 public void run() {
                     player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
-                            .append(Component.text(DeathTimer))
+                            .append(Component.text(pd.getDeathtimer()))
                             .append(Component.translatable("crystalized.game.knockoff.respawn2")));
 
-                    if (DeathTimer == 2) {
+                    if (pd.getDeathtimer() == 2) {
                         player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1);
-                    } else if (DeathTimer == 1) {
+                    } else if (pd.getDeathtimer() == 1) {
                         player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1.25F);
-                    } else if (DeathTimer == 0) {
+                    } else if (pd.getDeathtimer() == 0) {
                         player.playSound(player, "crystalized:effect.knockoff_countdown",50, 1.5F);
-                    } else if (DeathTimer == -1) {
+                    } else if (pd.getDeathtimer() == -1) {
                         player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
                         tpPlayersBack(player);
                         player.setGameMode(GameMode.SURVIVAL);
-                        DeathTimer = 0;
+                        pd.setDeathtimer(0);
                         pd.isPlayerDead = false;
                         cancel();
                     }
@@ -126,7 +128,7 @@ public class PlayerListener implements Listener {
                     if (!pd.isPlayerDead) {
                         cancel();
                     }
-                    DeathTimer -= 1;
+                    pd.setDeathtimer(pd.getDeathtimer() - 1);
                 }
             }.runTaskTimer(knockoff.getInstance(), 1, 20);
         } else {

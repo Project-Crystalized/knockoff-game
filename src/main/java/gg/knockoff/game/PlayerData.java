@@ -13,6 +13,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     private int kills = 0;
     private int deaths = 0;
     private int damagepercentage = 0;
+    private int deathtimer = 0;
     public boolean DamagePercentageStopTimer = false;
 
     public PlayerData(Player p) {
@@ -24,7 +25,6 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     }
 
     public void takeawayLife(int amt) { //Unlike the other calls in this class, this takes away lives. be careful when using this
-        Player p = Bukkit.getPlayer(player);
         lives -= amt;
     }
 
@@ -33,7 +33,6 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     }
 
     public void addKill(int amt) {
-        Player p = Bukkit.getPlayer(player);
         kills += amt;
     }
 
@@ -42,8 +41,15 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     }
 
     public void addDeath(int amt) {
-        Player p = Bukkit.getPlayer(player);
         deaths += amt;
+    }
+
+    public void setDeathtimer(int amt) {
+        deathtimer = amt;
+    }
+
+    public int getDeathtimer() {
+        return this.deathtimer;
     }
 
     public int getDamagepercentage() {

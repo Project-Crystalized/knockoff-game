@@ -4,6 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -55,6 +56,27 @@ public class Teams {
             Bukkit.getServer().sendMessage(Component.text("\nStarting the game requires a player to be online. Please login to the server and try again.\n"));
             return;
         } else {
+            new BukkitRunnable() {
+                @Override
+                public void run() { //Clear every team when the game ends and everyone is kicked
+                    if (knockoff.getInstance().GameManager == null) {
+                        if (!blue.isEmpty()) {blue.clear();}
+                        if (!cyan.isEmpty()) {cyan.clear();}
+                        if (!green.isEmpty()) {green.clear();}
+                        if (!lemon.isEmpty()) {lemon.clear();}
+                        if (!lime.isEmpty()) {lime.clear();}
+                        if (!magenta.isEmpty()) {magenta.clear();}
+                        if (!orange.isEmpty()) {orange.clear();}
+                        if (!peach.isEmpty()) {peach.clear();}
+                        if (!purple.isEmpty()) {purple.clear();}
+                        if (!red.isEmpty()) {red.clear();}
+                        if (!white.isEmpty()) {white.clear();}
+                        if (!yellow.isEmpty()) {yellow.clear();}
+                        cancel();
+                    }
+                }
+            }.runTaskTimer(knockoff.getInstance(), 20 ,1);
+
             if (playerlist.size() > 0) {
                 if (blue.isEmpty()) {
                     blue.add(playerlist.get(0));
@@ -211,7 +233,6 @@ public class Teams {
                 return;
             }
         }
-        Bukkit.getLogger().log(Level.INFO, "Successfully sorted every online player into Teams");
     }
 
 

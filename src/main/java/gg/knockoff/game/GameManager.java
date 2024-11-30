@@ -107,7 +107,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
 
-                    if (knockoff.getInstance().DevMode == false && !pd.isPlayerDead) {
+                    if (!knockoff.getInstance().DevMode && !pd.isPlayerDead) {
                         //p.getPlayer().sendActionBar(text("Your Stats. Lives Left: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
                         p.sendPlayerListHeaderAndFooter(

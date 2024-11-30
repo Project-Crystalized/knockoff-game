@@ -2,8 +2,8 @@ name: knockoff-game
 version: '0.0.1'
 main: gg.knockoff.game.knockoff
 api-version: '1.21'
-depend: [FastAsyncWorldEdit]
-softdepend: [Crystalized_Essentials, floodgate]
+depend: [FastAsyncWorldEdit, Crystalized_Essentials]
+softdepend: [floodgate]
 commands:
   knockoff:
     description: "Commands for KnockOff"

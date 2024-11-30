@@ -166,57 +166,57 @@ public class PlayerListener implements Listener {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_CYAN))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_CYAN)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("green")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_GREEN))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_GREEN)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("lemon")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_LEMON))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_LEMON)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("lime")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_LIME))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_LIME)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("magenta")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_MAGENTA))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_MAGENTA)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("orange")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_ORANGE))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_ORANGE)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("peach")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_PEACH))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_PEACH)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("purple")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_PURPLE))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_PURPLE)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("red")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_RED))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_RED)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("white")) {
                 Bukkit.getServer().sendMessage(Component.text("") //bit pointless adding .color(Teams.TEAM_WHITE) here but whatever
                         .append(player.displayName().color(Teams.TEAM_WHITE))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_WHITE)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("yellow")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_YELLOW))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_YELLOW)));
+                        .append(event.message()));
             } else {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName())

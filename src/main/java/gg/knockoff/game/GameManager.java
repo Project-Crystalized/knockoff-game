@@ -110,14 +110,14 @@ public class GameManager { //I honestly think this entire class could be optimis
                     if (!knockoff.getInstance().DevMode && !pd.isPlayerDead) {
                         //p.getPlayer().sendActionBar(text("Your Stats. Lives Left: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
-                        p.sendPlayerListHeaderAndFooter(
-                                //Header
-                                text("\n")
-                                        .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
-                                        .append(text("\n")),
 
-                                //Footer
-                                text("team information goes here")
+                        p.sendPlayerListHeader(
+                                text("\n")
+                                .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
+                                .append(text("\n"))
+                        );
+                        p.sendPlayerListFooter(
+                                text("TODO: team information goes here") //TODO
                         );
                     }
 

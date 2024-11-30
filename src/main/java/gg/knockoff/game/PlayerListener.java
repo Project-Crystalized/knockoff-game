@@ -161,7 +161,7 @@ public class PlayerListener implements Listener {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_BLUE))
                         .append(Component.text(": "))
-                        .append(event.message().color(Teams.TEAM_BLUE)));
+                        .append(event.message()));
             } else if (Teams.GetPlayerTeam(player).equals("cyan")) {
                 Bukkit.getServer().sendMessage(Component.text("")
                         .append(player.displayName().color(Teams.TEAM_CYAN))

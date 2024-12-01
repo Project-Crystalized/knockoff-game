@@ -81,7 +81,7 @@ public class PlayerListener implements Listener {
             Player attacker = player.getKiller();
             PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
             pda.addKill(1);
-            attacker.showTitle(Title.title(text(" "), text("[\uE103] " + player.displayName()), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
+            attacker.showTitle(Title.title(text(" "), text("[\uE103] ").append(player.displayName()), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
             attacker.playSound(attacker, "crystalized:effect.ally_kill", 50, 1);
         }
         pd.addDeath(1);

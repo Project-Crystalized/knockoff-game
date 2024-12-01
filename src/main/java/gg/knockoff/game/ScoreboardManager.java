@@ -17,13 +17,6 @@ public class ScoreboardManager {
 
         FloodgateApi floodgateapi = FloodgateApi.getInstance();
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Team blue = scoreboard.registerNewTeam("blue");
-        blue.color(NamedTextColor.DARK_BLUE);
-        blue.setAllowFriendlyFire(false);
-        blue.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.FOR_OTHER_TEAMS);
-        if (Teams.GetPlayerTeam(player).equals("blue")) {
-            blue.addPlayer(player);
-        }
 
         Component title = text("\uE108 ").color(NamedTextColor.WHITE).append(text("KnockOff (WIP)").color(NamedTextColor.GOLD));
         Objective obj = scoreboard.registerNewObjective("main", Criteria.DUMMY, title);

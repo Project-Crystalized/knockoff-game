@@ -14,6 +14,7 @@ Knockoff is currently built for 1.21.1 Paper, This plugin won't work on newer or
 Dependencies (You need to install these) <br>
 [FAWE (FastAsyncWorldEdit)](https://www.spigotmc.org/resources/fastasyncworldedit.13932/) <br>
 [Crystalized Essentials](https://github.com/Project-Crystalized/crystalized-essentials) <br>
+[ProtocolLib](https://www.spigotmc.org/resources/protocollib.1997/) <br>
 
 This Plugin also supports Minecraft: Bedrock Edition through Geyser and the Floodgate API <br>
 You may need to build the plugin as we don't support GitHub releases, see Building Instructions <br>

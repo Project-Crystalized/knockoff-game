@@ -2,7 +2,6 @@ package gg.knockoff.game;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
 public class PlayerData { //This class probably isn't optimised, but it works so who cares

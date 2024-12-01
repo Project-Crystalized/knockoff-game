@@ -35,7 +35,7 @@ import static net.kyori.adventure.text.Component.text;
 
 public class GameManager { //I honestly think this entire class could be optimised because of how long it is
     public List<PlayerData> playerDatas;
-    public Teams teams = new Teams();
+    public Teams teams;
 
     public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;

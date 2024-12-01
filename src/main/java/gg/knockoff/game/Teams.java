@@ -1,14 +1,15 @@
 package gg.knockoff.game;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 public class Teams {
@@ -87,7 +88,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.SEVERE, "Tried to add a player to team Blue but the player list is 0. Please report this as you shouldn't be able to get this error");
-                return;
             }
 
             if (playerlist.size() > 1) { //If the player list is 2 or greater
@@ -100,7 +100,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.WARNING, "No player(s) available for Cyan team (FYI: Recommend getting an alt account or someone else to join. 2 or more players is recommended)");
-                return;
             }
 
             if (playerlist.size() > 2) { //If the player list is 3 or greater
@@ -113,7 +112,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Lemon team");
-                return;
             }
 
             if (playerlist.size() > 3) { //If the player list is 4 or greater
@@ -126,7 +124,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Lemon team");
-                return;
             }
 
             if (playerlist.size() > 4) { //If the player list is 5 or greater
@@ -139,7 +136,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Lemon team");
-                return;
             }
 
             if (playerlist.size() > 5) { //If the player list is 6 or greater
@@ -152,7 +148,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Lemon team");
-                return;
             }
 
             if (playerlist.size() > 6) { //If the player list is 7 or greater
@@ -165,7 +160,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Orange team");
-                return;
             }
 
             if (playerlist.size() > 7) { //If the player list is 8 or greater
@@ -178,7 +172,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Peach team");
-                return;
             }
 
             if (playerlist.size() > 8) { //If the player list is 9 or greater
@@ -191,7 +184,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Purple team");
-                return;
             }
 
             if (playerlist.size() > 9) { //If the player list is 10 or greater
@@ -204,7 +196,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Red team");
-                return;
             }
 
             if (playerlist.size() > 10) { //If the player list is 11 or greater
@@ -217,7 +208,6 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for White team");
-                return;
             }
 
             if (playerlist.size() > 11) { //If the player list is 12
@@ -230,8 +220,34 @@ public class Teams {
                 }
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Yellow team");
-                return;
             }
+
+            Scoreboard scoreboard2 = Bukkit.getScoreboardManager().getNewScoreboard();
+            Team sbblue = scoreboard2.registerNewTeam("sbblue");
+            sbblue.color(NamedTextColor.DARK_BLUE);
+            sbblue.setAllowFriendlyFire(false);
+            sbblue.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (blue.contains(player.getName())) {
+                    sbblue.addPlayer(player);
+                }
+            }
+
+            Team sbcyan = scoreboard2.registerNewTeam("sbcyan");
+            sbcyan.color(NamedTextColor.DARK_AQUA);
+            sbcyan.setAllowFriendlyFire(false);
+            sbcyan.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                if (cyan.contains(player.getName())) {
+                    sbcyan.addPlayer(player);
+                }
+            }
+
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.setScoreboard(scoreboard2);
+            }
+            Bukkit.getLogger().log(Level.INFO, "blue: " + sbblue.getSize());
+            Bukkit.getLogger().log(Level.INFO, "cyan: " + sbcyan.getSize());
         }
     }
 

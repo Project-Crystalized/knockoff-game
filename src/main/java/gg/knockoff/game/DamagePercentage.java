@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -11,8 +12,6 @@ public class DamagePercentage implements Listener {
     @EventHandler
     public void onDamage(EntityDamageByEntityEvent event) {
         GameManager gc = knockoff.getInstance().GameManager;
-        Player player = (((Player) event.getEntity()).getPlayer());
-        Player damager = (((Player)event.getDamager()).getPlayer());
         if (!(event.getDamager() instanceof Player)) {
             return;
         }
@@ -21,9 +20,12 @@ public class DamagePercentage implements Listener {
             return;
         } else {
             if (event.getEntity() instanceof Player) { //Prevents friendly fire, this checks if the player you're attacking is in the same team as you and canceles the attack event
+                Player player = (((Player) event.getEntity()).getPlayer());
+                Player damager = (((Player)event.getDamager()).getPlayer());
                 if (knockoff.getInstance().GameManager.teams.GetPlayerTeam(player)
                         .equals(knockoff.getInstance().GameManager.teams.GetPlayerTeam(damager))) {
                     event.setCancelled(true);
+
                 } else {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     pd.DamagePercentageStopTimer = true;
@@ -31,6 +33,8 @@ public class DamagePercentage implements Listener {
                     player.setVelocity(damager.getLocation().getDirection().multiply(pd.getDamagepercentage() / 10));
                     pd.changepercentage(3);
                 }
+            } else if (event.getEntity() instanceof ArmorStand) {
+            return; //Without this, the console will throw an error if you punch the custom nametag
             }
         }
     }

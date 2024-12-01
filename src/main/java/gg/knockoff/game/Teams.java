@@ -4,6 +4,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
@@ -283,5 +286,32 @@ public class Teams {
         } else {
             player.displayName(Component.text("[Unknown Team]").append(Component.text(player.getName())));
         }
+    }
+}
+
+class CustomPlayerNametags{
+
+    public static void CustomPlayerNametags(Player player) {
+
+        Location ploc = player.getLocation();
+        ArmorStand AT = (ArmorStand) ploc.getWorld().spawn(ploc, ArmorStand.class);
+        //AT.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(0.001);
+        AT.setGravity(false);
+        AT.setCanPickupItems(false);
+        AT.setVisible(false);
+        AT.setCustomNameVisible(true);
+        player.addPassenger(AT);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                AT.teleport(player);
+                AT.customName(Component.text("").append(player.displayName()).append(Component.text("\ninfo here")));
+                if (knockoff.getInstance().GameManager == null) {
+                    AT.remove();
+                    cancel();
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 20, 1);
     }
 }

@@ -18,6 +18,117 @@ public class ScoreboardManager {
         FloodgateApi floodgateapi = FloodgateApi.getInstance();
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
+        //This should run after Teams.java is initalized and has sorted the teams
+        //Fuck this part also, took me a while to figure out, and the same code copy pasted 12 times isn't helping it being shit - Callum
+        Team sbblue = scoreboard.registerNewTeam("sbblue");
+        sbblue.color(NamedTextColor.DARK_BLUE);
+        sbblue.setAllowFriendlyFire(false);
+        sbblue.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.blue.contains(p.getName())) {
+                sbblue.addPlayer(p);
+            }
+        }
+        Team sbcyan = scoreboard.registerNewTeam("sbcyan");
+        sbcyan.color(NamedTextColor.DARK_AQUA);
+        sbcyan.setAllowFriendlyFire(false);
+        sbcyan.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.cyan.contains(p.getName())) {
+                sbcyan.addPlayer(p);
+            }
+        }
+        Team sbgreen = scoreboard.registerNewTeam("sbgreen");
+        sbgreen.color(NamedTextColor.DARK_GREEN);
+        sbgreen.setAllowFriendlyFire(false);
+        sbgreen.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.green.contains(p.getName())) {
+                sbgreen.addPlayer(p);
+            }
+        }
+        Team sblemon = scoreboard.registerNewTeam("sblemon");
+        sblemon.color(NamedTextColor.YELLOW);
+        sblemon.setAllowFriendlyFire(false);
+        sblemon.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.lemon.contains(p.getName())) {
+                sblemon.addPlayer(p);
+            }
+        }
+        Team sblime = scoreboard.registerNewTeam("sblime");
+        sblime.color(NamedTextColor.GREEN);
+        sblime.setAllowFriendlyFire(false);
+        sblime.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.lime.contains(p.getName())) {
+                sblime.addPlayer(p);
+            }
+        }
+        Team sbmagenta = scoreboard.registerNewTeam("sbmagenta");
+        sbmagenta.color(NamedTextColor.LIGHT_PURPLE);
+        sbmagenta.setAllowFriendlyFire(false);
+        sbmagenta.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.magenta.contains(p.getName())) {
+                sbmagenta.addPlayer(p);
+            }
+        }
+        Team sborange = scoreboard.registerNewTeam("sborange");
+        sborange.color(NamedTextColor.GOLD);
+        sborange.setAllowFriendlyFire(false);
+        sborange.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.orange.contains(p.getName())) {
+                sborange.addPlayer(p);
+            }
+        }
+        Team sbpeach = scoreboard.registerNewTeam("sbpeach");
+        sbpeach.color(NamedTextColor.RED);
+        sbpeach.setAllowFriendlyFire(false);
+        sbpeach.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.peach.contains(p.getName())) {
+                sbpeach.addPlayer(p);
+            }
+        }
+        Team sbpurple = scoreboard.registerNewTeam("sbpurple");
+        sbpurple.color(NamedTextColor.DARK_PURPLE);
+        sbpurple.setAllowFriendlyFire(false);
+        sbpurple.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.purple.contains(p.getName())) {
+                sbpurple.addPlayer(p);
+            }
+        }
+        Team sbred = scoreboard.registerNewTeam("sbred");
+        sbred.color(NamedTextColor.RED);
+        sbred.setAllowFriendlyFire(false);
+        sbred.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.red.contains(p.getName())) {
+                sbred.addPlayer(p);
+            }
+        }
+        Team sbwhite = scoreboard.registerNewTeam("sbwhite");
+        sbwhite.color(NamedTextColor.WHITE);
+        sbwhite.setAllowFriendlyFire(false);
+        sbwhite.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.white.contains(p.getName())) {
+                sbwhite.addPlayer(p);
+            }
+        }
+        Team sbyellow = scoreboard.registerNewTeam("sbyellow");
+        sbyellow.color(NamedTextColor.YELLOW);
+        sbyellow.setAllowFriendlyFire(false);
+        sbyellow.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.NEVER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            if (Teams.yellow.contains(p.getName())) {
+                sbyellow.addPlayer(p);
+            }
+        }
+
         Component title = text("\uE108 ").color(NamedTextColor.WHITE).append(text("KnockOff (WIP)").color(NamedTextColor.GOLD));
         Objective obj = scoreboard.registerNewObjective("main", Criteria.DUMMY, title);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -28,7 +139,6 @@ public class ScoreboardManager {
             game's language, So we write the text in English manually. Plus the Scoreboard on TubNet was
             different on Bedrock compared to Java so we're keeping the same tradition - Callum
             */
-            //Bukkit.getServer().sendMessage(text("[SCOREBOARD] Player " + player + " is Bedrock"));
 
             obj.getScore("7").setScore(7);
             obj.getScore("7").customName(Component.text("  "));

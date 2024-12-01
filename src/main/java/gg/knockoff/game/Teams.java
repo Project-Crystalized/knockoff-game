@@ -221,33 +221,6 @@ public class Teams {
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Yellow team");
             }
-
-            Scoreboard scoreboard2 = Bukkit.getScoreboardManager().getNewScoreboard();
-            Team sbblue = scoreboard2.registerNewTeam("sbblue");
-            sbblue.color(NamedTextColor.DARK_BLUE);
-            sbblue.setAllowFriendlyFire(false);
-            sbblue.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (blue.contains(player.getName())) {
-                    sbblue.addPlayer(player);
-                }
-            }
-
-            Team sbcyan = scoreboard2.registerNewTeam("sbcyan");
-            sbcyan.color(NamedTextColor.DARK_AQUA);
-            sbcyan.setAllowFriendlyFire(false);
-            sbcyan.setOption(Team.Option.NAME_TAG_VISIBILITY, Team.OptionStatus.ALWAYS);
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                if (cyan.contains(player.getName())) {
-                    sbcyan.addPlayer(player);
-                }
-            }
-
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.setScoreboard(scoreboard2);
-            }
-            Bukkit.getLogger().log(Level.INFO, "blue: " + sbblue.getSize());
-            Bukkit.getLogger().log(Level.INFO, "cyan: " + sbcyan.getSize());
         }
     }
 

@@ -18,9 +18,7 @@ import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.*;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -49,6 +47,11 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     public GameManager() {//Start of the game
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
+        for (Entity e : Bukkit.getWorld("world").getEntities()) {
+            if (e instanceof TextDisplay) {
+                e.remove();
+            }
+        }
         if (Bukkit.getOnlinePlayers().size() > 13) {
             GameType = "duos";
         } else {
@@ -143,6 +146,11 @@ public class GameManager { //I honestly think this entire class could be optimis
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.kick(Component.text("Game over, thanks for playing!").color(NamedTextColor.RED));
+        }
+        for (Entity e : Bukkit.getWorld("world").getEntities()) {
+            if (e instanceof TextDisplay) {
+                e.remove();
+            }
         }
 
         knockoff.getInstance().GameManager.teams = null;

@@ -4,13 +4,13 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.Team;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -293,23 +293,38 @@ class CustomPlayerNametags{
 
     public static void CustomPlayerNametags(Player player) {
 
-        Location ploc = player.getLocation();
-        ArmorStand AT = (ArmorStand) ploc.getWorld().spawn(ploc, ArmorStand.class);
-        //AT.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(0.001);
-        AT.setGravity(false);
-        AT.setCanPickupItems(false);
-        AT.setVisible(false);
-        AT.setCustomNameVisible(true);
-        player.addPassenger(AT);
+        //I make 2 display entities facing the opposite way because normally display entities are only visible from 1 side
+        //Location ploc = player.getLocation();
+        Location ploc = new Location(player.getWorld(), player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
+        Location ploc2 = new Location(player.getWorld(), player.getX(), player.getY(), player.getZ(), player.getYaw() + 180, player.getPitch());
+        TextDisplay displayfront = ploc.getWorld().spawn(ploc, TextDisplay.class, entity -> {
+            entity.setBillboard(Display.Billboard.CENTER);
+        });
+        TextDisplay displayback = ploc.getWorld().spawn(ploc, TextDisplay.class, entity -> {
+            entity.setBillboard(Display.Billboard.CENTER);
+        });
+
         new BukkitRunnable() {
             @Override
             public void run() {
-
-                AT.teleport(player);
-                AT.customName(Component.text("").append(player.displayName()).append(Component.text("\ninfo here")));
                 if (knockoff.getInstance().GameManager == null) {
-                    AT.remove();
+                    displayfront.remove();
+                    displayback.remove();
                     cancel();
+                } else {
+                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                    displayfront.text(Component.text("")
+                            .append(player.displayName())
+                            .append(Component.text("\nKB: "))
+                            .append(Component.text(pd.getDamagepercentage())));
+                    displayback.text(Component.text("")
+                            .append(player.displayName())
+                            .append(Component.text("\nKB: "))
+                            .append(Component.text(pd.getDamagepercentage())));
+                    Location ploc = new Location(player.getWorld(), player.getX(), player.getY() + 2, player.getZ(), player.getYaw(), player.getPitch());
+                    displayfront.teleport(ploc);
+                    Location ploc2 = new Location(player.getWorld(), player.getX(), player.getY() + 2, player.getZ(), player.getYaw() + 180, player.getPitch());
+                    displayback.teleport(ploc2);
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 20, 1);

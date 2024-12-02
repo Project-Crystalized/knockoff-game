@@ -29,6 +29,8 @@ public final class knockoff extends JavaPlugin {
 
         Commands dc = new Commands();
         this.getCommand("knockoff").setExecutor(dc);
+        this.getCommand("knockoff_give").setExecutor(dc);
+        this.getCommand("knockoff_dropitem").setExecutor(dc);
         new BukkitRunnable() {
 
             @Override

@@ -294,9 +294,7 @@ class CustomPlayerNametags{
     public static void CustomPlayerNametags(Player player) {
 
         //I make 2 display entities facing the opposite way because normally display entities are only visible from 1 side
-        //Location ploc = player.getLocation();
         Location ploc = new Location(player.getWorld(), player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
-        Location ploc2 = new Location(player.getWorld(), player.getX(), player.getY(), player.getZ(), player.getYaw() + 180, player.getPitch());
         TextDisplay displayfront = ploc.getWorld().spawn(ploc, TextDisplay.class, entity -> {
             entity.setBillboard(Display.Billboard.CENTER);
         });
@@ -313,14 +311,26 @@ class CustomPlayerNametags{
                     cancel();
                 } else {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
-                    displayfront.text(Component.text("")
-                            .append(player.displayName())
-                            .append(Component.text("\nKB: "))
-                            .append(Component.text(pd.getDamagepercentage())));
-                    displayback.text(Component.text("")
-                            .append(player.displayName())
-                            .append(Component.text("\nKB: "))
-                            .append(Component.text(pd.getDamagepercentage())));
+                    if (pd.isPlayerDead) {
+                        displayfront.text(Component.text(""));
+                        displayback.text(Component.text(""));
+                    } else {
+                        displayfront.text(Component.text("")
+                                .append(player.displayName())
+                                .append(Component.text("\nKB: "))
+                                .append(Component.text(pd.getDamagepercentage()))
+                                .append(Component.text("% | L: "))
+                                .append(Component.text(pd.getLives()))
+                        );
+                        displayback.text(Component.text("")
+                                .append(player.displayName())
+                                .append(Component.text("\nKB: "))
+                                .append(Component.text(pd.getDamagepercentage()))
+                                .append(Component.text("% | L: "))
+                                .append(Component.text(pd.getLives()))
+                        );
+                    }
+
                     Location ploc = new Location(player.getWorld(), player.getX(), player.getY() + 2, player.getZ(), player.getYaw(), player.getPitch());
                     displayfront.teleport(ploc);
                     Location ploc2 = new Location(player.getWorld(), player.getX(), player.getY() + 2, player.getZ(), player.getYaw() + 180, player.getPitch());

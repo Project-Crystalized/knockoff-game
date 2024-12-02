@@ -3,6 +3,7 @@ package gg.knockoff.game;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,6 +19,10 @@ public class Commands implements CommandExecutor {
         switch (label) {
             case "knockoff":
                 return run_knockoff(args, commandSender);
+            case "knockoff_give":
+                return run_give(args, commandSender);
+            case "knockoff_dropitem":
+                return run_dropitem(args, commandSender);
             default:
                 return false;
         }
@@ -60,6 +65,31 @@ public class Commands implements CommandExecutor {
         } else {
             player.sendMessage(Component.text("[!] Incorrect usage of command /knockoff.")
                     .append(Component.text("\n    Usage: /knockoff [start/end/reload_config]")));
+        }
+        return true;
+    }
+
+    private boolean run_give(String[] args, CommandSender commandSender) {
+        Player player = (Player) commandSender;
+        if (args.length > 0) {
+            KnockoffItem.GiveCustomItem(player, args[0]);
+        } else {
+            player.sendMessage(Component.text("[!] Incorrect usage of command /knockoff_give. No arguments. Args: /knockoff_give [item] [player]"));
+        }
+        return true;
+    }
+
+    private boolean run_dropitem(String[] args, CommandSender commandSender) {
+        Player player = (Player) commandSender;
+        if (args.length > 0) {
+            if (knockoff.getInstance().GameManager != null) {
+                Location loc = new Location(player.getWorld(), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+                DropPowerup.DropPowerup(loc, args[0]);
+            } else {
+                player.sendMessage(Component.text("[!] This command can only be executed when a game is in progress"));
+            }
+        } else {
+            player.sendMessage(Component.text("[!] Incorrect usage of command /knockoff_dropitem. No arguments. Args: /knockoff_dropitem [item]"));
         }
         return true;
     }

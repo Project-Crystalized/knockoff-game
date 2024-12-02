@@ -59,6 +59,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
 
         teams = new Teams();
+        KnockoffItem.SetupKnockoffItems();
 
         // Sets the target area to air to prevent previous game's sections to interfere with the current game
         // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
@@ -129,7 +130,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 for (Entity e : Bukkit.getWorld("world").getEntities()) {
                     if (e instanceof Item) {
                         if (((Item) e).getItemStack().getType().equals(Material.COAL) || ((Item) e).getItemStack().getType().equals(Material.WIND_CHARGE)) {
-                            return; //do nothing, material.coal and wind charges is powerups so we dont clear them
+                            //do nothing, material.coal and wind charges is powerups so we dont clear them
                         } else {
                             e.remove();
                         }
@@ -567,7 +568,7 @@ class TabMenu {
                         .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
                         .append(text("\n"))
         );
-        p.sendPlayerListFooter(text("\n"));
+        p.sendPlayerListFooter(text("\n")); //TODO
         /*
         for (Player p : Bukkit.getOnlinePlayers()) {
 

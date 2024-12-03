@@ -103,6 +103,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             ScoreboardManager.SetPlayerScoreboard(p);
             Teams.SetPlayerDisplayNames(p);
             CustomPlayerNametags.CustomPlayerNametags(p);
+            p.unlistPlayer(p);
 
             p.setSneaking(true);
             p.setSneaking(false);
@@ -575,14 +576,14 @@ class MapManager {
 
 class TabMenu {
     public static void SendTabMenu(Player p) {
+        ArrayList a = new ArrayList();
         p.sendPlayerListHeader(
                 text("\n")
                         .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
                         .append(text("\n"))
         );
         p.sendPlayerListFooter(text("\n")); //TODO
-        /*
-        for (Player p : Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
 
         }
 
@@ -590,7 +591,6 @@ class TabMenu {
                 text("")
                         .append(text(""))
         );
-         */
     }
 }
 

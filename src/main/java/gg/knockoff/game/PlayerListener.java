@@ -139,8 +139,8 @@ public class PlayerListener implements Listener {
             Bukkit.getServer().sendMessage(text("[")
                     .append(Component.text("\uE103").color(NamedTextColor.RED))
                     .append(Component.text("] "))
-                    .append(Component.text(player.getName())
-                            .append(Component.text(" has been eliminated from the game!"))));  // TODO make this a translatable text component
+                    .append(player.displayName())
+                            .append(Component.text(" has been eliminated from the game!")));  // TODO make this a translatable text component
             player.getPlayer().sendMessage(text("Your final stats: Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
             pd.isPlayerDead = true;
         }

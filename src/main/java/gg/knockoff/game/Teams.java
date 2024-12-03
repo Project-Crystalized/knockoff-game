@@ -95,7 +95,7 @@ public class Teams {
 
             if (playerlist.size() > 1) { //If the player list is 2 or greater
                 if (cyan.isEmpty()) {
-                    cyan.add(playerlist.get(1));
+                    blue.add(playerlist.get(1));
                     if (playerlist.size() > 13) {
                         cyan.add(playerlist.get(13));
                     }
@@ -331,9 +331,9 @@ class CustomPlayerNametags{
                         );
                     }
 
-                    Location ploc = new Location(player.getWorld(), player.getX(), player.getY() + 2, player.getZ(), player.getYaw(), player.getPitch());
+                    Location ploc = new Location(player.getWorld(), player.getX(), player.getY() + 2.5, player.getZ(), player.getYaw(), player.getPitch());
                     displayfront.teleport(ploc);
-                    Location ploc2 = new Location(player.getWorld(), player.getX(), player.getY() + 2, player.getZ(), player.getYaw() + 180, player.getPitch());
+                    Location ploc2 = new Location(player.getWorld(), player.getX(), player.getY() + 2.5, player.getZ(), player.getYaw() + 180, player.getPitch());
                     displayback.teleport(ploc2);
                 }
             }

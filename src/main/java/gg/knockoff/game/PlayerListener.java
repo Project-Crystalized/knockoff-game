@@ -136,7 +136,6 @@ public class PlayerListener implements Listener {
                 //we kick the player if their lives is less than 0. To prevent cheating and to possibly catch bugs where players may die twice
                 player.kick(Component.text("You're eliminated from the game but you have somehow died again. and/or your lives is measured in negative numbers! Please report this bug to the Crystalized devs.").color(NamedTextColor.RED));
             }
-            pd.takeawayLife(1); // takes away 1 life
             Bukkit.getServer().sendMessage(text("[")
                     .append(Component.text("\uE103").color(NamedTextColor.RED))
                     .append(Component.text("] "))

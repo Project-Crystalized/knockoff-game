@@ -1,5 +1,10 @@
 package gg.knockoff.game;
 
+import com.comphenix.protocol.PacketType;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.google.gson.JsonArray;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -98,9 +103,16 @@ public class GameManager { //I honestly think this entire class could be optimis
             ScoreboardManager.SetPlayerScoreboard(p);
             Teams.SetPlayerDisplayNames(p);
             CustomPlayerNametags.CustomPlayerNametags(p);
+
+            p.setSneaking(true);
+            p.setSneaking(false);
         }
 
-        new BukkitRunnable() { //Probably not great optimization
+        StartGameLoop();
+    }
+
+    private void StartGameLoop() {
+        new BukkitRunnable() {
             @Override
             public void run() {
                 if (knockoff.getInstance().DevMode) {
@@ -579,5 +591,42 @@ class TabMenu {
                         .append(text(""))
         );
          */
+    }
+}
+
+class KnockoffProtocolLib {
+
+    public static PacketAdapter make_allys_glow() {
+        return new PacketAdapter(knockoff.getInstance(), PacketType.Play.Server.ENTITY_METADATA) {
+            @Override
+            public void onPacketSending(PacketEvent event) {
+                GameManager gc = knockoff.getInstance().GameManager;
+                PacketContainer packet = event.getPacket();
+                Player updated_player = get_player_by_entity_id(packet.getIntegers().read(0));
+                if (gc == null
+                        || updated_player == null
+                        || Teams.GetPlayerTeam(updated_player) != Teams.GetPlayerTeam(event.getPlayer())) {
+                    return;
+                }
+                event.setPacket(packet = packet.deepClone());
+                List<WrappedDataValue> wrappedData = packet.getDataValueCollectionModifier().read(0);
+                for (WrappedDataValue wdv : wrappedData) {
+                    if (wdv.getIndex() == 0) {
+                        byte b = (byte) wdv.getValue();
+                        b |= 0b01000000;
+                        wdv.setValue(b);
+                    }
+                }
+            }
+        };
+    }
+
+    private static Player get_player_by_entity_id(int id) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getEntityId() == id) {
+                return player;
+            }
+        }
+        return null;
     }
 }

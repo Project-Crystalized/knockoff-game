@@ -1,7 +1,8 @@
 package gg.knockoff.game;
 
+import com.comphenix.protocol.ProtocolLibrary;
+import com.comphenix.protocol.ProtocolManager;
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -15,10 +16,12 @@ public final class knockoff extends JavaPlugin {
     public boolean is_force_starting = false;
     public GameManager GameManager;
     public boolean DevMode = false;
+    public ProtocolManager protocolmanager;
     //public ConfigData ConfigData;
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
+        protocolmanager = ProtocolLibrary.getProtocolManager();
         //ConfigData = new ConfigData();
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new DamagePercentage(), this);
@@ -31,6 +34,7 @@ public final class knockoff extends JavaPlugin {
         this.getCommand("knockoff").setExecutor(dc);
         this.getCommand("knockoff_give").setExecutor(dc);
         this.getCommand("knockoff_dropitem").setExecutor(dc);
+
         new BukkitRunnable() {
 
             @Override
@@ -48,10 +52,12 @@ public final class knockoff extends JavaPlugin {
                         new BukkitRunnable() {
                             int timer = 3;
                             public void run() {
+                                GameManager = new GameManager();
+                                cancel();
+                                /*
                                 switch (timer) {
                                     case -2:
-                                        GameManager = new GameManager();
-                                        cancel();
+
                                     case -1:
                                         break; // should prevent the "GO!" from appearing twice
                                     case 0:
@@ -82,13 +88,18 @@ public final class knockoff extends JavaPlugin {
                                         break; //This shouldn't trigger
                                 }
                                 timer--;
+                                 */
                             }
+
                         }.runTaskTimer(knockoff.getInstance(), 1, 20);
                     }
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 1, 20);
+
+        protocolmanager.addPacketListener(KnockoffProtocolLib.make_allys_glow());
         getLogger().log(Level.INFO, "KnockOff Plugin Enabled!");
+
     }
 
     @Override

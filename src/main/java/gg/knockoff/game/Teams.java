@@ -1,12 +1,9 @@
 package gg.knockoff.game;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.Color;
 import org.bukkit.Location;
-import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
@@ -95,7 +92,7 @@ public class Teams {
 
             if (playerlist.size() > 1) { //If the player list is 2 or greater
                 if (cyan.isEmpty()) {
-                    blue.add(playerlist.get(1));
+                    cyan.add(playerlist.get(1));
                     if (playerlist.size() > 13) {
                         cyan.add(playerlist.get(13));
                     }
@@ -293,36 +290,23 @@ class CustomPlayerNametags{
 
     public static void CustomPlayerNametags(Player player) {
 
-        //I make 2 display entities facing the opposite way because normally display entities are only visible from 1 side
         Location ploc = new Location(player.getWorld(), player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());
         TextDisplay displayfront = ploc.getWorld().spawn(ploc, TextDisplay.class, entity -> {
-            entity.setBillboard(Display.Billboard.CENTER);
-        });
-        TextDisplay displayback = ploc.getWorld().spawn(ploc, TextDisplay.class, entity -> {
             entity.setBillboard(Display.Billboard.CENTER);
         });
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().GameManager == null || !player.isOnline()) {
                     displayfront.remove();
-                    displayback.remove();
                     cancel();
                 } else {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     if (pd.isPlayerDead) {
                         displayfront.text(Component.text(""));
-                        displayback.text(Component.text(""));
                     } else {
                         displayfront.text(Component.text("")
-                                .append(player.displayName())
-                                .append(Component.text("\nKB: "))
-                                .append(Component.text(pd.getDamagepercentage()))
-                                .append(Component.text("% | L: "))
-                                .append(Component.text(pd.getLives()))
-                        );
-                        displayback.text(Component.text("")
                                 .append(player.displayName())
                                 .append(Component.text("\nKB: "))
                                 .append(Component.text(pd.getDamagepercentage()))
@@ -333,8 +317,6 @@ class CustomPlayerNametags{
 
                     Location ploc = new Location(player.getWorld(), player.getX(), player.getY() + 2.5, player.getZ(), player.getYaw(), player.getPitch());
                     displayfront.teleport(ploc);
-                    Location ploc2 = new Location(player.getWorld(), player.getX(), player.getY() + 2.5, player.getZ(), player.getYaw() + 180, player.getPitch());
-                    displayback.teleport(ploc2);
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 20, 1);

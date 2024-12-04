@@ -8,12 +8,14 @@ public class PlayerData { //This class probably isn't optimised, but it works so
 
     public String player;
     public boolean isPlayerDead = false;
+    public boolean isEliminated = false;
     private int lives = 5;
     private int kills = 0;
     private int deaths = 0;
     private int damagepercentage = 0;
     private int deathtimer = 0;
     public boolean DamagePercentageStopTimer = false;
+    public boolean isOnline = true;
 
     public PlayerData(Player p) {
         player = p.getName();

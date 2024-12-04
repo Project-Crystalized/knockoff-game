@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -20,6 +21,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
+import java.util.UUID;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -143,6 +145,7 @@ public class PlayerListener implements Listener {
                             .append(Component.text(" has been eliminated from the game!")));  // TODO make this a translatable text component
             player.getPlayer().sendMessage(text("Your final stats: Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
             pd.isPlayerDead = true;
+            pd.isEliminated = true;
         }
     }
 
@@ -219,5 +222,11 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void PlayerDropItem(PlayerDropItemEvent event) {
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void OnPlayerDisconnect(PlayerConnectionCloseEvent event) {
+        UUID uuid = event.getPlayerUniqueId();
+        Player p = Bukkit.getPlayer(uuid);
     }
 }

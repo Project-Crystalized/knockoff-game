@@ -22,6 +22,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
@@ -46,6 +47,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static int LastSectionPlaceLocationX = 0;
     public static int LastSectionPlaceLocationY = 0;
     public static int LastSectionPlaceLocationZ = 0;
+    public ArrayList PlayerList = new ArrayList();
 
     //Can be "solo" or "team"
     public String GameType = "Solo";
@@ -63,6 +65,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             GameType = "solo";
         }
 
+        PlayerList.clear();
         teams = new Teams();
         KnockoffItem.SetupKnockoffItems();
 
@@ -103,13 +106,23 @@ public class GameManager { //I honestly think this entire class could be optimis
             ScoreboardManager.SetPlayerScoreboard(p);
             Teams.SetPlayerDisplayNames(p);
             CustomPlayerNametags.CustomPlayerNametags(p);
-            p.unlistPlayer(p);
+            PlayerList.add(p.getName());
 
             p.setSneaking(true);
             p.setSneaking(false);
         }
 
         StartGameLoop();
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    TabMenu.SendTabMenu(p);
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 10 ,1);
+
     }
 
     private void StartGameLoop() {
@@ -124,13 +137,14 @@ public class GameManager { //I honestly think this entire class could be optimis
                 //Should stop this bukkitrunnable once the game ends
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        player.unlistPlayer(p);
+                    }
+
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
 
                     if (!knockoff.getInstance().DevMode && !pd.isPlayerDead) {
-                        //p.getPlayer().sendActionBar(text("Your Stats. Lives Left: " + pd.getLives() + " Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
-
-                        TabMenu.SendTabMenu(p);
                     }
 
                     if (p.getLocation().getY() < -30 && p.getGameMode().equals(GameMode.SURVIVAL)) {//instantly kills the player when they get knocked into the void
@@ -575,21 +589,76 @@ class MapManager {
 }
 
 class TabMenu {
+    //static String StatsPlayerList = "";
+    static Component StatsPlayerList = text("");
+
     public static void SendTabMenu(Player p) {
-        ArrayList a = new ArrayList();
+        StatsPlayerList = text("");
+
+        //Header
         p.sendPlayerListHeader(
                 text("\n")
                         .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
                         .append(text("\n"))
         );
-        p.sendPlayerListFooter(text("\n")); //TODO
-        for (Player player : Bukkit.getOnlinePlayers()) {
 
+        //Footer
+        // Could be optimised too
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+            if (pd.isOnline) {
+                if (pd.isPlayerDead) {
+                    if (pd.isEliminated) {
+                        StatsPlayerList = text("")
+                                .append(StatsPlayerList)
+                                .append(text("\n [Eliminated] "))
+                                .append(player.displayName())
+                                .append(text(" \uE101 ")
+                                .append(text(pd.getKills()))
+                                .append(text(" \uE103 "))
+                                .append(text(pd.getDeaths()))
+                            );
+                    } else {
+                        StatsPlayerList = text("")
+                                .append(StatsPlayerList)
+                                .append(text("\n [Dead] "))
+                                .append(player.displayName())
+                                .append(text(" \uE101 ")
+                                .append(text(pd.getKills()))
+                                .append(text(" \uE103 "))
+                                .append(text(pd.getDeaths()))
+                            );
+                    }
+                } else {
+                    StatsPlayerList = text("")
+                            .append(StatsPlayerList)
+                            .append(text("\n [Alive] "))
+                            .append(player.displayName())
+                            .append(text(" \uE101 ")
+                            .append(text(pd.getKills()))
+                            .append(text(" \uE103 "))
+                            .append(text(pd.getDeaths()))
+                    );
+                }
+            } else {
+                StatsPlayerList = text("")
+                        .append(StatsPlayerList)
+                        .append(text("\n [Disconnected] "))
+                        .append(player.displayName())
+                        .append(text(" \uE101 ")
+                        .append(text(pd.getKills()))
+                        .append(text(" \uE103 "))
+                        .append(text(pd.getDeaths()))
+                    );
+            }
         }
 
-        p.sendPlayerListFooter(
-                text("")
-                        .append(text(""))
+
+        p.sendPlayerListFooter(text("")
+                .append(text("---------------------------------------------------").color(NamedTextColor.GRAY)
+                .append(StatsPlayerList).color(NamedTextColor.WHITE)
+                .append(text("\n---------------------------------------------------\n\n").color(NamedTextColor.GRAY))
+                .append(text("Knockoff Version: " + knockoff.getInstance().getDescription().getVersion()).color(NamedTextColor.DARK_GRAY)))
         );
     }
 }

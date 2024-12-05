@@ -23,6 +23,7 @@ import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
@@ -31,6 +32,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -50,7 +52,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public ArrayList PlayerList = new ArrayList();
 
     //Can be "solo" or "team"
-    public String GameType = "Solo";
+    public static String GameType = "Solo";
 
     public GameManager() {//Start of the game
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
@@ -118,6 +120,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             @Override
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (knockoff.getInstance().GameManager == null) {cancel();}
                     TabMenu.SendTabMenu(p);
                 }
             }
@@ -130,9 +133,12 @@ public class GameManager { //I honestly think this entire class could be optimis
             @Override
             public void run() {
                 if (knockoff.getInstance().DevMode) {
-                    Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection +
-                            ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength()
-                            + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
+                    //This line provides debug info on the current map section
+                    //Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection + ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength() + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
+
+                    //This gives team info
+                    Bukkit.getServer().sendActionBar(Component.text("Team Stats: Blue: " + TeamStatus.BlueStatus + " Cyan: " + TeamStatus.CyanStatus));
+
                 }
                 //Should stop this bukkitrunnable once the game ends
                 if (knockoff.getInstance().GameManager == null) {cancel();}
@@ -167,7 +173,38 @@ public class GameManager { //I honestly think this entire class could be optimis
         }.runTaskTimer(knockoff.getInstance(), 20 ,1);
     }
 
-    public static void EndGame() {
+    public static void StartEndGame(String WinningTeam) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (GameManager.GameType.equals("solo")) {
+                player.showTitle(Title.title(text("solos win"), text(""), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+            } else {
+                player.showTitle(Title.title(text("teamed win"), text(""), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+            }
+            player.playSound(player, "minecraft:ui.toast.challenge_complete", 50, 1); //TODO placeholder sound
+        }
+        new BukkitRunnable() {
+            int timer = 0;
+
+            @Override
+            public void run() {
+                switch (timer) {
+                    case 5, 6, 7:
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            player.playSound(player, "minecraft:block.note_block_hat", 50, 1); //TODO placeholder sound
+                        }
+                        break;
+                    case 8:
+                        ForceEndGame();
+                        cancel();
+                        break;
+                }
+
+                timer++;
+            }
+        }.runTaskTimer(knockoff.getInstance(), 20 ,1);
+    }
+
+    public static void ForceEndGame() {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + SectionPlaceLocationX + "," + SectionPlaceLocationY + "," + SectionPlaceLocationZ);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());

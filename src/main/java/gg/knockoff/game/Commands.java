@@ -51,7 +51,7 @@ public class Commands implements CommandExecutor {
                 } else if (args[0].equals("end")) {
                     if (knockoff.getInstance().GameManager != null) {
                         knockoff.getInstance().DevMode = false;
-                        knockoff.getInstance().GameManager.EndGame();
+                        knockoff.getInstance().GameManager.ForceEndGame();
                     } else {
                         player.sendMessage(Component.text("[!] This command cannot be used in the queue").color(NamedTextColor.RED));
                     }

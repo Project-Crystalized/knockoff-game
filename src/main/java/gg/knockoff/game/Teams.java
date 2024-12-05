@@ -221,6 +221,7 @@ public class Teams {
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Yellow team");
             }
+            TeamStatus.Init();
         }
     }
 
@@ -286,8 +287,152 @@ public class Teams {
     }
 }
 
-class CustomPlayerNametags{
+class TeamStatus{
 
+    public static String BlueStatus = "";
+    public static String CyanStatus = "";
+    public static String GreenStatus = "";
+    public static String LemonStatus = "";
+    public static String LimeStatus = "";
+    public static String MagentaStatus = "";
+    public static String OrangeStatus = "";
+    public static String PeachStatus = "";
+    public static String PurpleStatus = "";
+    public static String RedStatus = "";
+    public static String WhiteStatus = "";
+    public static String YellowStatus = "";
+    private static ArrayList TeamsList = new ArrayList();
+
+    //I hate this class
+    public static void Init() {
+
+        //If blue is empty, set it to "dead", otherwise set it to "alive"
+        //Also this specific case should never trigger, Blue is the first team player 1
+        //is always in, You need at least 1 player to start a game
+        if (Teams.blue.isEmpty()) {BlueStatus = "dead";} else {BlueStatus = "alive";}
+        if (Teams.cyan.isEmpty()) {CyanStatus = "dead";} else {CyanStatus = "alive";}
+        if (Teams.green.isEmpty()) {GreenStatus = "dead";} else {GreenStatus = "alive";}
+        if (Teams.lemon.isEmpty()) {LemonStatus = "dead";} else {LemonStatus = "alive";}
+        if (Teams.lime.isEmpty()) {LimeStatus = "dead";} else {LimeStatus = "alive";}
+        if (Teams.magenta.isEmpty()) {MagentaStatus = "dead";} else {MagentaStatus = "alive";}
+        if (Teams.orange.isEmpty()) {OrangeStatus = "dead";} else {OrangeStatus = "alive";}
+        if (Teams.peach.isEmpty()) {PeachStatus = "dead";} else {PeachStatus = "alive";}
+        if (Teams.purple.isEmpty()) {PurpleStatus = "dead";} else {PurpleStatus = "alive";}
+        if (Teams.red.isEmpty()) {RedStatus = "dead";} else {RedStatus = "alive";}
+        if (Teams.white.isEmpty()) {WhiteStatus = "dead";} else {WhiteStatus = "alive";}
+        if (Teams.yellow.isEmpty()) {YellowStatus = "dead";} else {YellowStatus = "alive";}
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+
+                // Check if all players in the team are alive. If not set them to dead
+                if (knockoff.getInstance().GameManager == null) {cancel();} //Putting this in between these blocks of code to prevent errors in console. This stops the BukkitRunnable when the game ends
+
+                //This is going get annoying to copy-paste for all 12 teams :cry:
+                // Could be optimised, marking all the ugly code in this project with this phrase ig
+                int blue = 0; int bi = 0;
+                while (bi != Teams.blue.size()) {
+                    Player p = Bukkit.getPlayer(Teams.blue.get(bi)); PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                    if (!pd.isEliminated) {
+                        blue++;
+                    }
+                    bi++;
+                }
+                if (blue == Teams.blue.size()) {BlueStatus = "alive";} else {BlueStatus = "dead";}
+
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                int cyan = 0; int ci = 0;
+                while (ci != Teams.cyan.size()) {
+                    Player p = Bukkit.getPlayer(Teams.cyan.get(ci)); PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                    if (!pd.isEliminated) {
+                        cyan++;
+                    }
+                    ci++;
+                }
+                if (cyan == Teams.cyan.size()) {CyanStatus = "alive";} else {CyanStatus = "dead";}
+
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                int green = 0; int gi = 0;
+                while (gi != Teams.green.size()) {
+                    Player p = Bukkit.getPlayer(Teams.green.get(gi)); PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                    if (!pd.isEliminated) {
+                        green++;
+                    }
+                    gi++;
+                }
+                if (green == Teams.green.size()) {GreenStatus = "alive";} else {GreenStatus = "dead";}
+
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                int lemon = 0; int li = 0;
+                while (li != Teams.lemon.size()) {
+                    Player p = Bukkit.getPlayer(Teams.lemon.get(li)); PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                    if (!pd.isEliminated) {
+                        lemon++;
+                    }
+                    li++;
+                }
+                if (lemon == Teams.lemon.size()) {LemonStatus = "alive";} else {LemonStatus = "dead";}
+
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                int lime = 0; int l2i = 0;
+                while (l2i != Teams.lime.size()) {
+                    Player p = Bukkit.getPlayer(Teams.lime.get(l2i)); PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                    if (!pd.isEliminated) {
+                        lime++;
+                    }
+                    l2i++;
+                }
+                if (lime == Teams.lime.size()) {LimeStatus = "alive";} else {LimeStatus = "dead";}
+
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                int magenta = 0; int mi = 0;
+                while (mi != Teams.magenta.size()) {
+                    Player p = Bukkit.getPlayer(Teams.magenta.get(mi)); PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                    if (!pd.isEliminated) {
+                        magenta++;
+                    }
+                    mi++;
+                }
+                if (magenta == Teams.magenta.size()) {MagentaStatus = "alive";} else {MagentaStatus = "dead";}
+
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                int orange = 0; int oi = 0;
+                while (oi != Teams.orange.size()) {
+                    Player p = Bukkit.getPlayer(Teams.orange.get(oi)); PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                    if (!pd.isEliminated) {
+                        orange++;
+                    }
+                    oi++;
+                }
+                if (orange == Teams.orange.size()) {OrangeStatus = "alive";} else {OrangeStatus = "dead";}
+
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                int peach = 0; int pi = 0;
+                while (pi != Teams.peach.size()) {
+                    Player p = Bukkit.getPlayer(Teams.peach.get(pi)); PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                    if (!pd.isEliminated) {
+                        peach++;
+                    }
+                    pi++;
+                }
+                if (peach == Teams.peach.size()) {PeachStatus = "alive";} else {PeachStatus = "dead";}
+
+                //TODO i fucking hate this but idk how else to format this well
+                // Could be optimised especially
+                if (BlueStatus.equals("alive") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("blue");
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("alive") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("cyan");
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 20, 1);
+    }
+}
+
+class CustomPlayerNametags{
     public static void CustomPlayerNametags(Player player) {
 
         Location ploc = new Location(player.getWorld(), player.getX(), player.getY(), player.getZ(), player.getYaw(), player.getPitch());

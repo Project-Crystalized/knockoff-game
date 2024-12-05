@@ -22,6 +22,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -226,7 +227,9 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void OnPlayerDisconnect(PlayerConnectionCloseEvent event) {
-        UUID uuid = event.getPlayerUniqueId();
-        Player p = Bukkit.getPlayer(uuid);
+        if (knockoff.getInstance().GameManager != null && Bukkit.getOnlinePlayers().equals(0)) {
+            Bukkit.getLogger().log(Level.INFO, "All players have disconnected. The Game will now end.");
+            knockoff.getInstance().GameManager.ForceEndGame();
+        }
     }
 }

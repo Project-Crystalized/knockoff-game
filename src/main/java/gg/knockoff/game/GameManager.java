@@ -121,7 +121,9 @@ public class GameManager { //I honestly think this entire class could be optimis
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (knockoff.getInstance().GameManager == null) {cancel();}
-                    TabMenu.SendTabMenu(p);
+                    if (knockoff.getInstance().GameManager != null) {
+                        TabMenu.SendTabMenu(p);
+                    }
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 10 ,1);
@@ -137,7 +139,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     //Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection + ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength() + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
 
                     //This gives team info
-                    Bukkit.getServer().sendActionBar(Component.text("Team Stats: Blue: " + TeamStatus.BlueStatus + " Cyan: " + TeamStatus.CyanStatus));
+                    Bukkit.getServer().sendActionBar(Component.text("Team Stats: " + TeamStatus.TeamsList));
 
                 }
                 //Should stop this bukkitrunnable once the game ends

@@ -34,7 +34,6 @@ public class PlayerListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         if (knockoff.getInstance().GameManager == null) {
-            GameManager gameManager = knockoff.getInstance().GameManager;
             player.teleport(knockoff.getInstance().mapdata.get_que_spawn(player.getWorld()));
             player.getInventory().clear();
             player.setHealth(20);
@@ -121,10 +120,12 @@ public class PlayerListener implements Listener {
                         player.playSound(player, "crystalized:effect.knockoff_countdown",50, 1.5F);
                     } else if (pd.getDeathtimer() == -1) {
                         player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
-                        tpPlayersBack(player);
-                        player.setGameMode(GameMode.SURVIVAL);
-                        pd.setDeathtimer(0);
-                        pd.isPlayerDead = false;
+                        if (GameManager.GameState.equals("game")) {
+                            tpPlayersBack(player);
+                            player.setGameMode(GameMode.SURVIVAL);
+                            pd.setDeathtimer(0);
+                            pd.isPlayerDead = false;
+                        }
                         cancel();
                     }
 

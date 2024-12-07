@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import javax.print.attribute.standard.JobOriginatingUserName;
 import java.util.*;
 import java.util.logging.Level;
 
@@ -222,7 +221,6 @@ public class Teams {
             }else {
                 Bukkit.getLogger().log(Level.INFO, "No player(s) available for Yellow team");
             }
-            TeamStatus.Init();
         }
     }
 
@@ -567,14 +565,56 @@ class TeamStatus{
 
                 }
 
-
-                //TODO i fucking hate this but idk how else to format this well
+                //TODO i fucking hate this but idk how else to format this well but it works
                 // Could be optimised especially
                 if (BlueStatus.equals("alive") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
                         && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-
+                    GameManager.StartEndGame("blue");
+                    cancel();
                 } else if (BlueStatus.equals("dead") && CyanStatus.equals("alive") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
                         && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("cyan");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("alive") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("green");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("alive") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("lemon");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("alive") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("lime");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("alive") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("magenta");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("alive")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("orange");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("alive") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("peach");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("alive") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("purple");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("alive") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("red");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("alive") && YellowStatus.equals("dead")) {
+                    GameManager.StartEndGame("white");
+                    cancel();
+                } else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
+                        && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("alive")) {
+                    GameManager.StartEndGame("yellow");
+                    cancel();
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 20, 1);

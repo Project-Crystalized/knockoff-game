@@ -22,7 +22,6 @@ import com.sk89q.worldedit.world.block.BlockState;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
-import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -50,12 +49,14 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static int LastSectionPlaceLocationY = 0;
     public static int LastSectionPlaceLocationZ = 0;
     public ArrayList PlayerList = new ArrayList();
+    public static String GameState = "game"; //can be "game" (game running), "end" (game ending)
 
     //Can be "solo" or "team"
     public static String GameType = "Solo";
 
     public GameManager() {//Start of the game
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
+        GameState = "game";
         for (Entity e : Bukkit.getWorld("world").getEntities()) {
             if (e instanceof TextDisplay) {
                 e.remove();
@@ -113,6 +114,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             p.setSneaking(true);
             p.setSneaking(false);
         }
+        TeamStatus.Init();
 
         StartGameLoop();
 
@@ -126,7 +128,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 10 ,1);
+        }.runTaskTimer(knockoff.getInstance(), 1 ,5);
 
     }
 
@@ -151,7 +153,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
 
-                    if (!knockoff.getInstance().DevMode && !pd.isPlayerDead) {
+                    if (!knockoff.getInstance().DevMode && !pd.isPlayerDead && GameState.equals("game")) {
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
                     }
 
@@ -176,11 +178,61 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void StartEndGame(String WinningTeam) {
+        GameState = "end";
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (GameManager.GameType.equals("solo")) {
-                player.showTitle(Title.title(text("solos win"), text(""), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                switch (WinningTeam) {
+                    case "blue" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.blue.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "cyan" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.cyan.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "green" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.green.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "lemon" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.lemon.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "lime" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.lime.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "magenta" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.magenta.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "orange" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.orange.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "peach" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.peach.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "purple" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.purple.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "red" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.red.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "white" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.white.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                    case "yellow" -> {
+                        Player LastPlayer = Bukkit.getPlayer(Teams.yellow.getFirst());
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                    }
+                }
             } else {
-                player.showTitle(Title.title(text("teamed win"), text(""), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                player.showTitle(Title.title(text("teamed win"), text("placeholder text"), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
             }
             player.playSound(player, "minecraft:ui.toast.challenge_complete", 50, 1); //TODO placeholder sound
         }
@@ -190,20 +242,19 @@ public class GameManager { //I honestly think this entire class could be optimis
             @Override
             public void run() {
                 switch (timer) {
-                    case 5, 6, 7:
+                    case 8, 9, 10:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.playSound(player, "minecraft:block.note_block_hat", 50, 1); //TODO placeholder sound
+                            player.playSound(player, "minecraft:block.note_block.hat", SoundCategory.MASTER,50, 1); //TODO placeholder sound
                         }
                         break;
-                    case 8:
+                    case 11:
                         ForceEndGame();
                         cancel();
                         break;
                 }
-
                 timer++;
             }
-        }.runTaskTimer(knockoff.getInstance(), 20 ,1);
+        }.runTaskTimer(knockoff.getInstance(), 20,20);
     }
 
     public static void ForceEndGame() {

@@ -255,6 +255,34 @@ public class Teams {
         }
     }
 
+    public static void DisconnectPlayer(String Player) {
+        if (blue.contains(Player)) {
+            blue.remove(blue.indexOf(Player));
+        } else if (cyan.contains(Player)) {
+            cyan.remove(cyan.indexOf(Player));
+        } else if (green.contains(Player)) {
+            green.remove(green.indexOf(Player));
+        } else if (lemon.contains(Player)) {
+            lemon.remove(lemon.indexOf(Player));
+        } else if (lime.contains(Player)) {
+            lime.remove(lime.indexOf(Player));
+        } else if (magenta.contains(Player)) {
+            magenta.remove(magenta.indexOf(Player));
+        } else if (orange.contains(Player)) {
+            orange.remove(orange.indexOf(Player));
+        } else if (peach.contains(Player)) {
+            peach.remove(peach.indexOf(Player));
+        } else if (purple.contains(Player)) {
+            purple.remove(purple.indexOf(Player));
+        } else if (red.contains(Player)) {
+            red.remove(red.indexOf(Player));
+        } else if (white.contains(Player)) {
+            white.remove(white.indexOf(Player));
+        } else if (yellow.contains(Player)) {
+            yellow.remove(yellow.indexOf(Player));
+        }
+    }
+
     public static void SetPlayerDisplayNames(Player player) {
         if (blue.contains(player.getName())) {
             player.displayName(Component.text("\uE120 ").append(Component.text(player.getName()).color(TEAM_BLUE)));

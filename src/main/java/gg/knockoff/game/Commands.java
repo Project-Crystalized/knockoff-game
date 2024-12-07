@@ -36,6 +36,7 @@ public class Commands implements CommandExecutor {
             } else {
                 if (args[0].equals("start")) {
                     if (knockoff.getInstance().GameManager == null) {
+                        knockoff.getInstance().DevMode = false;
                         knockoff.getInstance().is_force_starting = true;
                     } else {
                     player.sendMessage(Component.text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(NamedTextColor.RED));

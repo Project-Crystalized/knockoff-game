@@ -343,7 +343,13 @@ class TeamStatus{
                     }
                     bi++;
                 }
-                if (blue == Teams.blue.size()) {BlueStatus = "alive";} else if (bi == 0 && Teams.blue.size() == 0) {BlueStatus = "dead";} else {BlueStatus = "dead";}
+                if (bi == 0 && Teams.blue.size() == 0) {
+                    BlueStatus = "dead";
+                } else if (blue == Teams.blue.size()) {
+                    BlueStatus = "alive";
+                } else {
+                    BlueStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int cyan = 0; int ci = 0;
@@ -355,7 +361,13 @@ class TeamStatus{
                     }
                     ci++;
                 }
-                if (cyan == Teams.cyan.size()) {CyanStatus = "alive";} else if (ci == 0 && Teams.cyan.size() == 0) {CyanStatus = "dead";} else {CyanStatus = "dead";}
+                if (ci == 0 && Teams.cyan.size() == 0) {
+                    CyanStatus = "dead";
+                } else if (cyan == Teams.cyan.size()) {
+                    CyanStatus = "alive";
+                } else {
+                    CyanStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int green = 0; int gi = 0;
@@ -367,7 +379,13 @@ class TeamStatus{
                     }
                     gi++;
                 }
-                if (green == Teams.green.size()) {GreenStatus = "alive";} else if (gi == 0 && Teams.green.size() == 0) {GreenStatus = "dead";}  else {GreenStatus = "dead";}
+                if (gi == 0 && Teams.green.size() == 0) {
+                    GreenStatus = "dead";
+                } else if (green == Teams.green.size()) {
+                    GreenStatus = "alive";
+                }  else {
+                    GreenStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int lemon = 0; int li = 0;
@@ -379,7 +397,13 @@ class TeamStatus{
                     }
                     li++;
                 }
-                if (lemon == Teams.lemon.size()) {LemonStatus = "alive";} else if (li == 0 && Teams.lemon.size() == 0) {LemonStatus = "dead";} else {LemonStatus = "dead";}
+                if (li == 0 && Teams.lemon.size() == 0) {
+                    LemonStatus = "dead";
+                } else if (lemon == Teams.lemon.size()) {
+                    LemonStatus = "alive";
+                } else {
+                    LemonStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int lime = 0; int l2i = 0;
@@ -391,7 +415,13 @@ class TeamStatus{
                     }
                     l2i++;
                 }
-                if (lime == Teams.lime.size()) {LimeStatus = "alive";} else if (l2i == 0 && Teams.lime.size() == 0) {LimeStatus = "dead";} else {LimeStatus = "dead";}
+                if (lime == Teams.lime.size()) {
+                    LimeStatus = "dead";
+                } else if (l2i == 0 && Teams.lime.size() == 0) {
+                    LimeStatus = "alive";
+                } else {
+                    LimeStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int magenta = 0; int mi = 0;
@@ -403,7 +433,13 @@ class TeamStatus{
                     }
                     mi++;
                 }
-                if (magenta == Teams.magenta.size()) {MagentaStatus = "alive";} else if (mi == 0 && Teams.magenta.size() == 0) {MagentaStatus = "dead";} else {MagentaStatus = "dead";}
+                if (mi == 0 && Teams.magenta.size() == 0) {
+                    MagentaStatus = "dead";
+                } else if (magenta == Teams.magenta.size()) {
+                    MagentaStatus = "alive";
+                } else {
+                    MagentaStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int orange = 0; int oi = 0;
@@ -415,7 +451,13 @@ class TeamStatus{
                     }
                     oi++;
                 }
-                if (orange == Teams.orange.size()) {OrangeStatus = "alive";} else if (oi == 0 && Teams.orange.size() == 0) {OrangeStatus = "dead";} else {OrangeStatus = "dead";}
+                if (oi == 0 && Teams.orange.size() == 0) {
+                    OrangeStatus = "dead";
+                } else if (orange == Teams.orange.size()) {
+                    OrangeStatus = "alive";
+                } else {
+                    OrangeStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int peach = 0; int pi = 0;
@@ -427,7 +469,13 @@ class TeamStatus{
                     }
                     pi++;
                 }
-                if (peach == Teams.peach.size()) {PeachStatus = "alive";} else if (pi == 0 && Teams.peach.size() == 0) {PeachStatus = "dead";} else {PeachStatus = "dead";}
+                if (pi == 0 && Teams.peach.size() == 0) {
+                    PeachStatus = "dead";
+                } else if (peach == Teams.peach.size()) {
+                    PeachStatus = "alive";
+                } else {
+                    PeachStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int purple = 0; int p1i = 0;
@@ -439,7 +487,13 @@ class TeamStatus{
                     }
                     p1i++;
                 }
-                if (purple == Teams.purple.size()) {PurpleStatus = "alive";} else if (p1i == 0 && Teams.purple.size() == 0) {PurpleStatus = "dead";} else {PurpleStatus = "dead";}
+                if (purple == Teams.purple.size()) {
+                    PurpleStatus = "dead";
+                } else if (p1i == 0 && Teams.purple.size() == 0) {
+                    PurpleStatus = "alive";
+                } else {
+                    PurpleStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int red = 0; int ri = 0;
@@ -451,7 +505,13 @@ class TeamStatus{
                     }
                     ri++;
                 }
-                if (red == Teams.red.size()) {RedStatus = "alive";} else if (ri == 0 && Teams.red.size() == 0) {RedStatus = "dead";} else {RedStatus = "dead";}
+                if (ri == 0 && Teams.red.size() == 0) {
+                    RedStatus = "dead";
+                } else if (red == Teams.red.size()) {
+                    RedStatus = "alive";
+                } else {
+                    RedStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int white = 0; int wi = 0;
@@ -463,7 +523,13 @@ class TeamStatus{
                     }
                     wi++;
                 }
-                if (white == Teams.white.size()) {WhiteStatus = "alive";} else if (wi == 0 && Teams.white.size() == 0) {WhiteStatus = "dead";} else {WhiteStatus = "dead";}
+                if (wi == 0 && Teams.white.size() == 0) {
+                    WhiteStatus = "dead";
+                } else if (white == Teams.white.size()) {
+                    WhiteStatus = "alive";
+                } else {
+                    WhiteStatus = "dead";
+                }
 
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 int yellow = 0; int yi = 0;
@@ -475,7 +541,13 @@ class TeamStatus{
                     }
                     yi++;
                 }
-                if (yellow == Teams.yellow.size()) {YellowStatus = "alive";} else if (yi == 0 && Teams.yellow.size() == 0) {YellowStatus = "dead";} else {YellowStatus = "dead";}
+                if (yi == 0 && Teams.yellow.size() == 0) {
+                    YellowStatus = "dead";
+                } else if (yellow == Teams.yellow.size()) {
+                    YellowStatus = "alive";
+                } else {
+                    YellowStatus = "dead";
+                }
 
                 TeamsList.clear();
                 TeamsList.add(BlueStatus);
@@ -500,10 +572,9 @@ class TeamStatus{
                 // Could be optimised especially
                 if (BlueStatus.equals("alive") && CyanStatus.equals("dead") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
                         && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-                    GameManager.StartEndGame("blue");
+
                 } else if (BlueStatus.equals("dead") && CyanStatus.equals("alive") && GreenStatus.equals("dead") && LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead") && OrangeStatus.equals("dead")
                         && PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead") && WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-                    GameManager.StartEndGame("cyan");
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 20, 1);

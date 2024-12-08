@@ -138,10 +138,10 @@ public class GameManager { //I honestly think this entire class could be optimis
             public void run() {
                 if (knockoff.getInstance().DevMode) {
                     //This line provides debug info on the current map section
-                    //Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection + ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength() + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
+                    Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection + ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength() + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
 
                     //This gives team info
-                    Bukkit.getServer().sendActionBar(Component.text("Team Stats: " + TeamStatus.TeamsList));
+                    //Bukkit.getServer().sendActionBar(Component.text("Team Stats: " + TeamStatus.TeamsList));
 
                 }
                 //Should stop this bukkitrunnable once the game ends
@@ -636,11 +636,18 @@ public class GameManager { //I honestly think this entire class could be optimis
 
 class MapManager {
     //TODO these 2 methods are for map scrolling
+    static int LastXLength = 0;
+    static int LastYLength = 0;
+    static int LastZLength = 0;
 
     public static void CloneNewMapSection() {
         GameManager.LastSectionPlaceLocationX = GameManager.SectionPlaceLocationX;
         GameManager.LastSectionPlaceLocationY = GameManager.SectionPlaceLocationY;
         GameManager.LastSectionPlaceLocationZ = GameManager.SectionPlaceLocationZ;
+        LastXLength = knockoff.getInstance().mapdata.getCurrentXLength();
+        LastYLength = knockoff.getInstance().mapdata.getCurrentYLength();
+        LastZLength = knockoff.getInstance().mapdata.getCurrentZLength();
+        Bukkit.getServer().sendMessage(Component.translatable("crystalized.game.knockoff.chat.movetosafety").color(NamedTextColor.GOLD));
         CopyRandomMapSection();
 
         DecayMapSection();
@@ -648,8 +655,13 @@ class MapManager {
     public static void DecayMapSection() {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.LastSectionPlaceLocationX + "," + GameManager.LastSectionPlaceLocationY + "," + GameManager.LastSectionPlaceLocationZ);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace !air,white_glazed_terracotta,gray_glazed_terracotta,light_gray_glazed_terracotta amethyst_block");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + LastXLength + "," + LastYLength + "," + LastZLength);
+
+        //Replaces glass with pink stained glass
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace glass,tinted_glass,white_stained_glass,gray_stained_glass,light_gray_stained_glass,black_stained_glass,brown_stained_glass,red_stained_glass,orange_stained_glass,yellow_stained_glass,lime_stained_glass,green_stained_glass pink_stained_glass");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace cyan_stained_glass,blue_stained_glass,light_blue_stained_glass,purple_stained_glass pink_stained_glass");
+        //Replaces all blocks but the ones listed there with amethyst block
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace !air,white_glazed_terracotta,gray_glazed_terracotta,light_gray_glazed_terracotta,pink_stained_glass,pink_stained_glass_pane amethyst_block");
     }
 
     public static void CopyRandomMapSection() {

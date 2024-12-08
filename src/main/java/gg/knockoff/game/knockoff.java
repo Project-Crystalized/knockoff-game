@@ -34,6 +34,7 @@ public final class knockoff extends JavaPlugin {
         this.getCommand("knockoff").setExecutor(dc);
         this.getCommand("knockoff_give").setExecutor(dc);
         this.getCommand("knockoff_dropitem").setExecutor(dc);
+        this.getCommand("knockoff_debug").setExecutor(dc);
 
         new BukkitRunnable() {
 

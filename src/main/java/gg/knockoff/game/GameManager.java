@@ -628,19 +628,29 @@ public class GameManager { //I honestly think this entire class could be optimis
             p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
         }
     }
+
+    public static void CloneNewMapSection() {
+        MapManager.CloneNewMapSection();
+    }
 }
 
 class MapManager {
     //TODO these 2 methods are for map scrolling
-    /*
-    private static void CloneNewMapSection() {
-        LastSectionPlaceLocationX = SectionPlaceLocationX;
-        LastSectionPlaceLocationY = SectionPlaceLocationY;
-        LastSectionPlaceLocationZ = SectionPlaceLocationZ;
-    }
-    private static void DecayMapSection() {
 
-    }*/
+    public static void CloneNewMapSection() {
+        GameManager.LastSectionPlaceLocationX = GameManager.SectionPlaceLocationX;
+        GameManager.LastSectionPlaceLocationY = GameManager.SectionPlaceLocationY;
+        GameManager.LastSectionPlaceLocationZ = GameManager.SectionPlaceLocationZ;
+        CopyRandomMapSection();
+
+        DecayMapSection();
+    }
+    public static void DecayMapSection() {
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.LastSectionPlaceLocationX + "," + GameManager.LastSectionPlaceLocationY + "," + GameManager.LastSectionPlaceLocationZ);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace !air,white_glazed_terracotta,gray_glazed_terracotta,light_gray_glazed_terracotta amethyst_block");
+    }
 
     public static void CopyRandomMapSection() {
         knockoff.getInstance().mapdata.getrandommapsection();

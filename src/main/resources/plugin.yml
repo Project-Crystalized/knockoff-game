@@ -15,11 +15,17 @@ commands:
     description: "debug"
     usage: "/knockoff_give"
     aliases: [ ]
-    permission: knockoff.command.game
+    permission: knockoff.command.debug
     permission-message: "[!] You don't have permission to run the command"
   knockoff_dropitem:
     description: "debug"
     usage: "/knockoff_dropitem"
     aliases: [ ]
-    permission: knockoff.command.game
+    permission: knockoff.command.debug
+    permission-message: "[!] You don't have permission to run the command"
+  knockoff_debug:
+    description: "debug"
+    usage: "/knockoff_debug"
+    aliases: [ ]
+    permission: knockoff.command.debug
     permission-message: "[!] You don't have permission to run the command"

@@ -23,6 +23,8 @@ public class Commands implements CommandExecutor {
                 return run_give(args, commandSender);
             case "knockoff_dropitem":
                 return run_dropitem(args, commandSender);
+            case "knockoff_debug":
+                return run_debug(args, commandSender);
             default:
                 return false;
         }
@@ -92,6 +94,16 @@ public class Commands implements CommandExecutor {
             }
         } else {
             player.sendMessage(Component.text("[!] Incorrect usage of command /knockoff_dropitem. No arguments. Args: /knockoff_dropitem [item]"));
+        }
+        return true;
+    }
+
+    private boolean run_debug(String[] args, CommandSender commandSender) {
+        if (args.length > 0) {
+            if (args[0].equals("move")) {
+                knockoff.getInstance().GameManager.CloneNewMapSection();
+            }
+        } else {
         }
         return true;
     }

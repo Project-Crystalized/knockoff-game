@@ -8,6 +8,9 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -161,63 +164,90 @@ public class PlayerListener implements Listener {
                 .append(event.message()));
     }
 
-    private static void tpPlayersBack(Player p) { //TODO temporary for now
+    private static void tpPlayersBack(Player p) {
 
-        int SectionPlaceLocationX = GameManager.SectionPlaceLocationX;
-        int SectionPlaceLocationZ = GameManager.SectionPlaceLocationZ;
-
-        if (Teams.GetPlayerTeam(p).equals("blue")) {
-            Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
-            p.teleport(blueloc);
+        Location blockloc = new Location(Bukkit.getWorld("world"),
+                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
+                knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 5, //TODO temp
+                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5
+        );
+        Location ploc = new Location(Bukkit.getWorld("world"), blockloc.getX(), blockloc.getY() + 2, blockloc.getZ());
+        switch (Teams.GetPlayerTeam(p)) {
+            case "blue" -> {
+                blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.EAST);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "cyan" -> {
+                blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.NORTH);
+                blockloc.getBlock().setBlockData(dir);
+                }
+            case "green" -> {
+                blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.SOUTH);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "lemon" -> {
+                blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.WEST);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "lime" -> {
+                blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.EAST);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "magenta" -> {
+                blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.NORTH);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "orange" -> {
+                blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.SOUTH);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "peach" -> {
+                blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.WEST);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "purple" -> {
+                blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.EAST);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "red" -> {
+                blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.NORTH);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "white" -> {
+                blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.SOUTH);
+                blockloc.getBlock().setBlockData(dir);
+            }
+            case "yellow" -> {
+                blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                dir.setFacing(BlockFace.WEST);
+                blockloc.getBlock().setBlockData(dir);
+            }
         }
-        else if (Teams.GetPlayerTeam(p).equals("cyan")) {
-            Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
-            p.teleport(cyanloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("green")) {
-            Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
-            p.teleport(greenloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("lemon")) {
-            Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
-            p.teleport(greenloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("lime")) { //Yes im aware this has blueloc as its variable, I copy pasted the first 4 lol
-            Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
-            p.teleport(blueloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("magenta")) {
-            Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
-            p.teleport(cyanloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("orange")) {
-            Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
-            p.teleport(greenloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("peach")) {
-            Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
-            p.teleport(greenloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("purple")) {
-            Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
-            p.teleport(blueloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("red")) {
-            Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
-            p.teleport(cyanloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("white")) {
-            Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
-            p.teleport(greenloc);
-        }
-        else if (Teams.GetPlayerTeam(p).equals("yellow")) {
-            Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
-            p.teleport(greenloc);
-        }
-        else {
-            Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-            p.teleport(loc);
-        }
+        blockloc.getBlock().getState().update();
+        p.teleport(ploc);
         p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
     }
 

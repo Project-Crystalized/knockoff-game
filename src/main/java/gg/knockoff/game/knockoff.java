@@ -111,4 +111,9 @@ public final class knockoff extends JavaPlugin {
     public static knockoff getInstance() {
         return getPlugin(knockoff.class);
     }
+
+    //I hate how this isn't available normally in Java, I copy-pasted this off a website lol
+    public int getRandomNumber(int min, int max) {
+        return (int) ((Math.random() * (max - min)) + min);
+    }
 }

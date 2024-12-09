@@ -45,9 +45,9 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;
     public static int SectionPlaceLocationZ = 1000;
-    public static int LastSectionPlaceLocationX = 0;
+    public static int LastSectionPlaceLocationX = 1000;
     public static int LastSectionPlaceLocationY = 0;
-    public static int LastSectionPlaceLocationZ = 0;
+    public static int LastSectionPlaceLocationZ = 1000;
     public ArrayList PlayerList = new ArrayList();
     public static String GameState = "game"; //can be "game" (game running), "end" (game ending)
 
@@ -261,6 +261,9 @@ public class GameManager { //I honestly think this entire class could be optimis
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + SectionPlaceLocationX + "," + SectionPlaceLocationY + "," + SectionPlaceLocationZ);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + LastSectionPlaceLocationX + "," + LastSectionPlaceLocationY + "," + LastSectionPlaceLocationZ);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + (LastSectionPlaceLocationX + MapManager.LastXLength) + "," + (LastSectionPlaceLocationY+ MapManager.LastYLength) + "," + (LastSectionPlaceLocationZ + MapManager.LastZLength));
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.kick(Component.text("Game over, thanks for playing!").color(NamedTextColor.RED));
@@ -639,20 +642,40 @@ class MapManager {
     static int LastXLength = 0;
     static int LastYLength = 0;
     static int LastZLength = 0;
+    static String MoveDir = "";
 
     public static void CloneNewMapSection() {
         GameManager.LastSectionPlaceLocationX = GameManager.SectionPlaceLocationX;
         GameManager.LastSectionPlaceLocationY = GameManager.SectionPlaceLocationY;
         GameManager.LastSectionPlaceLocationZ = GameManager.SectionPlaceLocationZ;
-        LastXLength = knockoff.getInstance().mapdata.getCurrentXLength();
-        LastYLength = knockoff.getInstance().mapdata.getCurrentYLength();
-        LastZLength = knockoff.getInstance().mapdata.getCurrentZLength();
+        LastXLength = knockoff.getInstance().mapdata.CurrentXLength;
+        LastYLength = knockoff.getInstance().mapdata.CurrentYLength;
+        LastZLength = knockoff.getInstance().mapdata.CurrentZLength;
         Bukkit.getServer().sendMessage(Component.translatable("crystalized.game.knockoff.chat.movetosafety").color(NamedTextColor.GOLD));
         CopyRandomMapSection();
 
+        MoveDir = "EAST";
+        GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX + LastXLength;
+        GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
+        /*switch (knockoff.getInstance().getRandomNumber(1, 3)) {
+            case 1:
+                MoveDir = "EAST";
+
+                break;
+            case 2:
+                MoveDir = "SOUTH";
+                break;
+            case 3:
+                MoveDir = "WEST";
+                break;
+        }
+         */
+
+        PlaceCurrentlySelectedSection();
         DecayMapSection();
     }
     public static void DecayMapSection() {
+        /*
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.LastSectionPlaceLocationX + "," + GameManager.LastSectionPlaceLocationY + "," + GameManager.LastSectionPlaceLocationZ);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + LastXLength + "," + LastYLength + "," + LastZLength);
@@ -662,6 +685,68 @@ class MapManager {
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace cyan_stained_glass,blue_stained_glass,light_blue_stained_glass,purple_stained_glass pink_stained_glass");
         //Replaces all blocks but the ones listed there with amethyst block
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace !air,white_glazed_terracotta,gray_glazed_terracotta,light_gray_glazed_terracotta,pink_stained_glass,pink_stained_glass_pane amethyst_block");
+         */
+
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
+        switch (MoveDir) {
+            case "EAST" -> new BukkitRunnable() {
+                int XPos = 0;
+                @Override
+                public void run() {
+                    if (knockoff.getInstance().GameManager == null) {cancel();}
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " +
+                            (GameManager.LastSectionPlaceLocationX + XPos) + "," +
+                            (GameManager.LastSectionPlaceLocationY) + "," +
+                            (GameManager.LastSectionPlaceLocationZ));
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " +
+                                    (GameManager.LastSectionPlaceLocationX + XPos) + "," +
+                                    (GameManager.LastSectionPlaceLocationY + LastYLength) + "," +
+                                    (GameManager.LastSectionPlaceLocationZ + LastZLength));
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace glass,tinted_glass,white_stained_glass,gray_stained_glass,light_gray_stained_glass,black_stained_glass,brown_stained_glass,red_stained_glass,orange_stained_glass,yellow_stained_glass,lime_stained_glass,green_stained_glass pink_stained_glass");
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace cyan_stained_glass,blue_stained_glass,light_blue_stained_glass,purple_stained_glass pink_stained_glass");
+                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace !air,white_glazed_terracotta,gray_glazed_terracotta,light_gray_glazed_terracotta,pink_stained_glass,pink_stained_glass_pane amethyst_block");
+                    XPos++;
+                    if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength)) {
+                        //TODO, Clear area
+                        cancel();
+                    }
+                }
+            }.runTaskTimer(knockoff.getInstance(), 0, 20);
+            case "SOUTH" -> new BukkitRunnable() {
+                @Override
+                public void run() {
+                    //SOUTH
+                    if (knockoff.getInstance().GameManager == null) {cancel();}
+                }
+            }.runTaskTimer(knockoff.getInstance(), 0, 20);
+            case "WEST" -> new BukkitRunnable() {
+                @Override
+                public void run() {
+                    //WEST
+                    if (knockoff.getInstance().GameManager == null) {cancel();}
+                }
+            }.runTaskTimer(knockoff.getInstance(), 0, 20);
+        }
+
+        new BukkitRunnable() {
+            int timer = 10;
+            @Override
+            public void run() {
+                switch (timer) {
+                    case 0:
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.LastSectionPlaceLocationX + "," + GameManager.LastSectionPlaceLocationY + "," + GameManager.LastSectionPlaceLocationZ);
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.CurrentXLength + "," + knockoff.getInstance().mapdata.CurrentYLength + "," + knockoff.getInstance().mapdata.CurrentZLength);
+                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
+                        cancel();
+                        break;
+                    default:
+                        Bukkit.getServer().sendMessage(Component.text("[DEBUG] Last Map section will disappear in " + timer + "seconds."));
+                        timer--;
+                        break;
+                }
+
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0,20);
     }
 
     public static void CopyRandomMapSection() {

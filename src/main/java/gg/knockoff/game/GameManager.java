@@ -7,9 +7,13 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.google.gson.JsonArray;
 import com.sk89q.worldedit.EditSession;
+import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.function.mask.BlockMask;
+import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
@@ -17,11 +21,16 @@ import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
+import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
+import com.sk89q.worldedit.world.block.BlockType;
+import com.sk89q.worldedit.world.block.BlockTypes;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.entity.*;
@@ -33,7 +42,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -639,9 +650,9 @@ public class GameManager { //I honestly think this entire class could be optimis
 
 class MapManager {
     //TODO these 2 methods are for map scrolling
-    static int LastXLength = 0;
-    static int LastYLength = 0;
-    static int LastZLength = 0;
+    public static int LastXLength = 0;
+    public static int LastYLength = 0;
+    public static int LastZLength = 0;
     static String MoveDir = "";
 
     public static void CloneNewMapSection() {
@@ -651,7 +662,9 @@ class MapManager {
         LastXLength = knockoff.getInstance().mapdata.CurrentXLength;
         LastYLength = knockoff.getInstance().mapdata.CurrentYLength;
         LastZLength = knockoff.getInstance().mapdata.CurrentZLength;
-        Bukkit.getServer().sendMessage(Component.translatable("crystalized.game.knockoff.chat.movetosafety").color(NamedTextColor.GOLD));
+        Bukkit.getServer().sendMessage(Component.translatable("crystalized.game.knockoff.chat.movetosafety1").color(NamedTextColor.GOLD)
+                .append(Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(NamedTextColor.RED).decoration(TextDecoration.BOLD, true))
+        );
         CopyRandomMapSection();
 
         MoveDir = "EAST";
@@ -672,22 +685,144 @@ class MapManager {
          */
 
         PlaceCurrentlySelectedSection();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.showTitle(Title.title(text(""), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(NamedTextColor.RED), Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(4), Duration.ofMillis(500))));
+            //
+        }
+
+        //TODO Temporary sound effect. For Map Movement
+        new BukkitRunnable() {
+            int timer = 0;
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    switch (timer) {
+                        case 1, 3:
+                            player.playSound(player, "minecraft:block.note_block.chime", 50, 1);
+                            break;
+                        case 2:
+                            player.playSound(player, "minecraft:block.note_block.chime", 50, 1);
+                            player.playSound(player, "minecraft:block.conduit.ambient", 50, 1);
+                            break;
+                        case 4:
+                            cancel();
+                            break;
+                    }
+                }
+                timer++;
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 10);
         DecayMapSection();
     }
     public static void DecayMapSection() {
+        //WorldEdit/FAWE API documentation is ass, gl understanding this
+
+
+        //Turning map into Crystals
+        new BukkitRunnable() {
+            int XPos = 0;
+
+            @Override
+            public void run() {
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                switch (MoveDir) {
+                    case "EAST" -> {
+                        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+                        if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
+                            //TODO, Clear area
+                            cancel();
+                        } else {
+                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+                                Region region = new CuboidRegion(
+                                        BlockVector3.at(
+                                                GameManager.LastSectionPlaceLocationX + XPos,
+                                                GameManager.LastSectionPlaceLocationY,
+                                                GameManager.LastSectionPlaceLocationZ
+                                        ),
+                                        BlockVector3.at(
+                                                GameManager.LastSectionPlaceLocationX + XPos,
+                                                GameManager.LastSectionPlaceLocationY + LastYLength,
+                                                GameManager.LastSectionPlaceLocationZ + LastZLength
+                                        )
+                                );
+                                //Mask mask = new BlockMask(editSession.getExtent(), new BaseBlock(BlockTypes.AIR));
+                                ExistingBlockMask mask = new ExistingBlockMask(editSession.getExtent());
+                                RandomPattern pat = new RandomPattern();
+                                BlockState a = BukkitAdapter.adapt(Material.AMETHYST_BLOCK.createBlockData());
+                                pat.add(a, 1);
+                                editSession.replaceBlocks(region, mask, pat);
+                                editSession.flushQueue();
+                            } catch (Exception e) {
+                                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                                e.printStackTrace();
+                            }
+                            XPos++;
+                        }
+                    }
+                    case "SOUTH" -> {
+
+                    }
+                    case "WEST" -> {
+
+                    }
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 10);
+
+        //Filling crystals with air, this has a delay compared to the previous BukkitRunnable
+        //This is literally copy pasted code but with the material changed to AIR
+        new BukkitRunnable() {
+            int XPos = 0;
+
+            @Override
+            public void run() {
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                switch (MoveDir) {
+                    case "EAST" -> {
+                        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+                        if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
+                            //TODO, Clear area
+                            cancel();
+                        } else {
+                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+                                Region region = new CuboidRegion(
+                                        BlockVector3.at(
+                                                GameManager.LastSectionPlaceLocationX + XPos,
+                                                GameManager.LastSectionPlaceLocationY,
+                                                GameManager.LastSectionPlaceLocationZ
+                                        ),
+                                        BlockVector3.at(
+                                                GameManager.LastSectionPlaceLocationX + XPos,
+                                                GameManager.LastSectionPlaceLocationY + LastYLength,
+                                                GameManager.LastSectionPlaceLocationZ + LastZLength
+                                        )
+                                );
+                                //Mask mask = new BlockMask(editSession.getExtent(), new BaseBlock(BlockTypes.AIR));
+                                ExistingBlockMask mask = new ExistingBlockMask(editSession.getExtent());
+                                RandomPattern pat = new RandomPattern();
+                                BlockState a = BukkitAdapter.adapt(Material.AIR.createBlockData());
+                                pat.add(a, 1);
+                                editSession.replaceBlocks(region, mask, pat);
+                                editSession.flushQueue();
+                            } catch (Exception e) {
+                                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                                e.printStackTrace();
+                            }
+                            XPos++;
+                        }
+                    }
+                    case "SOUTH" -> {
+
+                    }
+                    case "WEST" -> {
+
+                    }
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 30, 10);
+
+
         /*
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.LastSectionPlaceLocationX + "," + GameManager.LastSectionPlaceLocationY + "," + GameManager.LastSectionPlaceLocationZ);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + LastXLength + "," + LastYLength + "," + LastZLength);
-
-        //Replaces glass with pink stained glass
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace glass,tinted_glass,white_stained_glass,gray_stained_glass,light_gray_stained_glass,black_stained_glass,brown_stained_glass,red_stained_glass,orange_stained_glass,yellow_stained_glass,lime_stained_glass,green_stained_glass pink_stained_glass");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace cyan_stained_glass,blue_stained_glass,light_blue_stained_glass,purple_stained_glass pink_stained_glass");
-        //Replaces all blocks but the ones listed there with amethyst block
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace !air,white_glazed_terracotta,gray_glazed_terracotta,light_gray_glazed_terracotta,pink_stained_glass,pink_stained_glass_pane amethyst_block");
-         */
-
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
         switch (MoveDir) {
             case "EAST" -> new BukkitRunnable() {
                 int XPos = 0;
@@ -711,42 +846,9 @@ class MapManager {
                         cancel();
                     }
                 }
-            }.runTaskTimer(knockoff.getInstance(), 0, 20);
-            case "SOUTH" -> new BukkitRunnable() {
-                @Override
-                public void run() {
-                    //SOUTH
-                    if (knockoff.getInstance().GameManager == null) {cancel();}
-                }
-            }.runTaskTimer(knockoff.getInstance(), 0, 20);
-            case "WEST" -> new BukkitRunnable() {
-                @Override
-                public void run() {
-                    //WEST
-                    if (knockoff.getInstance().GameManager == null) {cancel();}
-                }
-            }.runTaskTimer(knockoff.getInstance(), 0, 20);
+            }.runTaskTimer(knockoff.getInstance(), 0, 10);
         }
-
-        new BukkitRunnable() {
-            int timer = 10;
-            @Override
-            public void run() {
-                switch (timer) {
-                    case 0:
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.LastSectionPlaceLocationX + "," + GameManager.LastSectionPlaceLocationY + "," + GameManager.LastSectionPlaceLocationZ);
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.CurrentXLength + "," + knockoff.getInstance().mapdata.CurrentYLength + "," + knockoff.getInstance().mapdata.CurrentZLength);
-                        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
-                        cancel();
-                        break;
-                    default:
-                        Bukkit.getServer().sendMessage(Component.text("[DEBUG] Last Map section will disappear in " + timer + "seconds."));
-                        timer--;
-                        break;
-                }
-
-            }
-        }.runTaskTimer(knockoff.getInstance(), 0,20);
+        */
     }
 
     public static void CopyRandomMapSection() {

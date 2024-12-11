@@ -296,7 +296,3 @@ public class ScoreboardManager {
         }.runTaskTimer(knockoff.getInstance(), 20 ,1);
     }
 }
-
-class Queue_Scoreboard {
-    //TODO obvious what to do here
-}

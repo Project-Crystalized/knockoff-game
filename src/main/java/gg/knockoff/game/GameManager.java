@@ -115,6 +115,12 @@ public class GameManager { //I honestly think this entire class could be optimis
         SetupFirstSpawns();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+            WorldBorder PlayerBorder = Bukkit.getServer().createWorldBorder();
+            p.setWorldBorder(PlayerBorder);
+            //PlayerBorder.setCenter(p.getLocation());
+            PlayerBorder.setCenter(p.getX() + 0.5, p.getZ() + 0.5);
+            PlayerBorder.setSize(3);
+
             GiveTeamItems(p);
             p.setGameMode(GameMode.SURVIVAL);
             ScoreboardManager.SetPlayerScoreboard(p);
@@ -127,7 +133,50 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
         TeamStatus.Init();
 
-        StartGameLoop();
+        new BukkitRunnable() {
+            int timer = 0;
+            @Override
+            public void run() {
+                switch (timer) {
+                    case 7:
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            player.showTitle(Title.title(text("Go!").color(NamedTextColor.GOLD), text(" "),
+                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
+                            player.playSound(player, "crystalized:effect.countdown_end", 50, 1);
+                            player.getWorldBorder().reset();
+                        }
+                        StartGameLoop();
+                        cancel();
+                        break;
+                    case 6:
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            player.showTitle(Title.title(text("Starting in:"), text("3 2 ").color(NamedTextColor.GRAY)
+                                            .append(Component.text("1").color(NamedTextColor.WHITE))
+                                    ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
+                            player.playSound(player, "crystalized:effect.countdown", 50, 1);
+                        }
+                        break;
+                    case 5:
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            player.showTitle(Title.title(text("Starting in:"), text("3").color(NamedTextColor.GRAY)
+                                            .append(Component.text(" 2").color(NamedTextColor.WHITE))
+                                            .append(Component.text(" 1").color(NamedTextColor.GRAY))
+                                    ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
+                            player.playSound(player, "crystalized:effect.countdown", 50, 1);
+                        }
+                        break;
+                    case 4:
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            player.showTitle(Title.title(text("Starting in:"), text("3").color(NamedTextColor.WHITE)
+                                            .append(Component.text(" 2 1").color(NamedTextColor.GRAY))
+                                    ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
+                            player.playSound(player, "crystalized:effect.countdown", 50, 1);
+                        }
+                        break;
+                }
+                timer++;
+            }
+        }.runTaskTimer(knockoff.getInstance(), 1 ,20);
 
         new BukkitRunnable() {
             @Override
@@ -157,17 +206,16 @@ public class GameManager { //I honestly think this entire class could be optimis
                 }
                 //Should stop this bukkitrunnable once the game ends
                 if (knockoff.getInstance().GameManager == null) {cancel();}
+
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     for (Player player : Bukkit.getOnlinePlayers()) {
                         player.unlistPlayer(p);
                     }
 
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-
                     if (!knockoff.getInstance().DevMode && !pd.isPlayerDead && GameState.equals("game")) {
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
                     }
-
                     if (p.getLocation().getY() < -30 && p.getGameMode().equals(GameMode.SURVIVAL)) {//instantly kills the player when they get knocked into the void
                         Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                         p.teleport(loc);
@@ -672,22 +720,22 @@ class MapManager {
 
 
 
-        /*switch (knockoff.getInstance().getRandomNumber(1, 3)) {
-            case 1:
+        switch (knockoff.getInstance().getRandomNumber(1, 3)) {
+            case 1, 2:
                 MoveDir = "EAST";
                 GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX + LastXLength;
                 GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
                 break;
-            case 2:
+            /*case 2: //TODO
                 MoveDir = "SOUTH";
-                break;
+                break;*/
             case 3:
                 MoveDir = "WEST";
                 GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX - knockoff.getInstance().mapdata.CurrentXLength;
                 GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
                 break;
         }
-         */
+
 
         PlaceCurrentlySelectedSection();
         for (Player player : Bukkit.getOnlinePlayers()) {

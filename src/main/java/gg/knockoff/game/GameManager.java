@@ -199,9 +199,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                 }
 
                 GameManager.RoundCounter--;
-                if (GameManager.RoundCounter == 0) {
+                if (GameManager.RoundCounter == 0 && GameManager.GameState.equals("game")) {
                     GameManager.CloneNewMapSection();
-                    RoundCounter = 50;
+                    RoundCounter = 60;
                     Round++;
                 }
             }
@@ -863,7 +863,7 @@ class MapManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 0, 10);
+        }.runTaskTimer(knockoff.getInstance(), 0, 5);
 
         //Filling crystals with air, this has a delay compared to the previous BukkitRunnable
         //This is literally copy pasted code but with the material changed to AIR
@@ -944,36 +944,7 @@ class MapManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 60, 10);
-
-
-        /*
-        switch (MoveDir) {
-            case "EAST" -> new BukkitRunnable() {
-                int XPos = 0;
-                @Override
-                public void run() {
-                    if (knockoff.getInstance().GameManager == null) {cancel();}
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " +
-                            (GameManager.LastSectionPlaceLocationX + XPos) + "," +
-                            (GameManager.LastSectionPlaceLocationY) + "," +
-                            (GameManager.LastSectionPlaceLocationZ));
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " +
-                                    (GameManager.LastSectionPlaceLocationX + XPos) + "," +
-                                    (GameManager.LastSectionPlaceLocationY + LastYLength) + "," +
-                                    (GameManager.LastSectionPlaceLocationZ + LastZLength));
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace glass,tinted_glass,white_stained_glass,gray_stained_glass,light_gray_stained_glass,black_stained_glass,brown_stained_glass,red_stained_glass,orange_stained_glass,yellow_stained_glass,lime_stained_glass,green_stained_glass pink_stained_glass");
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace cyan_stained_glass,blue_stained_glass,light_blue_stained_glass,purple_stained_glass pink_stained_glass");
-                    Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace !air,white_glazed_terracotta,gray_glazed_terracotta,light_gray_glazed_terracotta,pink_stained_glass,pink_stained_glass_pane amethyst_block");
-                    XPos++;
-                    if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength)) {
-                        //TODO, Clear area
-                        cancel();
-                    }
-                }
-            }.runTaskTimer(knockoff.getInstance(), 0, 10);
-        }
-        */
+        }.runTaskTimer(knockoff.getInstance(), 60, 5);
     }
 
     public static void CopyRandomMapSection() {

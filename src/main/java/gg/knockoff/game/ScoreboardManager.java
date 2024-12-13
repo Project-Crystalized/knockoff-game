@@ -281,18 +281,18 @@ public class ScoreboardManager {
                 } else {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
-                        obj.getScore("5").customName(Component.text("Round: ").append(text("TBA")));
-                        obj.getScore("4").customName(Component.text("Next Round: ").append(text("TBA")));
+                        obj.getScore("5").customName(Component.text("Round: ").append(text(GameManager.Round)));
+                        obj.getScore("4").customName(Component.text("Next Round: ").append(text(GameManager.RoundCounter)));
                         obj.getScore("3").customName(Component.text("Lives: ").append(text(pd.getLives())));
                         obj.getScore("2").customName(Component.text("Kills: ").append(text(pd.getKills())));
                     } else {
-                        RoundCount.suffix(text("TBA"));
-                        NextRound.suffix(text("TBA"));
+                        RoundCount.suffix(text(GameManager.Round));
+                        NextRound.suffix(text(GameManager.RoundCounter));
                         LivesCount.suffix(text(pd.getLives()));
                         KillCount.suffix(text(pd.getKills()));
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 20 ,1);
+        }.runTaskTimer(knockoff.getInstance(), 0 ,1);
     }
 }

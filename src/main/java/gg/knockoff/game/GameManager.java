@@ -7,13 +7,10 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.google.gson.JsonArray;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.LocalSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
-import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
-import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
@@ -21,12 +18,8 @@ import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.regions.RegionSelector;
 import com.sk89q.worldedit.session.ClipboardHolder;
-import com.sk89q.worldedit.world.block.BaseBlock;
 import com.sk89q.worldedit.world.block.BlockState;
-import com.sk89q.worldedit.world.block.BlockType;
-import com.sk89q.worldedit.world.block.BlockTypes;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -42,9 +35,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -64,6 +55,9 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     //Can be "solo" or "team"
     public static String GameType = "Solo";
+
+    public static int Round = 0;
+    public static int RoundCounter =0;
 
     public GameManager() {//Start of the game
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
@@ -117,7 +111,6 @@ public class GameManager { //I honestly think this entire class could be optimis
         for (Player p : Bukkit.getOnlinePlayers()) {
             WorldBorder PlayerBorder = Bukkit.getServer().createWorldBorder();
             p.setWorldBorder(PlayerBorder);
-            //PlayerBorder.setCenter(p.getLocation());
             PlayerBorder.setCenter(p.getX() + 0.5, p.getZ() + 0.5);
             PlayerBorder.setSize(3);
 
@@ -193,6 +186,28 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     private void StartGameLoop() {
+        GameManager.Round = 1;
+        GameManager.RoundCounter = 30;
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (knockoff.getInstance().GameManager == null) {cancel();}
+                if (knockoff.getInstance().DevMode) {
+                    Round = 0;
+                    RoundCounter = 0;
+                    cancel();
+                }
+
+                GameManager.RoundCounter--;
+                if (GameManager.RoundCounter == 0) {
+                    GameManager.CloneNewMapSection();
+                    RoundCounter = 50;
+                    Round++;
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0 ,20);
+
+
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -233,7 +248,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 20 ,1);
+        }.runTaskTimer(knockoff.getInstance(), 0 ,1);
     }
 
     public static void StartEndGame(String WinningTeam) {

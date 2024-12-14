@@ -109,6 +109,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         SetupFirstSpawns();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+            PlayerList.add(p.getName());
             WorldBorder PlayerBorder = Bukkit.getServer().createWorldBorder();
             p.setWorldBorder(PlayerBorder);
             PlayerBorder.setCenter(p.getX() + 0.5, p.getZ() + 0.5);
@@ -119,12 +120,13 @@ public class GameManager { //I honestly think this entire class could be optimis
             ScoreboardManager.SetPlayerScoreboard(p);
             Teams.SetPlayerDisplayNames(p);
             CustomPlayerNametags.CustomPlayerNametags(p);
-            PlayerList.add(p.getName());
 
             p.setSneaking(true);
             p.setSneaking(false);
         }
         TeamStatus.Init();
+        GameManager.Round = 1;
+        GameManager.RoundCounter = 30;
 
         new BukkitRunnable() {
             int timer = 0;
@@ -186,8 +188,6 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     private void StartGameLoop() {
-        GameManager.Round = 1;
-        GameManager.RoundCounter = 30;
         new BukkitRunnable() {
             @Override
             public void run() {

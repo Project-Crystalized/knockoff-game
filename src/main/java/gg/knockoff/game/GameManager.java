@@ -26,6 +26,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -199,6 +200,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                 }
 
                 GameManager.RoundCounter--;
+                if (GameManager.RoundCounter == 30 && GameManager.GameState.equals("game")) {
+                    SpawnRandomPowerup();
+                }
                 if (GameManager.RoundCounter == 0 && GameManager.GameState.equals("game")) {
                     GameManager.CloneNewMapSection();
                     RoundCounter = 60;
@@ -712,10 +716,34 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static void CloneNewMapSection() {
         MapManager.CloneNewMapSection();
     }
+
+    private static void SpawnRandomPowerup() {
+        boolean IsValidSpot = false;
+        Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
+        while (!IsValidSpot) {
+            blockloc = new Location(Bukkit.getWorld("world"),
+                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
+                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
+                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5
+            );
+            if (blockloc.getBlock().getType().equals(Material.AIR)) {
+                IsValidSpot = false;
+            } else {
+                IsValidSpot = true;
+            }
+        }
+        DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 5, blockloc.getBlockZ()),
+                KnockoffItem.ItemList.get(0).toString()
+        );
+        Bukkit.getServer().sendMessage(Component.text("---------------------------------\n\n[!]")
+                .append(Component.translatable("crystalized.game.knockoff.chat.powerup"))
+                .append(Component.text("\n\n---------------------------------"))
+        );
+        Bukkit.getServer().sendMessage(Component.text("[DEBUG] Coords: X:" + blockloc.getBlockX() + " Y:" + blockloc.getBlockY() + " Z:" + blockloc.getBlockZ()));
+    }
 }
 
 class MapManager {
-    //TODO these 2 methods are for map scrolling
     public static int LastXLength = 0;
     public static int LastYLength = 0;
     public static int LastZLength = 0;
@@ -863,7 +891,7 @@ class MapManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 0, 9);
+        }.runTaskTimer(knockoff.getInstance(), 0, 10);
 
         //Filling crystals with air, this has a delay compared to the previous BukkitRunnable
         //This is literally copy pasted code but with the material changed to AIR
@@ -888,7 +916,7 @@ class MapManager {
                                                 GameManager.LastSectionPlaceLocationZ
                                         ),
                                         BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + XPos + 5,
+                                                GameManager.LastSectionPlaceLocationX + XPos - 5,
                                                 GameManager.LastSectionPlaceLocationY + LastYLength,
                                                 GameManager.LastSectionPlaceLocationZ + LastZLength
                                         )
@@ -944,7 +972,7 @@ class MapManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 60, 9);
+        }.runTaskTimer(knockoff.getInstance(), 60, 10);
     }
 
     public static void CopyRandomMapSection() {

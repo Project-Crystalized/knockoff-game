@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 public class KnockoffItem {
-    private static final ArrayList ItemList = new ArrayList();
+    public static final ArrayList ItemList = new ArrayList();
 
     public static void SetupKnockoffItems() {
         ItemList.clear();
@@ -188,6 +188,7 @@ class DropPowerup {
                 Bukkit.getServer().sendMessage(Component.text("[!] An internal error occurred, check console."));
                 Bukkit.getLogger().log(Level.WARNING, "[KNOCKOFFITEM] Unknown Item \"" + powerup + "\".");
             }
+            entity.setGravity(false);
             entity.setGlowing(true);
             entity.setCanPlayerPickup(true);
             entity.setCustomNameVisible(true);

@@ -863,7 +863,7 @@ class MapManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 0, 5);
+        }.runTaskTimer(knockoff.getInstance(), 0, 9);
 
         //Filling crystals with air, this has a delay compared to the previous BukkitRunnable
         //This is literally copy pasted code but with the material changed to AIR
@@ -888,7 +888,7 @@ class MapManager {
                                                 GameManager.LastSectionPlaceLocationZ
                                         ),
                                         BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + XPos,
+                                                GameManager.LastSectionPlaceLocationX + XPos + 5,
                                                 GameManager.LastSectionPlaceLocationY + LastYLength,
                                                 GameManager.LastSectionPlaceLocationZ + LastZLength
                                         )
@@ -923,7 +923,7 @@ class MapManager {
                                                 GameManager.LastSectionPlaceLocationZ
                                         ),
                                         BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + LastXLength - XPos,
+                                                GameManager.LastSectionPlaceLocationX + LastXLength - XPos + 5,
                                                 GameManager.LastSectionPlaceLocationY + LastYLength,
                                                 GameManager.LastSectionPlaceLocationZ + LastZLength
                                         )
@@ -944,7 +944,7 @@ class MapManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 60, 5);
+        }.runTaskTimer(knockoff.getInstance(), 60, 9);
     }
 
     public static void CopyRandomMapSection() {

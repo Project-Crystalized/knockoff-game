@@ -441,9 +441,9 @@ class TeamStatus{
                     }
                     l2i++;
                 }
-                if (lime == Teams.lime.size()) {
+                if (l2i == 0 && Teams.lime.size() == 0) {
                     LimeStatus = "dead";
-                } else if (l2i == 0 && Teams.lime.size() == 0) {
+                } else if (lime == Teams.lime.size()) {
                     LimeStatus = "alive";
                 } else {
                     LimeStatus = "dead";

@@ -9,7 +9,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.*;
 import org.geysermc.floodgate.api.FloodgateApi;
 
-import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.*;
 
 public class ScoreboardManager {
 
@@ -129,7 +129,7 @@ public class ScoreboardManager {
             }
         }
 
-        Component title = text("\uE108 ").color(NamedTextColor.WHITE).append(text("KnockOff (WIP)").color(NamedTextColor.GOLD));
+        Component title = text("\uE108 ").color(NamedTextColor.WHITE).append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD));
         Objective obj = scoreboard.registerNewObjective("main", Criteria.DUMMY, title);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
@@ -294,5 +294,63 @@ public class ScoreboardManager {
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 2 ,1);
+    }
+}
+
+class QueueScoreBoard{
+    public QueueScoreBoard(Player player) {
+        FloodgateApi floodgateapi = FloodgateApi.getInstance();
+        Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
+        Component title = text("\uE108 ").color(NamedTextColor.WHITE).append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD));
+        Objective obj = scoreboard.registerNewObjective("main", Criteria.DUMMY, title);
+        obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+
+        obj.getScore("5").setScore(5);
+        obj.getScore("5").customName(text("  "));
+
+        obj.getScore("4").setScore(4);
+        obj.getScore("4").customName(text("You are playing on: " + knockoff.getInstance().mapdata.map_name));
+
+        obj.getScore("3").setScore(3);
+        obj.getScore("3").customName(text(" "));
+
+        obj.getScore("2").setScore(2);
+        obj.getScore("2").customName(text("Waiting on Players: "));
+
+        obj.getScore("1").setScore(1);
+        obj.getScore("1").customName(text(""));
+
+        obj.getScore("0").setScore(0);
+        obj.getScore("0").customName(text("crystalized.cc ").color(TextColor.color(0xc4b50a)).append(text("(ServID)").color(NamedTextColor.GRAY)));
+
+        player.setScoreboard(scoreboard);
+
+        Team QueuePlayer = scoreboard.registerNewTeam("QueuePlayers");
+        QueuePlayer.addEntry("2");
+        QueuePlayer.suffix(text("Placeholder"));
+        obj.getScore("2").setScore(2);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
+                    obj.getScore("2").customName(Component.text("Waiting on Players: (")
+                            .append(Component.text("" + Bukkit.getOnlinePlayers().size()))
+                            .append(Component.text("/"))
+                            .append(Component.text("" + Bukkit.getMaxPlayers()))
+                            .append(Component.text(")"))
+                    );
+                } else {
+                    QueuePlayer.suffix(
+                            Component.text("(")
+                                    .append(Component.text("" + Bukkit.getOnlinePlayers().size()))
+                                    .append(Component.text("/"))
+                                    .append(Component.text("" + Bukkit.getMaxPlayers()))
+                                    .append(Component.text(")"))
+                    );
+                }
+                if (GameManager.GameState.equals("game") || GameManager.GameState.equals("end")) {cancel();}
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0 ,1);
     }
 }

@@ -6,9 +6,9 @@ import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.WorldBorder;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.WindCharge;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -188,11 +188,10 @@ class DropPowerup {
                 Bukkit.getServer().sendMessage(Component.text("[!] An internal error occurred, check console."));
                 Bukkit.getLogger().log(Level.WARNING, "[KNOCKOFFITEM] Unknown Item \"" + powerup + "\".");
             }
-            entity.setGravity(false);
+            entity.setGravity(true);
             entity.setGlowing(true);
             entity.setCanPlayerPickup(true);
             entity.setCustomNameVisible(true);
-
         });
 
         new BukkitRunnable() {

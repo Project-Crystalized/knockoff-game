@@ -58,6 +58,7 @@ public class PlayerListener implements Listener {
                     text("\n Expect bugs since this is an early version and isn't complete. \n If you find any please report to TotallyNoCallum on the Crystalized Discord ")
                             .append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY))
             );
+            new QueueScoreBoard(player);
         } else {
             player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
         }

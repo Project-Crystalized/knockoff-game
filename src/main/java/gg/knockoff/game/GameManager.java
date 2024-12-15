@@ -26,7 +26,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
-import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -147,16 +146,16 @@ public class GameManager { //I honestly think this entire class could be optimis
                         break;
                     case 6:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(text("Starting in:"), text("3 2 ").color(NamedTextColor.GRAY)
-                                            .append(Component.text("1").color(NamedTextColor.WHITE))
+                            player.showTitle(Title.title(text("Starting in:").color(NamedTextColor.GREEN), text("3 2 ").color(NamedTextColor.GRAY)
+                                            .append(Component.text("1").color(NamedTextColor.RED))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
                         }
                         break;
                     case 5:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(text("Starting in:"), text("3").color(NamedTextColor.GRAY)
-                                            .append(Component.text(" 2").color(NamedTextColor.WHITE))
+                            player.showTitle(Title.title(text("Starting in:").color(NamedTextColor.GREEN), text("3").color(NamedTextColor.GRAY)
+                                            .append(Component.text(" 2").color(NamedTextColor.RED))
                                             .append(Component.text(" 1").color(NamedTextColor.GRAY))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
@@ -164,7 +163,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         break;
                     case 4:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(text("Starting in:"), text("3").color(NamedTextColor.WHITE)
+                            player.showTitle(Title.title(text("Starting in:").color(NamedTextColor.GREEN), text("3").color(NamedTextColor.RED)
                                             .append(Component.text(" 2 1").color(NamedTextColor.GRAY))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
@@ -733,8 +732,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                 IsValidSpot = true;
             }
         }
-        DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 5, blockloc.getBlockZ()),
-                KnockoffItem.ItemList.get(0).toString()
+        DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 3, blockloc.getBlockZ()),
+                KnockoffItem.ItemList.get(
+                        knockoff.getInstance().getRandomNumber(0, KnockoffItem.ItemList.size())
+                ).toString()
         );
         Bukkit.getServer().sendMessage(Component.text("---------------------------------\n\n[!] ")
                 .append(Component.translatable("crystalized.game.knockoff.chat.powerup"))

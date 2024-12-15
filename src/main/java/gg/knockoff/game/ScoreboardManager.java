@@ -309,13 +309,13 @@ class QueueScoreBoard{
         obj.getScore("5").customName(text("  "));
 
         obj.getScore("4").setScore(4);
-        obj.getScore("4").customName(text("You are playing on: " + knockoff.getInstance().mapdata.map_name));
+        obj.getScore("4").customName(translatable("crystalized.game.knockoff.queue.playing"));
 
         obj.getScore("3").setScore(3);
         obj.getScore("3").customName(text(" "));
 
         obj.getScore("2").setScore(2);
-        obj.getScore("2").customName(text("Waiting on Players: "));
+        obj.getScore("2").customName(translatable("crystalized.game.knockoff.queue.waiting"));
 
         obj.getScore("1").setScore(1);
         obj.getScore("1").customName(text(""));
@@ -330,16 +330,22 @@ class QueueScoreBoard{
         QueuePlayer.suffix(text("Placeholder"));
         obj.getScore("2").setScore(2);
 
+        Team QueueMap = scoreboard.registerNewTeam("QueueMap");
+        QueueMap.addEntry("4");
+        QueueMap.suffix(text(""));
+        obj.getScore("4").setScore(4);
+
         new BukkitRunnable() {
             @Override
             public void run() {
                 if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
-                    obj.getScore("2").customName(Component.text("Waiting on Players: (")
-                            .append(Component.text("" + Bukkit.getOnlinePlayers().size()))
+                    obj.getScore("2").customName(Component.translatable("crystalized.game.knockoff.queue.waiting")
+                            .append(Component.text("(" + Bukkit.getOnlinePlayers().size()))
                             .append(Component.text("/"))
                             .append(Component.text("" + Bukkit.getMaxPlayers()))
                             .append(Component.text(")"))
                     );
+                    obj.getScore("4").customName(translatable("crystalized.game.knockoff.queue.playing" + knockoff.getInstance().mapdata.map_name));
                 } else {
                     QueuePlayer.suffix(
                             Component.text("(")
@@ -348,8 +354,8 @@ class QueueScoreBoard{
                                     .append(Component.text("" + Bukkit.getMaxPlayers()))
                                     .append(Component.text(")"))
                     );
+                    QueueMap.suffix(Component.text(knockoff.getInstance().mapdata.map_name));
                 }
-                if (GameManager.GameState.equals("game") || GameManager.GameState.equals("end")) {cancel();}
             }
         }.runTaskTimer(knockoff.getInstance(), 0 ,1);
     }

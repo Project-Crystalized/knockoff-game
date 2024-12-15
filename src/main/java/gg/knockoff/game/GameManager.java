@@ -40,6 +40,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.translatable;
 
 public class GameManager { //I honestly think this entire class could be optimised because of how long it is
     public List<PlayerData> playerDatas;
@@ -262,51 +263,51 @@ public class GameManager { //I honestly think this entire class could be optimis
                 switch (WinningTeam) {
                     case "blue" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.blue.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "cyan" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.cyan.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "green" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.green.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "lemon" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.lemon.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "lime" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.lime.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "magenta" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.magenta.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "orange" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.orange.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "peach" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.peach.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "purple" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.purple.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "red" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.red.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "white" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.white.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                     case "yellow" -> {
                         Player LastPlayer = Bukkit.getPlayer(Teams.yellow.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), text("Wins the Game!").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
                     }
                 }
             } else {
@@ -735,7 +736,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 5, blockloc.getBlockZ()),
                 KnockoffItem.ItemList.get(0).toString()
         );
-        Bukkit.getServer().sendMessage(Component.text("---------------------------------\n\n[!]")
+        Bukkit.getServer().sendMessage(Component.text("---------------------------------\n\n[!] ")
                 .append(Component.translatable("crystalized.game.knockoff.chat.powerup"))
                 .append(Component.text("\n\n---------------------------------"))
         );

@@ -77,11 +77,11 @@ public class PlayerListener implements Listener {
         if (player.getKiller() == null) {
             Bukkit.getServer().sendMessage(text("[\uE103] ")
                     .append(player.displayName())
-                    .append(Component.text(" Died")));
+                    .append(Component.translatable("crystalized.game.knockoff.chat.deathgeneric")));
         } else {
             Bukkit.getServer().sendMessage(text("[\uE103] ")
                     .append(player.displayName())
-                    .append(Component.text(" was knocked off by "))
+                    .append(Component.translatable("crystalized.game.knockoff.chat.deathknockoff"))
                     .append(player.getKiller().displayName()));
             Player attacker = player.getKiller();
             PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
@@ -147,7 +147,7 @@ public class PlayerListener implements Listener {
                     .append(Component.text("\uE103").color(NamedTextColor.RED))
                     .append(Component.text("] "))
                     .append(player.displayName())
-                            .append(Component.text(" has been eliminated from the game!")));  // TODO make this a translatable text component
+                            .append(Component.translatable("crystalized.game.knockoff.chat.eliminated")));
             player.getPlayer().sendMessage(text("Your final stats: Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
             pd.isPlayerDead = true;
             pd.isEliminated = true;

@@ -293,6 +293,6 @@ public class ScoreboardManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 0 ,1);
+        }.runTaskTimer(knockoff.getInstance(), 2 ,1);
     }
 }

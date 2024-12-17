@@ -656,11 +656,12 @@ class CustomPlayerNametags{
         TextDisplay displayfront = ploc.getWorld().spawn(ploc, TextDisplay.class, entity -> {
             entity.setBillboard(Display.Billboard.CENTER);
         });
+        player.addPassenger(displayfront);
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (knockoff.getInstance().GameManager == null || !player.isOnline()) {
+                if (knockoff.getInstance().GameManager == null || !player.isOnline() || knockoff.getInstance().GameManager.getPlayerData(player).isPlayerDead) {
                     displayfront.remove();
                     cancel();
                 } else {
@@ -677,10 +678,10 @@ class CustomPlayerNametags{
                         );
                     }
 
-                    Location ploc = new Location(player.getWorld(), player.getX(), player.getY() + 2.5, player.getZ(), player.getYaw(), player.getPitch());
-                    displayfront.teleport(ploc);
+                    //Location ploc = new Location(player.getWorld(), player.getX(), player.getY() + 2.5, player.getZ(), player.getYaw(), player.getPitch());
+                    //displayfront.teleport(ploc);
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 20, 1);
+        }.runTaskTimer(knockoff.getInstance(), 1, 1);
     }
 }

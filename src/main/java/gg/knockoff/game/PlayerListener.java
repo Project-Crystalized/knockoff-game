@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -98,8 +99,16 @@ public class PlayerListener implements Listener {
         }
         pd.addDeath(1);
         pd.isPlayerDead = true;
-        Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-        player.teleport(loc);
+
+        //Next best thing to delaying a task ig
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+                player.teleport(loc);
+                cancel();
+            }
+        }.runTaskTimer(knockoff.getInstance(), 2, 20);
 
         pd.takeawayLife(1); // takes away 1 life
         if (pd.getLives() > 0) { //If the player has lives left this code runs
@@ -135,6 +144,7 @@ public class PlayerListener implements Listener {
                             player.setGameMode(GameMode.SURVIVAL);
                             pd.setDeathtimer(0);
                             pd.isPlayerDead = false;
+                            CustomPlayerNametags.CustomPlayerNametags(player);
                         }
                         cancel();
                     }

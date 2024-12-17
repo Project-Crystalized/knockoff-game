@@ -349,7 +349,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + (LastSectionPlaceLocationX + MapManager.LastXLength) + "," + (LastSectionPlaceLocationY+ MapManager.LastYLength) + "," + (LastSectionPlaceLocationZ + MapManager.LastZLength));
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.kick(Component.text("Game over, thanks for playing!").color(NamedTextColor.RED));
+            p.kick();
         }
         for (Entity e : Bukkit.getWorld("world").getEntities()) {
             if (e instanceof TextDisplay) {

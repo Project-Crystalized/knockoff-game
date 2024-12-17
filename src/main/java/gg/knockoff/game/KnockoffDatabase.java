@@ -19,7 +19,8 @@ public class KnockoffDatabase {
         String create_ko_games = "CREATE TABLE IF NOT EXISTS KnockoffGames ("
                 + "map STRING,"
                 + "winner_team STRING,"
-                + "gametype STRING"
+                + "gametype STRING,"
+                + "timestamp INTEGER"
                 + ");";
         String create_ko_players = "CREATE TABLE IF NOT EXISTS KoGamesPlayers ("
                 + "player_uuid BYTES,"
@@ -29,7 +30,7 @@ public class KnockoffDatabase {
                 + "blocks_placed INTEGER,"
                 + "blocks_broken INTEGER,"
                 + "items_collected INTEGER,"
-                + "items_used INTEGER"
+                + "items_used INTEGER,"
                 + "games_won INTEGER"
                 + ");";
 
@@ -45,21 +46,19 @@ public class KnockoffDatabase {
         }
     }
 
-    public static void save_game() {
-        String save_game = "INSERT INTO KnockoffGames(map, winner_team, gametype) VALUES(?, ?, ?)";
+    public static void save_game(String WinningTeam) {
+        String save_game = "INSERT INTO KnockoffGames(map, winner_team, gametype, timestamp) VALUES(?, ?, ?, unixepoch())";
         GameManager gm = knockoff.getInstance().GameManager;
 
         try (Connection conn = DriverManager.getConnection(URL)) {
             PreparedStatement game_stmt = conn.prepareStatement(save_game);
             game_stmt.setString(1, knockoff.getInstance().mapdata.map_name);
-            game_stmt.setString(2, "placeholder");
+            game_stmt.setString(2, WinningTeam);
             game_stmt.setString(3, GameManager.GameType);
             game_stmt.executeUpdate();
 
-            int game_id = conn.prepareStatement("SELECT last_insert_rowid();").executeQuery().getInt("last_insert_rowid()");
-
             String save_player = "INSERT INTO KoGamesPlayers(player_uuid, team, kills, deaths, blocks_placed, blocks_broken, items_collected, items_used, games_won)"
-                    + " VALUES(?, ?, ?, ?, ?, ?, ?)";
+                    + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement player_stmt = conn.prepareStatement(save_player);
             for (Player p : Bukkit.getOnlinePlayers()) {
                 PlayerData pd = gm.getPlayerData(p);
@@ -72,7 +71,11 @@ public class KnockoffDatabase {
                 player_stmt.setInt(6, pd.blocksbroken);
                 player_stmt.setInt(7, pd.powerupscollected);
                 player_stmt.setInt(8, pd.powerupsused);
-                player_stmt.setInt(9, 0); //TODO
+                if (WinningTeam.equals(Teams.GetPlayerTeam(p))) {
+                    player_stmt.setInt(9, 1);
+                } else {
+                    player_stmt.setInt(9, 0);
+                }
                 player_stmt.executeUpdate();
             }
 

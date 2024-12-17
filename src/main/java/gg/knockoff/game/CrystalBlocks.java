@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -71,6 +72,12 @@ public class CrystalBlocks implements Listener {
                     blockloc.getBlock().getState().update();
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     pd.blocksplaced++;
+                    if (knockoff.getInstance().DevMode) {
+                        Bukkit.getServer().sendMessage(Component.text("[DEBUG] ")
+                                .append(player.displayName())
+                                .append(Component.text(" has placed a block (mainhand)"))
+                        );
+                    }
                 }, 1);
                 Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
                     if (player.getEquipment().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK)) {
@@ -112,6 +119,14 @@ public class CrystalBlocks implements Listener {
                         blockloc.getBlock().setBlockData(dir);
                     }
                     blockloc.getBlock().getState().update();
+                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                    pd.blocksplaced++;
+                    if (knockoff.getInstance().DevMode) {
+                        Bukkit.getServer().sendMessage(Component.text("[DEBUG] ")
+                                .append(player.displayName())
+                                .append(Component.text(" has placed a block (offhand)"))
+                        );
+                    }
                 }, 1);
                 Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
                     if (player.getEquipment().getItemInOffHand().getType().equals(Material.AMETHYST_BLOCK)) {
@@ -136,6 +151,12 @@ public class CrystalBlocks implements Listener {
                     blockloc.getBlock().breakNaturally(true);
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     pd.blocksbroken++;
+                    if (knockoff.getInstance().DevMode) {
+                        Bukkit.getServer().sendMessage(Component.text("[DEBUG] ")
+                                .append(player.displayName())
+                                .append(Component.text(" has broken a block"))
+                        );
+                    }
                 }
             }
         } else {

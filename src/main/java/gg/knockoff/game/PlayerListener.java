@@ -19,6 +19,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.*;
 import net.kyori.adventure.text.Component;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -287,11 +288,28 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void OnPlayerItemInteract(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
-        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
-        ItemMeta im = event.getItem().getItemMeta();
-        if (im.hasCustomModelData() && event.getItem().getType().equals(Material.COAL) && im.getCustomModelData() < 15) {
-            pd.powerupsused++;
+        if (knockoff.getInstance().GameManager != null) {
+            Player player = event.getPlayer();
+            PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+
+            if (event.getHand() == EquipmentSlot.HAND) {
+                return;
+            } else {
+                if (event.getItem().getType().equals(Material.COAL)) {
+
+                    ItemMeta im = event.getItem().getItemMeta();
+                    if (im.hasCustomModelData() && im.getCustomModelData() < 15) {
+                        pd.powerupsused++;
+                        if (knockoff.getInstance().DevMode) {
+                            Bukkit.getServer().sendMessage(Component.text("[DEBUG] ")
+                                    .append(player.displayName())
+                                    .append(Component.text(" has used a powerup"))
+                            );
+                        }
+                    }
+
+                }
+            }
         }
     }
 }

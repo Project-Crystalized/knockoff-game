@@ -36,6 +36,8 @@ public final class knockoff extends JavaPlugin {
         this.getCommand("knockoff_dropitem").setExecutor(dc);
         this.getCommand("knockoff_debug").setExecutor(dc);
 
+        KnockoffDatabase.setup_databases();
+
         new BukkitRunnable() {
 
             @Override
@@ -55,41 +57,6 @@ public final class knockoff extends JavaPlugin {
                             public void run() {
                                 GameManager = new GameManager();
                                 cancel();
-                                /*
-                                switch (timer) {
-                                    case -2:
-
-                                    case -1:
-                                        break; // should prevent the "GO!" from appearing twice
-                                    case 0:
-                                        for (Player p : Bukkit.getOnlinePlayers()) {
-                                            p.sendTitle("GO!", " ", 5, 20, 0);
-                                            p.playSound(p, "crystalized:effect.countdown_end", 50, 1);
-                                        }
-                                        break;
-                                    case 1:
-                                        for (Player p : Bukkit.getOnlinePlayers()) {
-                                            p.sendTitle("1", " ", 5, 20, 0);
-                                            p.playSound(p, "crystalized:effect.countdown", 50, 1);
-                                        }
-                                        break;
-                                    case 2:
-                                        for (Player p : Bukkit.getOnlinePlayers()) {
-                                            p.sendTitle("2", " ", 5, 20, 0);
-                                            p.playSound(p, "crystalized:effect.countdown", 50, 1);
-                                        }
-                                        break;
-                                    case 3:
-                                        for (Player p : Bukkit.getOnlinePlayers()) {
-                                            p.sendTitle("3", " ", 5, 20, 0);
-                                            p.playSound(p, "crystalized:effect.countdown", 50, 1);
-                                        }
-                                        break;
-                                    default:
-                                        break; //This shouldn't trigger
-                                }
-                                timer--;
-                                 */
                             }
 
                         }.runTaskTimer(knockoff.getInstance(), 1, 20);

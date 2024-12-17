@@ -68,7 +68,9 @@ public class CrystalBlocks implements Listener {
                         }
                         blockloc.getBlock().setBlockData(dir);
                     }
-                blockloc.getBlock().getState().update();
+                    blockloc.getBlock().getState().update();
+                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                    pd.blocksplaced++;
                 }, 1);
                 Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
                     if (player.getEquipment().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK)) {
@@ -132,6 +134,8 @@ public class CrystalBlocks implements Listener {
                     || block.getType().equals(Material.PINK_STAINED_GLASS) || block.getType().equals(Material.PINK_STAINED_GLASS)) {
                     Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
                     blockloc.getBlock().breakNaturally(true);
+                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                    pd.blocksbroken++;
                 }
             }
         } else {

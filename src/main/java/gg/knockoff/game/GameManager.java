@@ -314,6 +314,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             }
             player.playSound(player, "minecraft:ui.toast.challenge_complete", 50, 1); //TODO placeholder sound
         }
+        KnockoffDatabase.save_game();
         new BukkitRunnable() {
             int timer = 0;
 

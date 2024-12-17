@@ -14,29 +14,34 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import net.kyori.adventure.text.Component;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
-import java.util.UUID;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
 
 public class PlayerListener implements Listener {
 
-    //private int DeathTimer = 4;
-
+    @EventHandler
+    public void PlayerDisconnectMessage(PlayerQuitEvent event) {
+        event.quitMessage(Component.text(""));
+    }
     @EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+
         if (knockoff.getInstance().GameManager == null) {
+            event.joinMessage(Component.text(""));
             player.teleport(knockoff.getInstance().mapdata.get_que_spawn(player.getWorld()));
             player.getInventory().clear();
             player.setHealth(20);
@@ -265,6 +270,28 @@ public class PlayerListener implements Listener {
         if (knockoff.getInstance().GameManager != null && Bukkit.getOnlinePlayers().equals(0)) {
             Bukkit.getLogger().log(Level.INFO, "All players have disconnected. The Game will now end.");
             knockoff.getInstance().GameManager.ForceEndGame();
+        }
+    }
+
+    @EventHandler
+    public void OnPlayerPickupItem(EntityPickupItemEvent event) {
+        Player player = (Player) event.getEntity();
+        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+        pd.powerupscollected++;
+        Bukkit.getServer().sendMessage(Component.text("[!] ")
+                .append(player.displayName())
+                .append(Component.text(" has picked up a "))
+                .append(event.getItem().getItemStack().displayName())
+        );
+    }
+
+    @EventHandler
+    public void OnPlayerItemInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+        ItemMeta im = event.getItem().getItemMeta();
+        if (im.hasCustomModelData() && event.getItem().getType().equals(Material.COAL) && im.getCustomModelData() < 15) {
+            pd.powerupsused++;
         }
     }
 }

@@ -197,6 +197,12 @@ class DropPowerup {
         new BukkitRunnable() {
             @Override
             public void run() {
+                if (DroppedItem.isValid()) {
+                    DroppedItem.sendMessage(Component.text("A player has picked up a powerup, \"")
+                            .append(DroppedItem.getItemStack().displayName())
+                            .append(Component.text("\""))
+                    );
+                }
                 if (knockoff.getInstance().GameManager == null) {
                     DroppedItem.remove();
                     cancel();

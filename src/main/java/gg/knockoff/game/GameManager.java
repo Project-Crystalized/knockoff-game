@@ -117,7 +117,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             PlayerBorder.setSize(3);
 
             GiveTeamItems(p);
-            p.setGameMode(GameMode.SURVIVAL);
+            p.setGameMode(GameMode.ADVENTURE);
             ScoreboardManager.SetPlayerScoreboard(p);
             Teams.SetPlayerDisplayNames(p);
             CustomPlayerNametags.CustomPlayerNametags(p);
@@ -189,6 +189,10 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     private void StartGameLoop() {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.setGameMode(GameMode.SURVIVAL);
+        }
+
         new BukkitRunnable() {
             @Override
             public void run() {

@@ -12,7 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 public class KnockoffDatabase {
-
+    //TODO Change this to be in your home directory and make the file if it doesn't exist so no exceptions happen
     private static final String URL = "jdbc:sqlite:./databases/knockoff_db.sql";
 
     public static void setup_databases() {

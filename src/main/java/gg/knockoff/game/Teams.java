@@ -111,7 +111,7 @@ public class Teams {
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + green + " in Team Green");
                 }
             }else {
-                Bukkit.getLogger().log(Level.INFO, "No player(s) available for Lemon team");
+                Bukkit.getLogger().log(Level.INFO, "No player(s) available for Green team");
             }
 
             if (playerlist.size() > 3) { //If the player list is 4 or greater
@@ -135,7 +135,7 @@ public class Teams {
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + lime + " in Team Lime");
                 }
             }else {
-                Bukkit.getLogger().log(Level.INFO, "No player(s) available for Lemon team");
+                Bukkit.getLogger().log(Level.INFO, "No player(s) available for Lime team");
             }
 
             if (playerlist.size() > 5) { //If the player list is 6 or greater
@@ -147,7 +147,7 @@ public class Teams {
                     Bukkit.getLogger().log(Level.INFO, "Player(s) " + magenta + " in Team Magenta");
                 }
             }else {
-                Bukkit.getLogger().log(Level.INFO, "No player(s) available for Lemon team");
+                Bukkit.getLogger().log(Level.INFO, "No player(s) available for Magenta team");
             }
 
             if (playerlist.size() > 6) { //If the player list is 7 or greater
@@ -677,9 +677,6 @@ class CustomPlayerNametags{
                                 .append(Component.text(pd.getLives()))
                         );
                     }
-
-                    //Location ploc = new Location(player.getWorld(), player.getX(), player.getY() + 2.5, player.getZ(), player.getYaw(), player.getPitch());
-                    //displayfront.teleport(ploc);
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 1, 1);

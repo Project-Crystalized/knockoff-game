@@ -219,31 +219,31 @@ public class ScoreboardManager {
             Team TeamName = scoreboard.registerNewTeam("Team");
             TeamName.addEntry("8");
             if (Teams.GetPlayerTeam(player).equals("blue")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.blue").color(Teams.TEAM_BLUE));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.blue").color(Teams.TEAM_BLUE));
             } else if (Teams.GetPlayerTeam(player).equals("cyan")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.cyan").color(Teams.TEAM_CYAN));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.cyan").color(Teams.TEAM_CYAN));
             } else if (Teams.GetPlayerTeam(player).equals("green")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.green").color(Teams.TEAM_GREEN));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.green").color(Teams.TEAM_GREEN));
             } else if (Teams.GetPlayerTeam(player).equals("lemon")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.lemon").color(Teams.TEAM_LEMON));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.lemon").color(Teams.TEAM_LEMON));
             } else if (Teams.GetPlayerTeam(player).equals("lime")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.lime").color(Teams.TEAM_LIME));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.lime").color(Teams.TEAM_LIME));
             } else if (Teams.GetPlayerTeam(player).equals("magenta")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.magenta").color(Teams.TEAM_MAGENTA));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.magenta").color(Teams.TEAM_MAGENTA));
             } else if (Teams.GetPlayerTeam(player).equals("orange")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.orange").color(Teams.TEAM_ORANGE));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.orange").color(Teams.TEAM_ORANGE));
             } else if (Teams.GetPlayerTeam(player).equals("peach")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.peach").color(Teams.TEAM_PEACH));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.peach").color(Teams.TEAM_PEACH));
             } else if (Teams.GetPlayerTeam(player).equals("purple")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.purple").color(Teams.TEAM_PURPLE));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.purple").color(Teams.TEAM_PURPLE));
             } else if (Teams.GetPlayerTeam(player).equals("red")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.red").color(Teams.TEAM_RED));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.red").color(Teams.TEAM_RED));
             } else if (Teams.GetPlayerTeam(player).equals("white")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.white").color(Teams.TEAM_WHITE));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.white").color(Teams.TEAM_WHITE));
             } else if (Teams.GetPlayerTeam(player).equals("yellow")) {
-                TeamName.suffix(Component.translatable("crystalized.game.knockoff.team.yellow").color(Teams.TEAM_YELLOW));
+                TeamName.suffix(Component.translatable("crystalized.game.generic.team.yellow").color(Teams.TEAM_YELLOW));
             } else {
-                TeamName.suffix(text("Unknown").color(NamedTextColor.WHITE));
+                TeamName.suffix(text("???").color(NamedTextColor.WHITE));
             }
             obj.getScore("8").setScore(8);
         }
@@ -339,13 +339,13 @@ class QueueScoreBoard{
             @Override
             public void run() {
                 if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
-                    obj.getScore("2").customName(Component.translatable("crystalized.game.knockoff.queue.waiting")
+                    obj.getScore("2").customName(Component.text("Waiting for Players: ")
                             .append(Component.text("(" + Bukkit.getOnlinePlayers().size()))
                             .append(Component.text("/"))
                             .append(Component.text("" + Bukkit.getMaxPlayers()))
                             .append(Component.text(")"))
                     );
-                    obj.getScore("4").customName(translatable("crystalized.game.knockoff.queue.playing" + knockoff.getInstance().mapdata.map_name));
+                    obj.getScore("4").customName(text("You are playing on: " + knockoff.getInstance().mapdata.map_name));
                 } else {
                     QueuePlayer.suffix(
                             Component.text("(")

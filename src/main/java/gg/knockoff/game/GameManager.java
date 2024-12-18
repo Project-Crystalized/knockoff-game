@@ -243,7 +243,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                         Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                         p.teleport(loc);
                         p.setHealth(0);
-
+                    } else if (p.getLocation().getY() < -30 && p.getGameMode().equals(GameMode.SPECTATOR)) {
+                        Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+                        p.teleport(loc);
                     }
                 }
                 for (Entity e : Bukkit.getWorld("world").getEntities()) {

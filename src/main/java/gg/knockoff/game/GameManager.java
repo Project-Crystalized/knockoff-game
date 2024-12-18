@@ -205,7 +205,25 @@ public class GameManager { //I honestly think this entire class could be optimis
 
                 GameManager.RoundCounter--;
                 if (GameManager.RoundCounter == 30 && GameManager.GameState.equals("game")) {
-                    SpawnRandomPowerup();
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.playSound(p, "minecraft:block.note_block.pling", 50, 2);
+                    }
+                    //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
+                    //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
+                    if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
+                        Bukkit.getServer().sendMessage(Component.text("---------------------------------\n\n[!] ")
+                                .append(Component.translatable("crystalized.game.knockoff.chat.powerup").color(NamedTextColor.DARK_AQUA))
+                                .append(Component.text("\n\n---------------------------------"))
+                        );
+                        SpawnRandomPowerup();
+                    } else {
+                        Bukkit.getServer().sendMessage(Component.text("---------------------------------\n\n[!] ")
+                                .append(Component.translatable("crystalized.game.knockoff.chat.powerup2").color(NamedTextColor.DARK_AQUA))
+                                .append(Component.text("\n\n---------------------------------"))
+                        );
+                        SpawnRandomPowerup();
+                        SpawnRandomPowerup();
+                    }
                 }
                 if (GameManager.RoundCounter == 0 && GameManager.GameState.equals("game")) {
                     GameManager.CloneNewMapSection();
@@ -744,11 +762,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                         knockoff.getInstance().getRandomNumber(0, KnockoffItem.ItemList.size())
                 ).toString()
         );
-        Bukkit.getServer().sendMessage(Component.text("---------------------------------\n\n[!] ")
-                .append(Component.translatable("crystalized.game.knockoff.chat.powerup"))
-                .append(Component.text("\n\n---------------------------------"))
-        );
-        Bukkit.getServer().sendMessage(Component.text("[DEBUG] Coords: X:" + blockloc.getBlockX() + " Y:" + blockloc.getBlockY() + " Z:" + blockloc.getBlockZ()));
     }
 }
 

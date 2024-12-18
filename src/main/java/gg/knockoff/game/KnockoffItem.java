@@ -7,8 +7,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.WorldBorder;
+import org.bukkit.entity.Display;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.TextDisplay;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -191,23 +193,38 @@ class DropPowerup {
             entity.setGravity(true);
             entity.setGlowing(true);
             entity.setCanPlayerPickup(true);
-            entity.setCustomNameVisible(true);
+            entity.setCustomNameVisible(false);
+        });
+        TextDisplay DroppedItemName = loc.getWorld().spawn(DroppedItem.getLocation(), TextDisplay.class, entity -> {
+            entity.setBillboard(Display.Billboard.CENTER);
+            entity.text(DroppedItem.customName());
+            entity.setSeeThrough(true);
         });
 
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (DroppedItem.isValid()) {
-                    DroppedItem.sendMessage(Component.text("A player has picked up a powerup, \"")
-                            .append(DroppedItem.getItemStack().displayName())
-                            .append(Component.text("\""))
-                    );
+                DroppedItem.setGravity(false);
+                if (DroppedItem.isDead()) {
+                    DroppedItemName.remove();
+                    cancel();
                 }
                 if (knockoff.getInstance().GameManager == null) {
+                    DroppedItemName.remove();
                     DroppedItem.remove();
                     cancel();
                 }
+
+                //Prob not the best way of doing this but adding it as a passenger doesn't seem to work
+                Location Nameloc = new Location(
+                        DroppedItem.getLocation().getWorld(),
+                        DroppedItem.getLocation().getX(),
+                        DroppedItem.getLocation().getY() + 1,
+                        DroppedItem.getLocation().getZ()
+                        );
+                DroppedItemName.teleport(Nameloc);
+                DroppedItem.teleport(loc);
             }
-        }.runTaskTimer(knockoff.getInstance(), 20, 1);
+        }.runTaskTimer(knockoff.getInstance(), 10, 1);
     }
 }

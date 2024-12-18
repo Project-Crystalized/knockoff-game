@@ -189,6 +189,9 @@ public class PlayerListener implements Listener {
                 knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5
         );
         Location ploc = new Location(Bukkit.getWorld("world"), blockloc.getX(), blockloc.getY() + 2, blockloc.getZ());
+        if (knockoff.getInstance().GameManager == null || p == null) {
+            return;
+        }
         switch (Teams.GetPlayerTeam(p)) {
             case "blue" -> {
                 blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);

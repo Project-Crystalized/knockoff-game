@@ -192,6 +192,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.setGameMode(GameMode.SURVIVAL);
         }
+        Hazards.StartHazards();
 
         new BukkitRunnable() {
             @Override

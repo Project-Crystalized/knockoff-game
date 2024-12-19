@@ -201,6 +201,7 @@ class DropPowerup {
             entity.setSeeThrough(true);
         });
 
+        DroppedItem.teleport(loc);
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -225,6 +226,6 @@ class DropPowerup {
                 DroppedItemName.teleport(Nameloc);
                 DroppedItem.teleport(loc);
             }
-        }.runTaskTimer(knockoff.getInstance(), 10, 1);
+        }.runTaskTimer(knockoff.getInstance(), 0, 1);
     }
 }

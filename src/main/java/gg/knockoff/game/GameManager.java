@@ -32,6 +32,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -216,19 +217,44 @@ public class GameManager { //I honestly think this entire class could be optimis
                     //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
                     //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
                     Server s = Bukkit.getServer();
+                    FloodgateApi floodgateapi = FloodgateApi.getInstance();
                     if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
-                        s.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(Component.text("-".repeat(55)));
+                            } else {
+                                p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                            }
+                        }
                         s.sendMessage(Component.text(" "));
                         s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup").color(NamedTextColor.DARK_AQUA));
                         s.sendMessage(Component.text(" "));
-                        s.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(Component.text("-".repeat(55)));
+                            } else {
+                                p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                            }
+                        }
                         SpawnRandomPowerup();
                     } else {
-                        s.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(Component.text("-".repeat(55)));
+                            } else {
+                                p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                            }
+                        }
                         s.sendMessage(Component.text(" "));
                         s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup2").color(NamedTextColor.DARK_AQUA));
                         s.sendMessage(Component.text(" "));
-                        s.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(Component.text("-".repeat(55)));
+                            } else {
+                                p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                            }
+                        }
                         SpawnRandomPowerup();
                         SpawnRandomPowerup();
                     }
@@ -345,6 +371,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         KnockoffDatabase.save_game(WinningTeam);
         new BukkitRunnable() {
             int timer = 0;
+            FloodgateApi floodgateapi = FloodgateApi.getInstance();
 
             @Override
             public void run() {
@@ -352,7 +379,13 @@ public class GameManager { //I honestly think this entire class could be optimis
                     case 2:
                         Collections.sort(playerDatas, new PlayerDataComparator());
                         Collections.reverse(playerDatas);
-                        Bukkit.getServer().sendMessage(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD).decoration(TextDecoration.STRIKETHROUGH, true));
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(Component.text("-".repeat(55)).color(NamedTextColor.GOLD));
+                            } else {
+                                p.sendMessage(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
+                            }
+                        }
                         Bukkit.getServer().sendMessage(Component.text("")
                                 .append(Component.text("\n").append(Component.translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD)).append(Component.text(" \uE108").color(NamedTextColor.WHITE)))
                                 .append(Component.text("\n").append(Component.translatable("crystalized.game.generic.gameresults").color(NamedTextColor.BLUE)))
@@ -379,7 +412,14 @@ public class GameManager { //I honestly think this entire class could be optimis
                             );
                         }
 
-                        Bukkit.getServer().sendMessage(Component.text("\n").append(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD)).decoration(TextDecoration.STRIKETHROUGH, true));
+                        Bukkit.getServer().sendMessage(Component.text("\n"));
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(Component.text("-".repeat(55)).color(NamedTextColor.GOLD));
+                            } else {
+                                p.sendMessage(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
+                            }
+                        }
                         break;
                     case 12, 13, 14:
                         for (Player player : Bukkit.getOnlinePlayers()) {

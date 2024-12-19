@@ -30,7 +30,7 @@ public class Hazards {
             int timer = knockoff.getInstance().getRandomNumber(30, 60);
             @Override
             public void run() {
-                if (knockoff.getInstance().GameManager == null) {cancel();}
+                if (knockoff.getInstance().GameManager == null || GameManager.GameState.equals("end")) {cancel();}
                 if (knockoff.getInstance().DevMode) {
                     Bukkit.getServer().sendMessage(Component.text("Hazards disabled due to developer mode."));
                     cancel();
@@ -92,7 +92,7 @@ public class Hazards {
                             }
                             player.playSound(player, "minecraft:entity.tnt.primed",  50, 1);
                         }
-                        if (timer == 4) {
+                        if (timer == 3) {
                             IsHazardOver = true;
                             cancel();
                         }
@@ -100,16 +100,17 @@ public class Hazards {
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 40);
                 break;
+
             case "SlimeTime":
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 10 * 20, 2, false, false, true));
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 12 * 20, 2, false, false, true));
                     player.playSound(player, "minecraft:block.conduit.activate", 50, 1);
                 }
                 new BukkitRunnable() {
                     int timer = 0;
                     @Override
                     public void run() {
-                        if (timer == 10) { //This should last the jump boost's duration
+                        if (timer == 12) { //This should last the jump boost's duration
                             for (Player player : Bukkit.getOnlinePlayers()) {
                                 player.playSound(player, "minecraft:block.beacon.deactivate", 50, 1);
                             }

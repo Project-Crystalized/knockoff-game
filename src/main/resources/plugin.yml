@@ -4,6 +4,9 @@ main: gg.knockoff.game.knockoff
 api-version: '1.21.3'
 depend: [FastAsyncWorldEdit, Crystalized_Essentials, ProtocolLib]
 softdepend: [floodgate]
+authors: [Project Crystalized Team, Callum_Is_Bad]
+prefix: Knockoff
+description: Recreation of TubNet's Knockout! Now open source and remade by Project Crystalized
 commands:
   knockoff:
     description: "Commands for KnockOff"

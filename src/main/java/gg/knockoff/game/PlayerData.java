@@ -4,6 +4,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import java.util.Comparator;
+
 public class PlayerData { //This class probably isn't optimised, but it works so who cares
 
     public String player;
@@ -104,5 +106,16 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 10 ,1);
+    }
+
+    public int calc_player_score() {
+        return kills;
+    }
+}
+
+class PlayerDataComparator implements Comparator<PlayerData> {
+    @Override
+    public int compare(PlayerData arg0, PlayerData arg1) {
+        return arg0.calc_player_score() - arg1.calc_player_score();
     }
 }

@@ -35,6 +35,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -42,7 +43,7 @@ import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.translatable;
 
 public class GameManager { //I honestly think this entire class could be optimised because of how long it is
-    public List<PlayerData> playerDatas;
+    public static List<PlayerData> playerDatas;
     public Teams teams;
 
     public static int SectionPlaceLocationX = 1000;
@@ -80,7 +81,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         // Sets the target area to air to prevent previous game's sections to interfere with the current game
         // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
-        // Plus this lags the server anyways
+        // Plus this lags the server anyway
         Bukkit.getLogger().log(Level.INFO, "Making room for knockoff map, This may lag your server depending on how good it is");
         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
         CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(1100, -30, 1100), BlockVector3.at(1000, 40, 1000));
@@ -110,6 +111,9 @@ public class GameManager { //I honestly think this entire class could be optimis
         SetupFirstSpawns();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.unlistPlayer(p);
+            }
             PlayerList.add(p.getName());
             WorldBorder PlayerBorder = Bukkit.getServer().createWorldBorder();
             p.setWorldBorder(PlayerBorder);
@@ -211,17 +215,20 @@ public class GameManager { //I honestly think this entire class could be optimis
                     }
                     //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
                     //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
+                    Server s = Bukkit.getServer();
                     if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
-                        Bukkit.getServer().sendMessage(Component.text("---------------------------------\n\n[!] ")
-                                .append(Component.translatable("crystalized.game.knockoff.chat.powerup").color(NamedTextColor.DARK_AQUA))
-                                .append(Component.text("\n\n---------------------------------"))
-                        );
+                        s.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                        s.sendMessage(Component.text(" "));
+                        s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup").color(NamedTextColor.DARK_AQUA));
+                        s.sendMessage(Component.text(" "));
+                        s.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                         SpawnRandomPowerup();
                     } else {
-                        Bukkit.getServer().sendMessage(Component.text("---------------------------------\n\n[!] ")
-                                .append(Component.translatable("crystalized.game.knockoff.chat.powerup2").color(NamedTextColor.DARK_AQUA))
-                                .append(Component.text("\n\n---------------------------------"))
-                        );
+                        s.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                        s.sendMessage(Component.text(" "));
+                        s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup2").color(NamedTextColor.DARK_AQUA));
+                        s.sendMessage(Component.text(" "));
+                        s.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                         SpawnRandomPowerup();
                         SpawnRandomPowerup();
                     }
@@ -250,10 +257,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (knockoff.getInstance().GameManager == null) {cancel();}
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    for (Player player : Bukkit.getOnlinePlayers()) {
-                        player.unlistPlayer(p);
-                    }
-
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
                     if (!knockoff.getInstance().DevMode && !pd.isPlayerDead && GameState.equals("game")) {
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
@@ -346,12 +349,44 @@ public class GameManager { //I honestly think this entire class could be optimis
             @Override
             public void run() {
                 switch (timer) {
-                    case 8, 9, 10:
+                    case 2:
+                        Collections.sort(playerDatas, new PlayerDataComparator());
+                        Collections.reverse(playerDatas);
+                        Bukkit.getServer().sendMessage(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD).decoration(TextDecoration.STRIKETHROUGH, true));
+                        Bukkit.getServer().sendMessage(Component.text("")
+                                .append(Component.text("\n").append(Component.translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD)).append(Component.text(" \uE108").color(NamedTextColor.WHITE)))
+                                .append(Component.text("\n").append(Component.translatable("crystalized.game.generic.gameresults").color(NamedTextColor.BLUE)))
+                        );
+                        if (playerDatas.size() > 0) {
+                            PlayerData first = playerDatas.get(0);
+                            Bukkit.getServer().sendMessage(Component.text("   1st. ")
+                                    .append(Component.text(first.player)).color(NamedTextColor.GREEN).append(text(" ".repeat(20 - first.player.length())))
+                                    .append(Component.text("" + first.kills))
+                            );
+                        }
+                        if (playerDatas.size() > 1) {
+                            PlayerData second = playerDatas.get(1);
+                            Bukkit.getServer().sendMessage(Component.text("   2nd. ")
+                                    .append(Component.text(second.player)).color(NamedTextColor.YELLOW).append(text(" ".repeat(20 - second.player.length())))
+                                    .append(Component.text("" + second.kills))
+                            );
+                        }
+                        if (playerDatas.size() > 2) {
+                            PlayerData third = playerDatas.get(2);
+                            Bukkit.getServer().sendMessage(Component.text("   3rd. ")
+                                    .append(Component.text(third.player)).color(NamedTextColor.YELLOW).append(text(" ".repeat(20 - third.player.length())))
+                                    .append(Component.text("" + third.kills))
+                            );
+                        }
+
+                        Bukkit.getServer().sendMessage(Component.text("\n").append(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD)).decoration(TextDecoration.STRIKETHROUGH, true));
+                        break;
+                    case 12, 13, 14:
                         for (Player player : Bukkit.getOnlinePlayers()) {
                             player.playSound(player, "minecraft:block.note_block.hat", SoundCategory.MASTER,50, 1); //TODO placeholder sound
                         }
                         break;
-                    case 11:
+                    case 15:
                         ForceEndGame();
                         cancel();
                         break;
@@ -512,7 +547,6 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     private static void SetupFirstSpawns() {
-        //TODO idk how to change the direction of glazed terracotta blocks, so regular amethyst crystals are used instead
         if (!Teams.blue.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 5),

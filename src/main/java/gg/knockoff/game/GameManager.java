@@ -412,7 +412,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                             );
                         }
 
-                        Bukkit.getServer().sendMessage(Component.text("\n"));
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
                                 p.sendMessage(Component.text("-".repeat(55)).color(NamedTextColor.GOLD));

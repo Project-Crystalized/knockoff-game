@@ -141,7 +141,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 switch (timer) {
                     case 7:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(text("Go!").color(NamedTextColor.GOLD), text(" "),
+                            player.showTitle(Title.title(translatable("crystalized.game.generic.go").color(NamedTextColor.GOLD), text(" "),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown_end", 50, 1);
                             player.getWorldBorder().reset();
@@ -151,7 +151,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         break;
                     case 6:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(text("Starting in:").color(NamedTextColor.GREEN), text("3 2 ").color(NamedTextColor.GRAY)
+                            player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(NamedTextColor.GREEN), text("3 2 ").color(NamedTextColor.GRAY)
                                             .append(Component.text("1").color(NamedTextColor.RED))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
@@ -159,7 +159,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         break;
                     case 5:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(text("Starting in:").color(NamedTextColor.GREEN), text("3").color(NamedTextColor.GRAY)
+                            player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(NamedTextColor.GREEN), text("3").color(NamedTextColor.GRAY)
                                             .append(Component.text(" 2").color(NamedTextColor.RED))
                                             .append(Component.text(" 1").color(NamedTextColor.GRAY))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
@@ -168,7 +168,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         break;
                     case 4:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(text("Starting in:").color(NamedTextColor.GREEN), text("3").color(NamedTextColor.RED)
+                            player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(NamedTextColor.GREEN), text("3").color(NamedTextColor.RED)
                                             .append(Component.text(" 2 1").color(NamedTextColor.GRAY))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);

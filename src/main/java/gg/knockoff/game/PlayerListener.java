@@ -165,7 +165,7 @@ public class PlayerListener implements Listener {
                     .append(Component.text("] "))
                     .append(player.displayName())
                             .append(Component.translatable("crystalized.game.knockoff.chat.eliminated")));
-            player.getPlayer().sendMessage(text("Your final stats: Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
+            //player.getPlayer().sendMessage(text("Your final stats: Kills: " + pd.getKills() + " Deaths: " + pd.getDeaths()));
             pd.isPlayerDead = true;
             pd.isEliminated = true;
         }
@@ -294,7 +294,7 @@ public class PlayerListener implements Listener {
         pd.powerupscollected++;
         Bukkit.getServer().sendMessage(Component.text("[!] ")
                 .append(player.displayName())
-                .append(Component.text(" has picked up a "))
+                .append(Component.translatable("crystalized.game.knockoff.chat.pickedup"))
                 .append(event.getItem().getItemStack().displayName())
         );
     }

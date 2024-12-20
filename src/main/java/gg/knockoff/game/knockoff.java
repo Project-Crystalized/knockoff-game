@@ -76,7 +76,10 @@ public final class knockoff extends JavaPlugin {
                     GameCountdownStarted = false;
                 } else {
                     if (!GameCountdownStarted) {
-                        Bukkit.getServer().sendActionBar(Component.text("Game starting soon (4 Players required)"));
+                        Bukkit.getServer().sendActionBar(Component.translatable("crystalized.game.generic.startingsoon1").append(Component.text(" "))
+                                .append(Component.translatable("crystalized.game.generic.playersrequired1")).append(Component.text("" + PlayerStartLimit))
+                                .append(Component.translatable("crystalized.game.generic.playersrequired2"))
+                        );
                         if (Bukkit.getOnlinePlayers().size() > PlayerStartLimit || Bukkit.getOnlinePlayers().size() == PlayerStartLimit) {
                             GameCountdown();
                         }
@@ -98,7 +101,11 @@ public final class knockoff extends JavaPlugin {
             int timer = 15;
             @Override
             public void run() {
-                Bukkit.getServer().sendActionBar(Component.text("Game starting in: " + timer));
+                Bukkit.getServer().sendActionBar(Component.translatable("crystalized.game.generic.startingin").color(NamedTextColor.GREEN)
+                        .append(Component.text(" " + (timer + 1) ).color(NamedTextColor.DARK_GRAY))
+                        .append(Component.text(" " + timer).color(NamedTextColor.RED))
+                        .append(Component.text(" " + (timer - 1) ).color(NamedTextColor.DARK_GRAY))
+                );
                 timer--;
                 if (timer == 0) {
                     knockoff.getInstance().is_force_starting = true;

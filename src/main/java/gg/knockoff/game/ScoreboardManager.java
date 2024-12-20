@@ -145,44 +145,56 @@ public class ScoreboardManager {
 
             obj.getScore("6").setScore(6);
             if (Teams.GetPlayerTeam(player).equals("blue")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Blue").color(Teams.TEAM_BLUE)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.blue").color(Teams.TEAM_BLUE)));
             } else if (Teams.GetPlayerTeam(player).equals("cyan")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Cyan").color(Teams.TEAM_CYAN)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.cyan").color(Teams.TEAM_CYAN)));
             } else if (Teams.GetPlayerTeam(player).equals("green")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Green").color(Teams.TEAM_GREEN)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.green").color(Teams.TEAM_GREEN)));
             } else if (Teams.GetPlayerTeam(player).equals("lemon")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Lemon").color(Teams.TEAM_LEMON)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.lemon").color(Teams.TEAM_LEMON)));
             } else if (Teams.GetPlayerTeam(player).equals("lime")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Lime").color(Teams.TEAM_LIME)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.lime").color(Teams.TEAM_LIME)));
             } else if (Teams.GetPlayerTeam(player).equals("magenta")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Magenta").color(Teams.TEAM_MAGENTA)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.magenta").color(Teams.TEAM_MAGENTA)));
             } else if (Teams.GetPlayerTeam(player).equals("orange")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Orange").color(Teams.TEAM_ORANGE)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.orange").color(Teams.TEAM_ORANGE)));
             } else if (Teams.GetPlayerTeam(player).equals("peach")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Peach").color(Teams.TEAM_PEACH)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.peach").color(Teams.TEAM_PEACH)));
             } else if (Teams.GetPlayerTeam(player).equals("purple")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Purple").color(Teams.TEAM_PURPLE)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.purple").color(Teams.TEAM_PURPLE)));
             } else if (Teams.GetPlayerTeam(player).equals("red")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Red").color(Teams.TEAM_RED)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.red").color(Teams.TEAM_RED)));
             } else if (Teams.GetPlayerTeam(player).equals("white")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("White").color(Teams.TEAM_WHITE)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.white").color(Teams.TEAM_WHITE)));
             } else if (Teams.GetPlayerTeam(player).equals("yellow")) {
-                obj.getScore("6").customName(Component.text("Team: ").append(text("Yellow").color(Teams.TEAM_YELLOW)));
+                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                        .append(Component.translatable("crystalized.game.generic.team.yellow").color(Teams.TEAM_YELLOW)));
             } else {
                 obj.getScore("6").customName(Component.text("Team: Unknown"));
             }
 
             obj.getScore("5").setScore(5);
-            obj.getScore("5").customName(Component.text("Round: "));
+            obj.getScore("5").customName(Component.text("Round"));
 
             obj.getScore("4").setScore(4);
-            obj.getScore("4").customName(Component.text("Next Round: "));
+            obj.getScore("4").customName(Component.text("Next Round"));
 
             obj.getScore("3").setScore(3);
-            obj.getScore("3").customName(Component.text("Lives: "));
+            obj.getScore("3").customName(Component.text("Lives"));
 
             obj.getScore("2").setScore(2);
-            obj.getScore("2").customName(Component.text("Kills: "));
+            obj.getScore("2").customName(Component.text("Kills"));
 
             obj.getScore("1").setScore(1);
             obj.getScore("1").customName(text(" "));
@@ -253,22 +265,22 @@ public class ScoreboardManager {
 
         Team RoundCount = scoreboard.registerNewTeam("RoundCount");
         RoundCount.addEntry("6");
-        RoundCount.suffix(text("RoundCount Placeholder"));
+        RoundCount.suffix(text("RoundCount"));
         obj.getScore("6").setScore(6);
 
         Team NextRound = scoreboard.registerNewTeam("NextRound");
         NextRound.addEntry("5");
-        NextRound.suffix(text("NextRound Placeholder"));
+        NextRound.suffix(text("NextRound"));
         obj.getScore("5").setScore(5);
 
         Team LivesCount = scoreboard.registerNewTeam("LivesCount");
         LivesCount.addEntry("3");
-        LivesCount.suffix(text("LivesCount Placeholder"));
+        LivesCount.suffix(text("LivesCount"));
         obj.getScore("3").setScore(3);
 
         Team KillCount = scoreboard.registerNewTeam("KillCount");
         KillCount.addEntry("2");
-        KillCount.suffix(text("KillCount Placeholder"));
+        KillCount.suffix(text("KillCount"));
         obj.getScore("2").setScore(2);
 
         player.setScoreboard(scoreboard);
@@ -281,10 +293,10 @@ public class ScoreboardManager {
                 } else {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
-                        obj.getScore("5").customName(Component.text("Round: ").append(text(GameManager.Round)));
-                        obj.getScore("4").customName(Component.text("Next Round: ").append(text(GameManager.RoundCounter)));
-                        obj.getScore("3").customName(Component.text("Lives: ").append(text(pd.getLives())));
-                        obj.getScore("2").customName(Component.text("Kills: ").append(text(pd.getKills())));
+                        obj.getScore("5").customName(Component.translatable("crystalized.game.knockoff.round").append(text(": ")).append(text(GameManager.Round)));
+                        obj.getScore("4").customName(Component.translatable("crystalized.game.knockoff.nextround").append(text(": ")).append(text(GameManager.RoundCounter)));
+                        obj.getScore("3").customName(Component.translatable("crystalized.game.knockoff.lives").append(text(": ")).append(text(pd.getLives())));
+                        obj.getScore("2").customName(Component.translatable("crystalized.game.generic.kills").append(text(": ")).append(text(pd.getKills())));
                     } else {
                         RoundCount.suffix(text(GameManager.Round));
                         NextRound.suffix(text(GameManager.RoundCounter));

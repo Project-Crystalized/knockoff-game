@@ -221,7 +221,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(55)));
+                                p.sendMessage(Component.text("-".repeat(40)));
                             } else {
                                 p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
@@ -231,7 +231,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         s.sendMessage(Component.text(" "));
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(55)));
+                                p.sendMessage(Component.text("-".repeat(40)));
                             } else {
                                 p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
@@ -240,7 +240,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     } else {
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(55)));
+                                p.sendMessage(Component.text("-".repeat(40)));
                             } else {
                                 p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
@@ -250,7 +250,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         s.sendMessage(Component.text(" "));
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(55)));
+                                p.sendMessage(Component.text("-".repeat(40)));
                             } else {
                                 p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
@@ -381,7 +381,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         Collections.reverse(playerDatas);
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(55)).color(NamedTextColor.GOLD));
+                                p.sendMessage(Component.text("-".repeat(40)).color(NamedTextColor.GOLD));
                             } else {
                                 p.sendMessage(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
@@ -414,7 +414,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(55)).color(NamedTextColor.GOLD));
+                                p.sendMessage(Component.text("-".repeat(40)).color(NamedTextColor.GOLD));
                             } else {
                                 p.sendMessage(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
@@ -857,17 +857,17 @@ class MapManager {
         );
         CopyRandomMapSection();
 
-
-
         switch (knockoff.getInstance().getRandomNumber(1, 3)) {
-            case 1, 2:
+            case 1:
                 MoveDir = "EAST";
                 GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX + LastXLength;
                 GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
                 break;
-            /*case 2: //TODO
+            case 2:
                 MoveDir = "SOUTH";
-                break;*/
+                GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX;
+                GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ + LastZLength;
+                break;
             case 3:
                 MoveDir = "WEST";
                 GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX - knockoff.getInstance().mapdata.CurrentXLength;
@@ -951,7 +951,36 @@ class MapManager {
                         }
                     }
                     case "SOUTH" -> {
-
+                        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+                        if ((GameManager.LastSectionPlaceLocationZ + XPos) == (GameManager.LastSectionPlaceLocationZ + LastZLength + 1)) {
+                            cancel();
+                        } else {
+                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+                                Region region = new CuboidRegion(
+                                        BlockVector3.at(
+                                                GameManager.LastSectionPlaceLocationX,
+                                                GameManager.LastSectionPlaceLocationY,
+                                                GameManager.LastSectionPlaceLocationZ + XPos
+                                        ),
+                                        BlockVector3.at(
+                                                GameManager.LastSectionPlaceLocationX + LastXLength,
+                                                GameManager.LastSectionPlaceLocationY + LastYLength,
+                                                GameManager.LastSectionPlaceLocationZ + XPos
+                                        )
+                                );
+                                //Mask mask = new BlockMask(editSession.getExtent(), new BaseBlock(BlockTypes.AIR));
+                                ExistingBlockMask mask = new ExistingBlockMask(editSession.getExtent());
+                                RandomPattern pat = new RandomPattern();
+                                BlockState a = BukkitAdapter.adapt(Material.AMETHYST_BLOCK.createBlockData());
+                                pat.add(a, 1);
+                                editSession.replaceBlocks(region, mask, pat);
+                                editSession.flushQueue();
+                            } catch (Exception e) {
+                                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                                e.printStackTrace();
+                            }
+                            XPos++; //cba renaming
+                        }
                     }
                     case "WEST" -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
@@ -1032,7 +1061,36 @@ class MapManager {
                         }
                     }
                     case "SOUTH" -> {
-
+                        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+                        if ((GameManager.LastSectionPlaceLocationZ + XPos) == (GameManager.LastSectionPlaceLocationZ + LastZLength + 1)) {
+                            cancel();
+                        } else {
+                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+                                Region region = new CuboidRegion(
+                                        BlockVector3.at(
+                                                GameManager.LastSectionPlaceLocationX,
+                                                GameManager.LastSectionPlaceLocationY,
+                                                GameManager.LastSectionPlaceLocationZ + XPos
+                                        ),
+                                        BlockVector3.at(
+                                                GameManager.LastSectionPlaceLocationX + LastXLength,
+                                                GameManager.LastSectionPlaceLocationY + LastYLength,
+                                                GameManager.LastSectionPlaceLocationZ + XPos
+                                        )
+                                );
+                                //Mask mask = new BlockMask(editSession.getExtent(), new BaseBlock(BlockTypes.AIR));
+                                ExistingBlockMask mask = new ExistingBlockMask(editSession.getExtent());
+                                RandomPattern pat = new RandomPattern();
+                                BlockState a = BukkitAdapter.adapt(Material.AIR.createBlockData());
+                                pat.add(a, 1);
+                                editSession.replaceBlocks(region, mask, pat);
+                                editSession.flushQueue();
+                            } catch (Exception e) {
+                                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                                e.printStackTrace();
+                            }
+                            XPos++; //cba renaming
+                        }
                     }
                     case "WEST" -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));

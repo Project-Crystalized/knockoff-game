@@ -3,6 +3,7 @@ package gg.knockoff.game;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -17,7 +18,10 @@ public final class knockoff extends JavaPlugin {
     public GameManager GameManager;
     public boolean DevMode = false;
     public ProtocolManager protocolmanager;
+    private static boolean GameCountdownStarted = false;
     //public ConfigData ConfigData;
+
+    private int PlayerStartLimit = 4;
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
@@ -39,7 +43,6 @@ public final class knockoff extends JavaPlugin {
         KnockoffDatabase.setup_databases();
 
         new BukkitRunnable() {
-
             @Override
             public void run() {
                 if (GameManager != null) {
@@ -65,10 +68,52 @@ public final class knockoff extends JavaPlugin {
             }
         }.runTaskTimer(knockoff.getInstance(), 1, 20);
 
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                if (GameManager != null) {
+                    //do nothing, game has started
+                    GameCountdownStarted = false;
+                } else {
+                    if (!GameCountdownStarted) {
+                        Bukkit.getServer().sendActionBar(Component.text("Game starting soon (4 Players required)"));
+                        if (Bukkit.getOnlinePlayers().size() > PlayerStartLimit || Bukkit.getOnlinePlayers().size() == PlayerStartLimit) {
+                            GameCountdown();
+                        }
+                    } else if (Bukkit.getOnlinePlayers().size() < PlayerStartLimit) {
+                        GameCountdownStarted = false;
+                    }
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 1, 20);
+
         protocolmanager.addPacketListener(KnockoffProtocolLib.make_allys_glow());
         getLogger().log(Level.INFO, "KnockOff Plugin Enabled!");
 
     }
+
+    private static void GameCountdown() {
+        GameCountdownStarted = true;
+        new BukkitRunnable() {
+            int timer = 15;
+            @Override
+            public void run() {
+                Bukkit.getServer().sendActionBar(Component.text("Game starting in: " + timer));
+                timer--;
+                if (timer == 0) {
+                    knockoff.getInstance().is_force_starting = true;
+                    GameCountdownStarted = false;
+                    cancel();
+                }
+                if (!GameCountdownStarted) {
+                    Bukkit.getServer().sendMessage(Component.text("Game cancelled, too few players!").color(NamedTextColor.RED));
+                    GameCountdownStarted = false;
+                    cancel();
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 1, 20);
+    }
+
 
     @Override
     public void onDisable() {

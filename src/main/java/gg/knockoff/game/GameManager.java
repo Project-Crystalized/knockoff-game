@@ -366,7 +366,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             } else {
                 player.showTitle(Title.title(text("teamed win"), text("placeholder text"), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
             }
-            player.playSound(player, "minecraft:ui.toast.challenge_complete", 50, 1); //TODO placeholder sound
+            player.playSound(player, "crystalized:effect.ls_game_won", 50, 1);
         }
         KnockoffDatabase.save_game(WinningTeam);
         new BukkitRunnable() {
@@ -819,19 +819,25 @@ public class GameManager { //I honestly think this entire class could be optimis
     private static void SpawnRandomPowerup() {
         boolean IsValidSpot = false;
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
+        Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         while (!IsValidSpot) {
             blockloc = new Location(Bukkit.getWorld("world"),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5
             );
-            if (blockloc.getBlock().getType().equals(Material.AIR)) {
-                IsValidSpot = false;
-            } else {
+            blockloc2 = new Location(Bukkit.getWorld("world"),
+                    blockloc.getX(),
+                    blockloc.getY() + 1,
+                    blockloc.getZ()
+            );
+            if ((!blockloc.getBlock().getType().equals(Material.AIR)) && blockloc2.getBlock().getType().equals(Material.AIR)) {
                 IsValidSpot = true;
+            } else {
+                IsValidSpot = false;
             }
         }
-        DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 3, blockloc.getBlockZ()),
+        DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 1, blockloc.getBlockZ()),
                 KnockoffItem.ItemList.get(
                         knockoff.getInstance().getRandomNumber(0, KnockoffItem.ItemList.size())
                 ).toString()

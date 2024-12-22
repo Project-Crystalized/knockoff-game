@@ -227,5 +227,18 @@ class DropPowerup {
                 DroppedItem.teleport(loc);
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
+
+        new BukkitRunnable() {
+            int timer = 30;
+            @Override
+            public void run() {
+                if (timer == 0) {
+                    DroppedItemName.remove();
+                    DroppedItem.remove();
+                    cancel();
+                }
+                timer --;
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 20);
     }
 }

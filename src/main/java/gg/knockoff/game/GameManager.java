@@ -112,6 +112,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         SetupFirstSpawns();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+            p.getInventory().clear();
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.unlistPlayer(p);
             }

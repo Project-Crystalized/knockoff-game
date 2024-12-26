@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -18,6 +19,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.EquipmentSlot;
@@ -28,6 +30,7 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
+import java.util.Objects;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -53,8 +56,8 @@ public class PlayerListener implements Listener {
             player.removePotionEffect(PotionEffectType.REGENERATION);
             player.removePotionEffect(PotionEffectType.HUNGER);
             player.removePotionEffect(PotionEffectType.RESISTANCE);
-            player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, Integer.MAX_VALUE, 1, false, false, true));
-            player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, Integer.MAX_VALUE, 255, false, false, false));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
+            player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
             player.sendPlayerListHeaderAndFooter(
                     //Header
                     text("\n")
@@ -66,6 +69,14 @@ public class PlayerListener implements Listener {
                             .append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY))
             );
             new QueueScoreBoard(player);
+
+            ItemStack leavebutton = new ItemStack(Material.COAL, 1);
+            ItemMeta leavebuttonim = leavebutton.getItemMeta();
+            leavebuttonim.setCustomModelData(16);
+            leavebuttonim.displayName(Component.text("Return to lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+            leavebutton.setItemMeta(leavebuttonim);
+            player.getInventory().setItem(8, leavebutton);
+
         } else {
             player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
         }
@@ -301,28 +312,51 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void OnPlayerItemInteract(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
         if (knockoff.getInstance().GameManager != null) {
-            Player player = event.getPlayer();
             PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+            if (event.getHand() != EquipmentSlot.HAND || event.getItem() == null) {return;}
+            if (!event.getAction().isLeftClick()) {
+                ItemMeta im = event.getItem().getItemMeta();
+                if (
+                        (event.getItem().getType() == Material.COAL && im.hasCustomModelData() && im.getCustomModelData() < 15) ||
+                                (event.getItem().getType() == Material.WIND_CHARGE)
+                ) {
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            if (player.hasCooldown(Material.COAL) || player.hasCooldown(Material.WIND_CHARGE)) {
+                                pd.powerupsused++;
+                                if (knockoff.getInstance().DevMode) {
+                                    Bukkit.getServer().sendMessage(Component.text("[DEBUG] ")
+                                            .append(player.displayName())
+                                            .append(Component.text(" has used a powerup"))
+                                    );
+                                }
 
-            if (event.getHand() == EquipmentSlot.HAND) {
-                return;
-            } else {
-                if (event.getItem().getType().equals(Material.COAL)) {
-
-                    ItemMeta im = event.getItem().getItemMeta();
-                    if (im.hasCustomModelData() && im.getCustomModelData() < 15) {
-                        pd.powerupsused++;
-                        if (knockoff.getInstance().DevMode) {
-                            Bukkit.getServer().sendMessage(Component.text("[DEBUG] ")
-                                    .append(player.displayName())
-                                    .append(Component.text(" has used a powerup"))
-                            );
+                            }
+                            cancel();
                         }
-                    }
-
+                    }.runTaskTimer(knockoff.getInstance(),2, 1);
                 }
             }
+        } else {
+            if (event.getHand() != EquipmentSlot.HAND || event.getItem() == null) return;
+            if (event.getAction().isRightClick()) {
+                if (event.getItem().getType().equals(Material.COAL)) {
+                    ItemMeta im = event.getItem().getItemMeta();
+                    if (im.hasCustomModelData() && im.getCustomModelData() == 16) {
+                        player.kick();
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void OnInventoryMoveItem(InventoryClickEvent event) {
+        if (knockoff.getInstance().GameManager == null) {
+            event.setCancelled(true);
         }
     }
 }

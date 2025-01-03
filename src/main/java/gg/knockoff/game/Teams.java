@@ -12,6 +12,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.util.*;
 import java.util.logging.Level;
 
+import static net.kyori.adventure.text.Component.text;
+
 public class Teams {
 
     public static List<String> blue = new ArrayList<>();
@@ -54,7 +56,7 @@ public class Teams {
         }
 
         if (Bukkit.getOnlinePlayers().isEmpty()) {
-            Bukkit.getServer().sendMessage(Component.text("\nStarting the game requires a player to be online. Please login to the server and try again.\n"));
+            Bukkit.getServer().sendMessage(text("\nStarting the game requires a player to be online. Please login to the server and try again.\n"));
             return;
         } else {
             new BukkitRunnable() {
@@ -285,31 +287,31 @@ public class Teams {
 
     public static void SetPlayerDisplayNames(Player player) {
         if (blue.contains(player.getName())) {
-            player.displayName(Component.text("\uE120 ").append(Component.text(player.getName()).color(TEAM_BLUE)));
+            player.displayName(text("\uE120 ").append(text(player.getName()).color(TEAM_BLUE)));
         } else if (cyan.contains(player.getName())) {
-            player.displayName(Component.text("\uE121 ").append(Component.text(player.getName()).color(TEAM_CYAN)));
+            player.displayName(text("\uE121 ").append(text(player.getName()).color(TEAM_CYAN)));
         } else if (green.contains(player.getName())) {
-            player.displayName(Component.text("\uE122 ").append(Component.text(player.getName()).color(TEAM_GREEN)));
+            player.displayName(text("\uE122 ").append(text(player.getName()).color(TEAM_GREEN)));
         } else if (lemon.contains(player.getName())) {
-            player.displayName(Component.text("\uE128 ").append(Component.text(player.getName()).color(TEAM_LEMON)));
+            player.displayName(text("\uE128 ").append(text(player.getName()).color(TEAM_LEMON)));
         } else if (lime.contains(player.getName())) {
-            player.displayName(Component.text("\uE123 ").append(Component.text(player.getName()).color(TEAM_LIME)));
+            player.displayName(text("\uE123 ").append(text(player.getName()).color(TEAM_LIME)));
         } else if (magenta.contains(player.getName())) {
-            player.displayName(Component.text("\uE124 ").append(Component.text(player.getName()).color(TEAM_MAGENTA)));
+            player.displayName(text("\uE124 ").append(text(player.getName()).color(TEAM_MAGENTA)));
         } else if (orange.contains(player.getName())) {
-            player.displayName(Component.text("\uE129 ").append(Component.text(player.getName()).color(TEAM_ORANGE)));
+            player.displayName(text("\uE129 ").append(text(player.getName()).color(TEAM_ORANGE)));
         } else if (peach.contains(player.getName())) {
-            player.displayName(Component.text("\uE12A ").append(Component.text(player.getName()).color(TEAM_PEACH)));
+            player.displayName(text("\uE12A ").append(text(player.getName()).color(TEAM_PEACH)));
         } else if (purple.contains(player.getName())) {
-            player.displayName(Component.text("\uE12B ").append(Component.text(player.getName()).color(TEAM_PURPLE)));
+            player.displayName(text("\uE12B ").append(text(player.getName()).color(TEAM_PURPLE)));
         } else if (red.contains(player.getName())) {
-            player.displayName(Component.text("\uE125 ").append(Component.text(player.getName()).color(TEAM_RED)));
+            player.displayName(text("\uE125 ").append(text(player.getName()).color(TEAM_RED)));
         } else if (white.contains(player.getName())) {
-            player.displayName(Component.text("\uE126 ").append(Component.text(player.getName()).color(TEAM_WHITE)));
+            player.displayName(text("\uE126 ").append(text(player.getName()).color(TEAM_WHITE)));
         } else if (yellow.contains(player.getName())) {
-            player.displayName(Component.text("\uE127 ").append(Component.text(player.getName()).color(TEAM_YELLOW)));
+            player.displayName(text("\uE127 ").append(text(player.getName()).color(TEAM_YELLOW)));
         } else {
-            player.displayName(Component.text("[Unknown Team]").append(Component.text(player.getName())));
+            player.displayName(text("[Unknown Team]").append(text(player.getName())));
         }
     }
 }
@@ -351,6 +353,11 @@ class TeamStatus{
         if (Teams.red.isEmpty()) {RedStatus = "dead";} else {RedStatus = "alive";}
         if (Teams.white.isEmpty()) {WhiteStatus = "dead";} else {WhiteStatus = "alive";}
         if (Teams.yellow.isEmpty()) {YellowStatus = "dead";} else {YellowStatus = "alive";}
+
+        if (Bukkit.getOnlinePlayers().size() == 1) {
+            Bukkit.getServer().sendMessage(text("1 player detected, To end the game, run \"/knockoff end\" as a player with op. The game will not end automatically due to player size"));
+            return;
+        }
 
         new BukkitRunnable() {
             @Override
@@ -667,14 +674,14 @@ class CustomPlayerNametags{
                 } else {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     if (pd.isPlayerDead) {
-                        displayfront.text(Component.text(""));
+                        displayfront.text(text(""));
                     } else {
-                        displayfront.text(Component.text("")
+                        displayfront.text(text("")
                                 .append(player.displayName())
-                                .append(Component.text("\nKB: "))
-                                .append(Component.text(pd.getDamagepercentage()))
-                                .append(Component.text("% | L: "))
-                                .append(Component.text(pd.getLives()))
+                                .append(text("\nKB: "))
+                                .append(text(pd.getDamagepercentage()))
+                                .append(text("% | L: "))
+                                .append(text(pd.getLives()))
                         );
                     }
                 }

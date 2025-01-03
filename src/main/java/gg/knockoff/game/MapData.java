@@ -65,7 +65,7 @@ public class MapData {
             }
             // for statement above should generate something similar to this
             // ["section1", -18, 19, 34, 46, -6, -29, "waxed_copper_block, 1"]
-            // Format is: From X, From Y, From Z, To X, To Y, To Z, removeblock, middlecoord
+            // Format is: Name, From X, From Y, From Z, To X, To Y, To Z, border block, platform offset
 
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, "Could not load the maps configuration file!\n Error: " + e);
@@ -86,9 +86,9 @@ public class MapData {
     }
 
     public JsonArray getrandommapsection() {
-        Bukkit.getLogger().log(Level.INFO, "OLD: " + currentsection); //for debugging
-        while(currentsection.size()>0)
-        {
+
+        //Bukkit.getLogger().log(Level.INFO, "OLD: " + currentsection); //for debugging
+        while(currentsection.size()>0) {
             currentsection.remove(0);
         }
 
@@ -103,7 +103,7 @@ public class MapData {
         currentsection.add(sectionslist.get(7 + n * 9));
         currentsection.add(sectionslist.get(8 + n * 9));
 
-        Bukkit.getLogger().log(Level.INFO, "NEW: " + currentsection); //for debugging
+        //Bukkit.getLogger().log(Level.INFO, "NEW: " + currentsection); //for debugging
 
         CurrentXLength = getNewCurrentXlength();
         CurrentYLength = getNewCurrentYlength();

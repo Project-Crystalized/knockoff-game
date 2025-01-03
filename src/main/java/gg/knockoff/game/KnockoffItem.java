@@ -24,13 +24,15 @@ public class KnockoffItem {
     public static final ArrayList ItemList = new ArrayList();
 
     public static void SetupKnockoffItems() {
+        //Commented out powerups aren't functional yet and give a debug message. Commented out for a chance for players to always get usable powerups
+
         ItemList.clear();
         ItemList.add("BoostOrb");
-        ItemList.add("BridgeOrb");
+        //ItemList.add("BridgeOrb");
         ItemList.add("ExplosiveOrb");
-        ItemList.add("GrapplingOrb");
-        ItemList.add("KnockoutOrb");
-        ItemList.add("CloudTotem");
+        //ItemList.add("GrapplingOrb");
+        //ItemList.add("KnockoutOrb");
+        //ItemList.add("CloudTotem");
         ItemList.add("WindCharge");
     }
 

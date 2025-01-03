@@ -56,6 +56,7 @@ public class PlayerListener implements Listener {
             player.removePotionEffect(PotionEffectType.REGENERATION);
             player.removePotionEffect(PotionEffectType.HUNGER);
             player.removePotionEffect(PotionEffectType.RESISTANCE);
+            player.removePotionEffect(PotionEffectType.JUMP_BOOST); //Should remove slime time if you somehow still have it
             player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
             player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
             player.sendPlayerListHeaderAndFooter(

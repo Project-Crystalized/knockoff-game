@@ -6,6 +6,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.entity.Player;
+
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 
 import java.util.logging.Level;
 import org.bukkit.Bukkit;
@@ -30,6 +34,9 @@ public final class knockoff extends JavaPlugin {
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new DamagePercentage(), this);
         this.getServer().getPluginManager().registerEvents(new CrystalBlocks(), this);
+
+				this.getServer().getMessenger().registerOutgoingPluginChannel(this, "crystalized:knockoff");
+				this.getServer().getMessenger().registerOutgoingPluginChannel(this, "crystalized:main");
 
         Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);
         Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
@@ -56,8 +63,17 @@ public final class knockoff extends JavaPlugin {
                     } else {
                         is_force_starting = false;
                         new BukkitRunnable() {
-                            int timer = 3;
                             public void run() {
+
+																// signal that the game has started to the proxy
+																ByteArrayDataOutput out = ByteStreams.newDataOutput();
+																out.writeUTF("start_game");
+																for (Player p : Bukkit.getOnlinePlayers()) {
+																		out.writeUTF(p.getName());
+																}
+																Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
+																p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
+
                                 GameManager = new GameManager();
                                 cancel();
                             }
@@ -76,10 +92,6 @@ public final class knockoff extends JavaPlugin {
                     GameCountdownStarted = false;
                 } else {
                     if (!GameCountdownStarted) {
-                        Bukkit.getServer().sendActionBar(Component.translatable("crystalized.game.generic.startingsoon1").append(Component.text(" "))
-                                .append(Component.translatable("crystalized.game.generic.playersrequired1")).append(Component.text("" + PlayerStartLimit))
-                                .append(Component.translatable("crystalized.game.generic.playersrequired2"))
-                        );
                         if (Bukkit.getOnlinePlayers().size() > PlayerStartLimit || Bukkit.getOnlinePlayers().size() == PlayerStartLimit) {
                             GameCountdown();
                         }

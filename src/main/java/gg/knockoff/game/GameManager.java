@@ -34,6 +34,9 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.geysermc.floodgate.api.FloodgateApi;
 
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
+
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -275,10 +278,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (knockoff.getInstance().DevMode) {
                     //This line provides debug info on the current map section
                     Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection + ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength() + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
-
-                    //This gives team info
-                    //Bukkit.getServer().sendActionBar(Component.text("Team Stats: " + TeamStatus.TeamsList));
-
                 }
                 //Should stop this bukkitrunnable once the game ends
                 if (knockoff.getInstance().GameManager == null) {cancel();}
@@ -444,9 +443,25 @@ public class GameManager { //I honestly think this entire class could be optimis
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + LastSectionPlaceLocationX + "," + LastSectionPlaceLocationY + "," + LastSectionPlaceLocationZ);
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + (LastSectionPlaceLocationX + MapManager.LastXLength) + "," + (LastSectionPlaceLocationY+ MapManager.LastYLength) + "," + (LastSectionPlaceLocationZ + MapManager.LastZLength));
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            p.kick();
-        }
+
+				// send players back to lobby
+				ByteArrayDataOutput out = ByteStreams.newDataOutput();
+				out.writeUTF("Connect");
+				out.writeUTF("lobby");
+				for (Player p : Bukkit.getOnlinePlayers()) {
+						p.sendPluginMessage(knockoff.getInstance(), "crystalized:main", out.toByteArray());
+				}
+
+				// kick people 2 seconds later
+				new BukkitRunnable() {
+						@Override
+						public void run() {
+								for (Player p : Bukkit.getOnlinePlayers()) {
+            				p.kick();
+								}
+						}
+				}.runTaskLater(knockoff.getInstance(), (20 * 2));
+
         for (Entity e : Bukkit.getWorld("world").getEntities()) {
             if (e instanceof TextDisplay) {
                 e.remove();

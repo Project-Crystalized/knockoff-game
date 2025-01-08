@@ -308,20 +308,49 @@ public class Teams {
 }
 
 class TeamStatus {
+	enum Status {
+		Alive,
+		Dead,
+	}
 
-	public static String BlueStatus = "";
-	public static String CyanStatus = "";
-	public static String GreenStatus = "";
-	public static String LemonStatus = "";
-	public static String LimeStatus = "";
-	public static String MagentaStatus = "";
-	public static String OrangeStatus = "";
-	public static String PeachStatus = "";
-	public static String PurpleStatus = "";
-	public static String RedStatus = "";
-	public static String WhiteStatus = "";
-	public static String YellowStatus = "";
-	private static ArrayList<String> TeamsList = new ArrayList<String>();
+	public static HashMap<String, Status> team_statuses = new HashMap<>();
+
+	private static void update_team_status(String team) {
+		int counter = 0;
+		for (String p_name : Teams.get_team_from_string(team)) {
+			Player p = Bukkit.getPlayer(p_name);
+			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+			if (pd == null) {
+				return;
+			}
+			if (!pd.isEliminated) {
+				counter++;
+			}
+		}
+		if (Teams.cyan.size() == 0) {
+			team_statuses.put(team, Status.Dead);
+		} else if (counter == Teams.cyan.size()) {
+			team_statuses.put(team, Status.Alive);
+		} else {
+			team_statuses.put(team, Status.Dead);
+		}
+	}
+
+	private static boolean is_only_team_alive(String team) {
+		if (team_statuses.get(team) == Status.Dead) {
+			return false;
+		}
+
+		for (String loop_team : team_statuses.keySet()) {
+			if (loop_team == team) {
+				continue;
+			}
+			if (team_statuses.get(loop_team) == Status.Alive) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 	// I hate this class
 
@@ -329,69 +358,13 @@ class TeamStatus {
 	// thanks to it being in a BukkitRunnable
 	// Works fine on my machines ig, if you have lag problems blame this ig
 	public static void Init() {
-
-		// If blue is empty, set it to "dead", otherwise set it to "alive"
-		// Also this specific case should never trigger, Blue is the first team player 1
-		// is always in, You need at least 1 player to start a game
-		if (Teams.blue.isEmpty()) {
-			BlueStatus = "dead";
-		} else {
-			BlueStatus = "alive";
-		}
-		if (Teams.cyan.isEmpty()) {
-			CyanStatus = "dead";
-		} else {
-			CyanStatus = "alive";
-		}
-		if (Teams.green.isEmpty()) {
-			GreenStatus = "dead";
-		} else {
-			GreenStatus = "alive";
-		}
-		if (Teams.lemon.isEmpty()) {
-			LemonStatus = "dead";
-		} else {
-			LemonStatus = "alive";
-		}
-		if (Teams.lime.isEmpty()) {
-			LimeStatus = "dead";
-		} else {
-			LimeStatus = "alive";
-		}
-		if (Teams.magenta.isEmpty()) {
-			MagentaStatus = "dead";
-		} else {
-			MagentaStatus = "alive";
-		}
-		if (Teams.orange.isEmpty()) {
-			OrangeStatus = "dead";
-		} else {
-			OrangeStatus = "alive";
-		}
-		if (Teams.peach.isEmpty()) {
-			PeachStatus = "dead";
-		} else {
-			PeachStatus = "alive";
-		}
-		if (Teams.purple.isEmpty()) {
-			PurpleStatus = "dead";
-		} else {
-			PurpleStatus = "alive";
-		}
-		if (Teams.red.isEmpty()) {
-			RedStatus = "dead";
-		} else {
-			RedStatus = "alive";
-		}
-		if (Teams.white.isEmpty()) {
-			WhiteStatus = "dead";
-		} else {
-			WhiteStatus = "alive";
-		}
-		if (Teams.yellow.isEmpty()) {
-			YellowStatus = "dead";
-		} else {
-			YellowStatus = "alive";
+		team_statuses.clear();
+		for (TeamData td : Teams.team_datas) {
+			if (Teams.get_team_from_string(td.name).isEmpty()) {
+				team_statuses.put(td.name, Status.Dead);
+			} else {
+				team_statuses.put(td.name, Status.Alive);
+			}
 		}
 
 		if (Bukkit.getOnlinePlayers().size() == 1) {
@@ -404,401 +377,21 @@ class TeamStatus {
 			@Override
 			public void run() {
 
-				// Check if all players in the team are alive. If not set them to dead
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				} // Putting this in between these blocks of code to prevent errors in console.
-					// This stops the BukkitRunnable when the game ends
-
-				// This is going get annoying to copy-paste for all 12 teams :cry:
-				// Could be optimised, marking all the ugly code in this project with this
-				// phrase ig
-				int blue = 0;
-				int bi = 0;
-				while (bi != Teams.blue.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.blue.get(bi));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (!pd.isEliminated) {
-						blue++;
-					}
-					bi++;
-				}
-				if (bi == 0 && Teams.blue.size() == 0) {
-					BlueStatus = "dead";
-				} else if (blue == Teams.blue.size()) {
-					BlueStatus = "alive";
-				} else {
-					BlueStatus = "dead";
+				for (TeamData td : Teams.team_datas) {
+					if (knockoff.getInstance().GameManager == null) {
+						cancel();
+					} 
+					// Check if all players in the team are alive. If not set them to dead
+					update_team_status(td.name);
 				}
 
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int cyan = 0;
-				int ci = 0;
-				while (ci != Teams.cyan.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.cyan.get(ci));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
+
+				for (TeamData td : Teams.team_datas) {
+					if (is_only_team_alive(td.name)) {
+						GameManager.StartEndGame(td.name);
+						cancel();
 						return;
 					}
-					if (!pd.isEliminated) {
-						cyan++;
-					}
-					ci++;
-				}
-				if (ci == 0 && Teams.cyan.size() == 0) {
-					CyanStatus = "dead";
-				} else if (cyan == Teams.cyan.size()) {
-					CyanStatus = "alive";
-				} else {
-					CyanStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int green = 0;
-				int gi = 0;
-				while (gi != Teams.green.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.green.get(gi));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						green++;
-					}
-					gi++;
-				}
-				if (gi == 0 && Teams.green.size() == 0) {
-					GreenStatus = "dead";
-				} else if (green == Teams.green.size()) {
-					GreenStatus = "alive";
-				} else {
-					GreenStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int lemon = 0;
-				int li = 0;
-				while (li != Teams.lemon.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.lemon.get(li));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						lemon++;
-					}
-					li++;
-				}
-				if (li == 0 && Teams.lemon.size() == 0) {
-					LemonStatus = "dead";
-				} else if (lemon == Teams.lemon.size()) {
-					LemonStatus = "alive";
-				} else {
-					LemonStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int lime = 0;
-				int l2i = 0;
-				while (l2i != Teams.lime.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.lime.get(l2i));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						lime++;
-					}
-					l2i++;
-				}
-				if (l2i == 0 && Teams.lime.size() == 0) {
-					LimeStatus = "dead";
-				} else if (lime == Teams.lime.size()) {
-					LimeStatus = "alive";
-				} else {
-					LimeStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int magenta = 0;
-				int mi = 0;
-				while (mi != Teams.magenta.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.magenta.get(mi));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						magenta++;
-					}
-					mi++;
-				}
-				if (mi == 0 && Teams.magenta.size() == 0) {
-					MagentaStatus = "dead";
-				} else if (magenta == Teams.magenta.size()) {
-					MagentaStatus = "alive";
-				} else {
-					MagentaStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int orange = 0;
-				int oi = 0;
-				while (oi != Teams.orange.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.orange.get(oi));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						orange++;
-					}
-					oi++;
-				}
-				if (oi == 0 && Teams.orange.size() == 0) {
-					OrangeStatus = "dead";
-				} else if (orange == Teams.orange.size()) {
-					OrangeStatus = "alive";
-				} else {
-					OrangeStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int peach = 0;
-				int pi = 0;
-				while (pi != Teams.peach.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.peach.get(pi));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						peach++;
-					}
-					pi++;
-				}
-				if (pi == 0 && Teams.peach.size() == 0) {
-					PeachStatus = "dead";
-				} else if (peach == Teams.peach.size()) {
-					PeachStatus = "alive";
-				} else {
-					PeachStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int purple = 0;
-				int p1i = 0;
-				while (p1i != Teams.purple.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.purple.get(p1i));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						purple++;
-					}
-					p1i++;
-				}
-				if (purple == Teams.purple.size()) {
-					PurpleStatus = "dead";
-				} else if (p1i == 0 && Teams.purple.size() == 0) {
-					PurpleStatus = "alive";
-				} else {
-					PurpleStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int red = 0;
-				int ri = 0;
-				while (ri != Teams.red.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.red.get(ri));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						red++;
-					}
-					ri++;
-				}
-				if (ri == 0 && Teams.red.size() == 0) {
-					RedStatus = "dead";
-				} else if (red == Teams.red.size()) {
-					RedStatus = "alive";
-				} else {
-					RedStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int white = 0;
-				int wi = 0;
-				while (wi != Teams.white.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.white.get(wi));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						white++;
-					}
-					wi++;
-				}
-				if (wi == 0 && Teams.white.size() == 0) {
-					WhiteStatus = "dead";
-				} else if (white == Teams.white.size()) {
-					WhiteStatus = "alive";
-				} else {
-					WhiteStatus = "dead";
-				}
-
-				if (knockoff.getInstance().GameManager == null) {
-					cancel();
-				}
-				int yellow = 0;
-				int yi = 0;
-				while (yi != Teams.yellow.size() && knockoff.getInstance().GameManager != null) {
-					Player p = Bukkit.getPlayer(Teams.yellow.get(yi));
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-					if (pd == null) {
-						return;
-					}
-					if (!pd.isEliminated) {
-						yellow++;
-					}
-					yi++;
-				}
-				if (yi == 0 && Teams.yellow.size() == 0) {
-					YellowStatus = "dead";
-				} else if (yellow == Teams.yellow.size()) {
-					YellowStatus = "alive";
-				} else {
-					YellowStatus = "dead";
-				}
-
-				TeamsList.clear();
-				TeamsList.add(BlueStatus);
-				TeamsList.add(CyanStatus);
-				TeamsList.add(GreenStatus);
-				TeamsList.add(LemonStatus);
-				TeamsList.add(LimeStatus);
-				TeamsList.add(MagentaStatus);
-				TeamsList.add(OrangeStatus);
-				TeamsList.add(PeachStatus);
-				TeamsList.add(PurpleStatus);
-				TeamsList.add(RedStatus);
-				TeamsList.add(WhiteStatus);
-				TeamsList.add(YellowStatus);
-
-				if (TeamsList.contains("alive")) {
-
-				}
-
-				// TODO i fucking hate this but idk how else to format this well but it works
-				// Could be optimised especially
-				if (BlueStatus.equals("alive") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("blue");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("alive") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("cyan");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("alive")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("green");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("alive") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("lemon");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("alive") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("lime");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("alive")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("magenta");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("alive")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("orange");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("alive") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("peach");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("alive") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("purple");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("alive")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("red");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("alive") && YellowStatus.equals("dead")) {
-					GameManager.StartEndGame("white");
-					cancel();
-				} else if (BlueStatus.equals("dead") && CyanStatus.equals("dead") && GreenStatus.equals("dead")
-						&& LemonStatus.equals("dead") && LimeStatus.equals("dead") && MagentaStatus.equals("dead")
-						&& OrangeStatus.equals("dead")
-						&& PeachStatus.equals("dead") && PurpleStatus.equals("dead") && RedStatus.equals("dead")
-						&& WhiteStatus.equals("dead") && YellowStatus.equals("alive")) {
-					GameManager.StartEndGame("yellow");
-					cancel();
 				}
 			}
 		}.runTaskTimer(knockoff.getInstance(), 20, 1);

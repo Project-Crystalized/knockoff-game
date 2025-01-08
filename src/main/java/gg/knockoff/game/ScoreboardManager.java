@@ -144,45 +144,13 @@ public class ScoreboardManager {
             obj.getScore("7").customName(Component.text("  "));
 
             obj.getScore("6").setScore(6);
-            if (Teams.GetPlayerTeam(player).equals("blue")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.blue").color(Teams.TEAM_BLUE)));
-            } else if (Teams.GetPlayerTeam(player).equals("cyan")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.cyan").color(Teams.TEAM_CYAN)));
-            } else if (Teams.GetPlayerTeam(player).equals("green")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.green").color(Teams.TEAM_GREEN)));
-            } else if (Teams.GetPlayerTeam(player).equals("lemon")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.lemon").color(Teams.TEAM_LEMON)));
-            } else if (Teams.GetPlayerTeam(player).equals("lime")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.lime").color(Teams.TEAM_LIME)));
-            } else if (Teams.GetPlayerTeam(player).equals("magenta")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.magenta").color(Teams.TEAM_MAGENTA)));
-            } else if (Teams.GetPlayerTeam(player).equals("orange")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.orange").color(Teams.TEAM_ORANGE)));
-            } else if (Teams.GetPlayerTeam(player).equals("peach")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.peach").color(Teams.TEAM_PEACH)));
-            } else if (Teams.GetPlayerTeam(player).equals("purple")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.purple").color(Teams.TEAM_PURPLE)));
-            } else if (Teams.GetPlayerTeam(player).equals("red")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.red").color(Teams.TEAM_RED)));
-            } else if (Teams.GetPlayerTeam(player).equals("white")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.white").color(Teams.TEAM_WHITE)));
-            } else if (Teams.GetPlayerTeam(player).equals("yellow")) {
-                obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
-                        .append(Component.translatable("crystalized.game.generic.team.yellow").color(Teams.TEAM_YELLOW)));
-            } else {
+						TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
+            if (td == null) {
                 obj.getScore("6").customName(Component.text("Team: Unknown"));
-            }
+            } else {
+            		obj.getScore("6").customName(Component.translatable("crystalized.game.generic.team").append(text(": "))
+                		.append(Component.translatable("crystalized.game.generic.team."+td.name).color(TextColor.color(td.color.asRGB()))));
+						}
 
             obj.getScore("5").setScore(5);
             obj.getScore("5").customName(Component.text("Round"));
@@ -230,33 +198,12 @@ public class ScoreboardManager {
 
             Team TeamName = scoreboard.registerNewTeam("Team");
             TeamName.addEntry("8");
-            if (Teams.GetPlayerTeam(player).equals("blue")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.blue").color(Teams.TEAM_BLUE));
-            } else if (Teams.GetPlayerTeam(player).equals("cyan")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.cyan").color(Teams.TEAM_CYAN));
-            } else if (Teams.GetPlayerTeam(player).equals("green")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.green").color(Teams.TEAM_GREEN));
-            } else if (Teams.GetPlayerTeam(player).equals("lemon")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.lemon").color(Teams.TEAM_LEMON));
-            } else if (Teams.GetPlayerTeam(player).equals("lime")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.lime").color(Teams.TEAM_LIME));
-            } else if (Teams.GetPlayerTeam(player).equals("magenta")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.magenta").color(Teams.TEAM_MAGENTA));
-            } else if (Teams.GetPlayerTeam(player).equals("orange")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.orange").color(Teams.TEAM_ORANGE));
-            } else if (Teams.GetPlayerTeam(player).equals("peach")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.peach").color(Teams.TEAM_PEACH));
-            } else if (Teams.GetPlayerTeam(player).equals("purple")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.purple").color(Teams.TEAM_PURPLE));
-            } else if (Teams.GetPlayerTeam(player).equals("red")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.red").color(Teams.TEAM_RED));
-            } else if (Teams.GetPlayerTeam(player).equals("white")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.white").color(Teams.TEAM_WHITE));
-            } else if (Teams.GetPlayerTeam(player).equals("yellow")) {
-                TeamName.suffix(Component.translatable("crystalized.game.generic.team.yellow").color(Teams.TEAM_YELLOW));
-            } else {
+						TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
+            if (td == null) {
                 TeamName.suffix(text("???").color(NamedTextColor.WHITE));
-            }
+            } else {
+            		TeamName.suffix(Component.translatable("crystalized.game.generic.team."+td.name).color(TextColor.color(td.color.asRGB())));
+						}
             obj.getScore("8").setScore(8);
         }
 

@@ -6,10 +6,11 @@ Recreation of TubNet Knockout
 You are dropped onto a map with generated sections, your goal is to punch other players off and be the last person standing.
 
 ## Contributors
-TotallyNoCallum - did everything lol
+TotallyNoCallum - did almost everything lol <br>
+Cooltexture - Programming help
 
 ## How to use
-Knockoff is currently built for 1.21.1 Paper, This plugin won't work on newer or older versions.
+Knockoff is currently built for 1.21.4 Paper, This plugin won't work on newer or older versions.
 
 Dependencies (You need to install these) <br>
 [FAWE (FastAsyncWorldEdit)](https://www.spigotmc.org/resources/fastasyncworldedit.13932/) <br>

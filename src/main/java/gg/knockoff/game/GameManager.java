@@ -22,7 +22,6 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockState;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
@@ -45,6 +44,7 @@ import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.Component.translatable;
+import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public class GameManager { //I honestly think this entire class could be optimised because of how long it is
     public static List<PlayerData> playerDatas;
@@ -56,7 +56,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static int LastSectionPlaceLocationX = 1000;
     public static int LastSectionPlaceLocationY = 0;
     public static int LastSectionPlaceLocationZ = 1000;
-    public ArrayList PlayerList = new ArrayList();
+    public ArrayList<String> PlayerList = new ArrayList<String>();
     public static String GameState = "game"; //can be "game" (game running), "end" (game ending)
 
     //Can be "solo" or "team"
@@ -145,7 +145,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 switch (timer) {
                     case 7:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(translatable("crystalized.game.generic.go").color(NamedTextColor.GOLD), text(" "),
+                            player.showTitle(Title.title(translatable("crystalized.game.generic.go").color(GOLD), text(" "),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown_end", 50, 1);
                             player.getWorldBorder().reset();
@@ -155,25 +155,25 @@ public class GameManager { //I honestly think this entire class could be optimis
                         break;
                     case 6:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(NamedTextColor.GREEN), text("3 2 ").color(NamedTextColor.GRAY)
-                                            .append(Component.text("1").color(NamedTextColor.RED))
+                            player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(GREEN), text("3 2 ").color(GRAY)
+                                            .append(Component.text("1").color(RED))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
                         }
                         break;
                     case 5:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(NamedTextColor.GREEN), text("3").color(NamedTextColor.GRAY)
-                                            .append(Component.text(" 2").color(NamedTextColor.RED))
-                                            .append(Component.text(" 1").color(NamedTextColor.GRAY))
+                            player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(GREEN), text("3").color(GRAY)
+                                            .append(Component.text(" 2").color(RED))
+                                            .append(Component.text(" 1").color(GRAY))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
                         }
                         break;
                     case 4:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(NamedTextColor.GREEN), text("3").color(NamedTextColor.RED)
-                                            .append(Component.text(" 2 1").color(NamedTextColor.GRAY))
+                            player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(GREEN), text("3").color(RED)
+                                            .append(Component.text(" 2 1").color(GRAY))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
                         }
@@ -231,7 +231,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             }
                         }
                         s.sendMessage(Component.text(" "));
-                        s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup").color(NamedTextColor.DARK_AQUA));
+                        s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
                         s.sendMessage(Component.text(" "));
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
@@ -250,7 +250,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             }
                         }
                         s.sendMessage(Component.text(" "));
-                        s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup2").color(NamedTextColor.DARK_AQUA));
+                        s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
                         s.sendMessage(Component.text(" "));
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
@@ -313,56 +313,9 @@ public class GameManager { //I honestly think this entire class could be optimis
         GameState = "end";
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (GameManager.GameType.equals("solo")) {
-                switch (WinningTeam) {
-                    case "blue" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.blue.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "cyan" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.cyan.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "green" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.green.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "lemon" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.lemon.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "lime" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.lime.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "magenta" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.magenta.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "orange" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.orange.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "peach" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.peach.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "purple" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.purple.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "red" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.red.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "white" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.white.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                    case "yellow" -> {
-                        Player LastPlayer = Bukkit.getPlayer(Teams.yellow.getFirst());
-                        player.showTitle(Title.title(text("").append(LastPlayer.displayName()), translatable("crystalized.game.knockoff.win").color(NamedTextColor.YELLOW), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
-                    }
-                }
+								Player lastPlayer = Bukkit.getPlayer(Teams.get_team_from_string(WinningTeam).getFirst());
+                player.showTitle(Title.title(lastPlayer.displayName(), translatable("crystalized.game.knockoff.win").color(YELLOW),
+										Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
             } else {
                 player.showTitle(Title.title(text("teamed win"), text("placeholder text"), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
             }
@@ -381,42 +334,42 @@ public class GameManager { //I honestly think this entire class could be optimis
                         Collections.reverse(playerDatas);
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(40)).color(NamedTextColor.GOLD));
+                                p.sendMessage(Component.text("-".repeat(40)).color(GOLD));
                             } else {
-                                p.sendMessage(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                p.sendMessage(Component.text(" ".repeat(55)).color(GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
                         }
                         Bukkit.getServer().sendMessage(Component.text("")
-                                .append(Component.text("\n").append(Component.translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD)).append(Component.text(" \uE108").color(NamedTextColor.WHITE)))
-                                .append(Component.text("\n").append(Component.translatable("crystalized.game.generic.gameresults").color(NamedTextColor.BLUE)))
+                                .append(Component.text("\n").append(Component.translatable("crystalized.game.knockoff.name").color(GOLD)).append(Component.text(" \uE108").color(WHITE)))
+                                .append(Component.text("\n").append(Component.translatable("crystalized.game.generic.gameresults").color(BLUE)))
                         );
                         if (playerDatas.size() > 0) {
                             PlayerData first = playerDatas.get(0);
                             Bukkit.getServer().sendMessage(Component.text("   1st. ")
-                                    .append(Component.text(first.player)).color(NamedTextColor.GREEN).append(text(" ".repeat(20 - first.player.length())))
+                                    .append(Component.text(first.player)).color(GREEN).append(text(" ".repeat(20 - first.player.length())))
                                     .append(Component.text("" + first.kills))
                             );
                         }
                         if (playerDatas.size() > 1) {
                             PlayerData second = playerDatas.get(1);
                             Bukkit.getServer().sendMessage(Component.text("   2nd. ")
-                                    .append(Component.text(second.player)).color(NamedTextColor.YELLOW).append(text(" ".repeat(20 - second.player.length())))
+                                    .append(Component.text(second.player)).color(YELLOW).append(text(" ".repeat(20 - second.player.length())))
                                     .append(Component.text("" + second.kills))
                             );
                         }
                         if (playerDatas.size() > 2) {
                             PlayerData third = playerDatas.get(2);
                             Bukkit.getServer().sendMessage(Component.text("   3rd. ")
-                                    .append(Component.text(third.player)).color(NamedTextColor.YELLOW).append(text(" ".repeat(20 - third.player.length())))
+                                    .append(Component.text(third.player)).color(YELLOW).append(text(" ".repeat(20 - third.player.length())))
                                     .append(Component.text("" + third.kills))
                             );
                         }
 
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(40)).color(NamedTextColor.GOLD));
+                                p.sendMessage(Component.text("-".repeat(40)).color(GOLD));
                             } else {
-                                p.sendMessage(Component.text(" ".repeat(55)).color(NamedTextColor.GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                p.sendMessage(Component.text(" ".repeat(55)).color(GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
                         }
                         break;
@@ -483,94 +436,16 @@ public class GameManager { //I honestly think this entire class could be optimis
         //for debugging
         //Bukkit.getLogger().log(Level.INFO, "[GAMEMANAGER] Player " + player.getName() + "Is in Team " + Teams.GetPlayerTeam(player));
 
-        if (Teams.GetPlayerTeam(player).equals("blue")) {
-            im.setCustomModelData(1);
-            inv.setChestplate(colorArmor(Color.fromRGB(0x0A42BB), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0x0A42BB), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0x0A42BB), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else if (Teams.GetPlayerTeam(player).equals("cyan")) {
-            im.setCustomModelData(2);
-            inv.setChestplate(colorArmor(Color.fromRGB(0x157D91), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0x157D91), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0x157D91), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("green")) {
-            im.setCustomModelData(3);
-            inv.setChestplate(colorArmor(Color.fromRGB(0x0A971E), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0x0A971E), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0x0A971E), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("lemon")) {
-            im.setCustomModelData(4);
-            inv.setChestplate(colorArmor(Color.fromRGB(0xFFC500), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0xFFC500), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0xFFC500), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("lime")) {
-            im.setCustomModelData(5);
-            inv.setChestplate(colorArmor(Color.fromRGB(0x67E555), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0x67E555), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0x67E555), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("magenta")) {
-            im.setCustomModelData(6);
-            inv.setChestplate(colorArmor(Color.fromRGB(0xDA50E0), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0xDA50E0), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0xDA50E0), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("orange")) {
-            im.setCustomModelData(7);
-            inv.setChestplate(colorArmor(Color.fromRGB(0xFF7900), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0xFF7900), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0xFF7900), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("peach")) {
-            im.setCustomModelData(8);
-            inv.setChestplate(colorArmor(Color.fromRGB(0xFF8775), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0xFF8775), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0xFF8775), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("purple")) {
-            im.setCustomModelData(9);
-            inv.setChestplate(colorArmor(Color.fromRGB(0x7525DC), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0x7525DC), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0x7525DC), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("red")) {
-            im.setCustomModelData(10);
-            inv.setChestplate(colorArmor(Color.fromRGB(0xF74036), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0xF74036), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0xF74036), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("white")) {
-            im.setCustomModelData(11);
-            inv.setChestplate(colorArmor(Color.fromRGB(0xFFFFFF), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0xFFFFFF), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0xFFFFFF), new ItemStack(Material.LEATHER_BOOTS)));
-
-        } else
-        if (Teams.GetPlayerTeam(player).equals("yellow")) {
-            im.setCustomModelData(12);
-            inv.setChestplate(colorArmor(Color.fromRGB(0xFBE059), new ItemStack(Material.LEATHER_CHESTPLATE)));
-            inv.setLeggings(colorArmor(Color.fromRGB(0xFBE059), new ItemStack(Material.LEATHER_LEGGINGS)));
-            inv.setBoots(colorArmor(Color.fromRGB(0xFBE059), new ItemStack(Material.LEATHER_BOOTS)));
-
-        }
+				TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
+        im.setCustomModelData(td.custom_model_data);
+        inv.setChestplate(colorArmor(td.color, new ItemStack(Material.LEATHER_CHESTPLATE)));
+        inv.setLeggings(colorArmor(td.color, new ItemStack(Material.LEATHER_LEGGINGS)));
+        inv.setBoots(colorArmor(td.color, new ItemStack(Material.LEATHER_BOOTS)));
 
         im.itemName(Component.translatable("crystalized.item.nexusblock.name"));
         List<Component> lore = new ArrayList<>();
-        lore.add(Component.translatable("crystalized.item.nexusblock.desc").color(NamedTextColor.DARK_GRAY));
-        lore.add(Component.translatable("crystalized.item.nexusblock.desc2").color(NamedTextColor.DARK_GRAY));
+        lore.add(Component.translatable("crystalized.item.nexusblock.desc").color(DARK_GRAY));
+        lore.add(Component.translatable("crystalized.item.nexusblock.desc2").color(DARK_GRAY));
         im.lore(lore);
         item.setItemMeta(im);
         player.getInventory().addItem(item);
@@ -773,55 +648,45 @@ public class GameManager { //I honestly think this entire class could be optimis
 
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+						World w = Bukkit.getWorld("world");
             if (Teams.GetPlayerTeam(p).equals("blue")) {
-                Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+                Location blueloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
                 p.teleport(blueloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("cyan")) {
-                Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+            } else if (Teams.GetPlayerTeam(p).equals("cyan")) {
+                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
                 p.teleport(cyanloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("green")) {
-                Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+            } else if (Teams.GetPlayerTeam(p).equals("green")) {
+                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
                 p.teleport(greenloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("lemon")) {
-                Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+            } else if (Teams.GetPlayerTeam(p).equals("lemon")) {
+                Location greenloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
                 p.teleport(greenloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("lime")) { //Yes im aware this has blueloc as its variable, I copy pasted the first 4 lol
-                Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+            } else if (Teams.GetPlayerTeam(p).equals("lime")) { //Yes im aware this has blueloc as its variable, I copy pasted the first 4 lol
+                Location blueloc = new Location(w, SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
                 p.teleport(blueloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("magenta")) {
-                Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+            } else if (Teams.GetPlayerTeam(p).equals("magenta")) {
+                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
                 p.teleport(cyanloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("orange")) {
-                Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+            } else if (Teams.GetPlayerTeam(p).equals("orange")) {
+                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
                 p.teleport(greenloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("peach")) {
-                Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+            } else if (Teams.GetPlayerTeam(p).equals("peach")) {
+                Location greenloc = new Location(w, SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
                 p.teleport(greenloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("purple")) {
-                Location blueloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
+            } else if (Teams.GetPlayerTeam(p).equals("purple")) {
+                Location blueloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
                 p.teleport(blueloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("red")) {
-                Location cyanloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
+            } else if (Teams.GetPlayerTeam(p).equals("red")) {
+                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
                 p.teleport(cyanloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("white")) {
-                Location greenloc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
+            } else if (Teams.GetPlayerTeam(p).equals("white")) {
+                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
                 p.teleport(greenloc);
-            } else
-            if (Teams.GetPlayerTeam(p).equals("yellow")) {
-                Location greenloc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
+            } else if (Teams.GetPlayerTeam(p).equals("yellow")) {
+                Location greenloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
                 p.teleport(greenloc);
             } else {
-                Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+                Location loc = new Location(w, knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                 p.teleport(loc);
             }
             p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
@@ -874,8 +739,8 @@ class MapManager {
         LastXLength = knockoff.getInstance().mapdata.CurrentXLength;
         LastYLength = knockoff.getInstance().mapdata.CurrentYLength;
         LastZLength = knockoff.getInstance().mapdata.CurrentZLength;
-        Bukkit.getServer().sendMessage(Component.translatable("crystalized.game.knockoff.chat.movetosafety1").color(NamedTextColor.GOLD)
-                .append(Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(NamedTextColor.RED).decoration(TextDecoration.BOLD, true))
+        Bukkit.getServer().sendMessage(Component.translatable("crystalized.game.knockoff.chat.movetosafety1").color(GOLD)
+                .append(Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED).decoration(TextDecoration.BOLD, true))
         );
         CopyRandomMapSection();
 
@@ -900,7 +765,7 @@ class MapManager {
 
         PlaceCurrentlySelectedSection();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.showTitle(Title.title(text(""), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(NamedTextColor.RED), Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(4), Duration.ofMillis(500))));
+            player.showTitle(Title.title(text(""), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(4), Duration.ofMillis(500))));
             //
         }
 
@@ -1197,7 +1062,7 @@ class TabMenu {
         //Header
         p.sendPlayerListHeader(
                 text("\n")
-                        .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
+                        .append(text("Crystalized: ").color(LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(GOLD)))
                         .append(text("\n"))
         );
 
@@ -1254,10 +1119,10 @@ class TabMenu {
 
 
         p.sendPlayerListFooter(text("")
-                .append(text("---------------------------------------------------").color(NamedTextColor.GRAY)
-                .append(StatsPlayerList).color(NamedTextColor.WHITE)
-                .append(text("\n---------------------------------------------------\n\n").color(NamedTextColor.GRAY))
-                .append(text("Knockoff Version: " + knockoff.getInstance().getDescription().getVersion()).color(NamedTextColor.DARK_GRAY)))
+                .append(text("---------------------------------------------------").color(GRAY)
+                .append(StatsPlayerList).color(WHITE)
+                .append(text("\n---------------------------------------------------\n\n").color(GRAY))
+                .append(text("Knockoff Version: " + knockoff.getInstance().getDescription().getVersion()).color(DARK_GRAY)))
         );
     }
 }

@@ -25,7 +25,7 @@ public final class knockoff extends JavaPlugin {
     private static boolean GameCountdownStarted = false;
     //public ConfigData ConfigData;
 
-    private int PlayerStartLimit = 4;
+    private int PlayerStartLimit = 2;
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
@@ -62,18 +62,18 @@ public final class knockoff extends JavaPlugin {
                         return;
                     } else {
                         is_force_starting = false;
+                        GameCountdownStarted = false;
                         new BukkitRunnable() {
                             public void run() {
 
-																// signal that the game has started to the proxy
-																ByteArrayDataOutput out = ByteStreams.newDataOutput();
-																out.writeUTF("start_game");
-																for (Player p : Bukkit.getOnlinePlayers()) {
-																		out.writeUTF(p.getName());
-																}
-																Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
-																p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
-
+								// signal that the game has started to the proxy
+                                ByteArrayDataOutput out = ByteStreams.newDataOutput();
+                                out.writeUTF("start_game");
+                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                    out.writeUTF(p.getName());
+                                }
+                                Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
+                                p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
                                 GameManager = new GameManager();
                                 cancel();
                             }
@@ -119,14 +119,13 @@ public final class knockoff extends JavaPlugin {
                         .append(Component.text(" " + (timer - 1) ).color(NamedTextColor.DARK_GRAY))
                 );
                 timer--;
-                if (timer == 0) {
-                    knockoff.getInstance().is_force_starting = true;
-                    GameCountdownStarted = false;
-                    cancel();
-                }
                 if (!GameCountdownStarted) {
                     Bukkit.getServer().sendMessage(Component.text("Game cancelled, too few players!").color(NamedTextColor.RED));
                     GameCountdownStarted = false;
+                    cancel();
+                }
+                if (timer == 0) {
+                    knockoff.getInstance().is_force_starting = true;
                     cancel();
                 }
             }

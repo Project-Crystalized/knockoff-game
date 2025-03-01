@@ -31,8 +31,8 @@ public class MapData {
             String file_content = Files.readString(Paths.get("./world/map_config.json"));
             JsonObject json = JsonParser.parseString(file_content).getAsJsonObject();
 
-            JsonArray q_spawn = json.get("que_spawn").getAsJsonArray();
-            this.que_spawn = new double[] { q_spawn.get(0).getAsDouble(), q_spawn.get(1).getAsDouble(),
+            JsonArray q_spawn = json.get("queue_spawn").getAsJsonArray();
+            this.queue_spawn = new double[] { q_spawn.get(0).getAsDouble(), q_spawn.get(1).getAsDouble(),
                     q_spawn.get(2).getAsDouble() };
 
             this.map_name = json.get("map_name").getAsString();
@@ -77,8 +77,8 @@ public class MapData {
         }
     }
 
-    public Location get_que_spawn(World w) {
-        return new Location(w, que_spawn[0], que_spawn[1], que_spawn[2]);
+    public Location get_queue_spawn(World w) {
+        return new Location(w, queue_spawn[0], queue_spawn[1], queue_spawn[2]);
     }
 
     public String toString() {

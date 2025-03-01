@@ -46,7 +46,7 @@ public class PlayerListener implements Listener {
 
 		if (knockoff.getInstance().GameManager == null) {
 			event.joinMessage(Component.text(""));
-			player.teleport(knockoff.getInstance().mapdata.get_que_spawn(player.getWorld()));
+			player.teleport(knockoff.getInstance().mapdata.get_queue_spawn(player.getWorld()));
 			player.getInventory().clear();
 			player.setHealth(20);
 			player.setFoodLevel(20);

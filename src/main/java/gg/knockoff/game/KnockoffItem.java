@@ -37,13 +37,13 @@ public class KnockoffItem {
         //Commented out powerups aren't functional yet and give a debug message. Commented out for a chance for players to always get usable powerups
 
         ItemList.clear();
-        //ItemList.add("BoostOrb"); //
+        ItemList.add("BoostOrb");
         //ItemList.add("BridgeOrb");
-        //ItemList.add("ExplosiveOrb"); //
+        ItemList.add("ExplosiveOrb");
         //ItemList.add("GrapplingOrb");
         //ItemList.add("KnockoutOrb");
         //ItemList.add("CloudTotem");
-        //ItemList.add("WindCharge");  //
+        ItemList.add("WindCharge");
         ItemList.add("BoxingGlove");
 
 

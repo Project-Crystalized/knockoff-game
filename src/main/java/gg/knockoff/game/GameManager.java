@@ -298,11 +298,13 @@ public class GameManager { //I honestly think this entire class could be optimis
                 }
                 for (Entity e : Bukkit.getWorld("world").getEntities()) {
                     if (e instanceof Item) {
-                        if (((Item) e).getItemStack().getType().equals(Material.COAL) || ((Item) e).getItemStack().getType().equals(Material.WIND_CHARGE)) {
-                            if (((Item) e).getItemStack().getItemMeta().hasCustomModelData()) {
+                        if (((Item) e).getItemStack().getType().equals(Material.COAL)) {
+                            if (!((Item) e).getItemStack().getItemMeta().hasCustomModelData()) {
                                 e.remove();
                             }
                             //do nothing, material.coal and wind charges is powerups so we dont clear them
+                        } else if (((Item) e).getItemStack().getType().equals(Material.WIND_CHARGE)) {
+                            //do nothing
                         } else {
                             e.remove();
                         }

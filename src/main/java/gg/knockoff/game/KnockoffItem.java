@@ -239,7 +239,7 @@ class DropPowerup {
                     DroppedItem.remove();
                     cancel();
                 }
-                timer --;
+                timer--;
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 20);
     }

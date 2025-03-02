@@ -48,6 +48,7 @@ public final class knockoff extends JavaPlugin {
         this.getCommand("knockoff_debug").setExecutor(dc);
 
         KnockoffDatabase.setup_databases();
+        KnockoffItem.SetupKnockoffItems();
 
         new BukkitRunnable() {
             @Override

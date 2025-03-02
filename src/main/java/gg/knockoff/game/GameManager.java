@@ -81,7 +81,6 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         PlayerList.clear();
         teams = new Teams();
-        KnockoffItem.SetupKnockoffItems();
 
         // Sets the target area to air to prevent previous game's sections to interfere with the current game
         // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
@@ -303,7 +302,8 @@ public class GameManager { //I honestly think this entire class could be optimis
                                 e.remove();
                             }
                             //do nothing, material.coal and wind charges is powerups so we dont clear them
-                        } else if (((Item) e).getItemStack().getType().equals(Material.WIND_CHARGE)) {
+                        } else if (((Item) e).getItemStack().getType().equals(Material.WIND_CHARGE)
+                                || ((Item) e).getItemStack().equals(KnockoffItem.BoxingGlove)) {
                             //do nothing
                         } else {
                             e.remove();

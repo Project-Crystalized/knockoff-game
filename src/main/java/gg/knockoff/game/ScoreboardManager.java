@@ -129,7 +129,7 @@ public class ScoreboardManager {
             }
         }
 
-        Component title = text("\uE108 ").color(NamedTextColor.WHITE).append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD));
+        Component title = text("\uE12E ").color(NamedTextColor.WHITE).append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD));
         Objective obj = scoreboard.registerNewObjective("main", Criteria.DUMMY, title);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
@@ -260,7 +260,7 @@ class QueueScoreBoard{
     public QueueScoreBoard(Player player) {
         FloodgateApi floodgateapi = FloodgateApi.getInstance();
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
-        Component title = text("\uE108 ").color(NamedTextColor.WHITE).append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD));
+        Component title = text("\uE12E ").color(NamedTextColor.WHITE).append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD));
         Objective obj = scoreboard.registerNewObjective("main", Criteria.DUMMY, title);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 

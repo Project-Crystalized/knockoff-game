@@ -4,8 +4,10 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,11 +19,25 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class CrystalBlocks implements Listener {
 
+    NamespacedKey blue = new NamespacedKey("crystalized", "block/nexus/blue");
+    NamespacedKey cyan = new NamespacedKey("crystalized", "block/nexus/cyan");
+    NamespacedKey green = new NamespacedKey("crystalized", "block/nexus/green");
+    NamespacedKey lemon = new NamespacedKey("crystalized", "block/nexus/lemon");
+    NamespacedKey lime = new NamespacedKey("crystalized", "block/nexus/lime");
+    NamespacedKey magenta = new NamespacedKey("crystalized", "block/nexus/magenta");
+    NamespacedKey orange = new NamespacedKey("crystalized", "block/nexus/orange");
+    NamespacedKey peach = new NamespacedKey("crystalized", "block/nexus/peach");
+    NamespacedKey purple = new NamespacedKey("crystalized", "block/nexus/purple");
+    NamespacedKey white = new NamespacedKey("crystalized", "block/nexus/white");
+    NamespacedKey yellow = new NamespacedKey("crystalized", "block/nexus/yellow");
+    NamespacedKey red = new NamespacedKey("crystalized", "block/nexus/red");
+
     @EventHandler
     public void WhenCrystalBlockPlaced(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         //if (event.getHand() != EquipmentSlot.HAND) return;
-        Block block = player.getTargetBlock(null, 5);
+        //Block block = player.getTargetBlock(null, 5);
+        Block block = event.getBlock();
         Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
         if ((blockloc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength()
                 || blockloc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength()
@@ -36,47 +52,98 @@ public class CrystalBlocks implements Listener {
             event.setCancelled(true);
             return;
         }
-        //I had to rewrite this because || statements are weird, fuck you - Callum
+        //I had to rewrite this because || statements are weird
         //MainHand
         if (player.getEquipment().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK)) {
-            if (player.getEquipment().getItemInMainHand().getItemMeta().hasCustomModelData()) {
+            if (player.getEquipment().getItemInMainHand().getItemMeta().hasItemModel()) {
                 Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
-                    if (!blockloc.getBlock().getType().equals(Material.AMETHYST_BLOCK)) {
-                        return;
-                    }
-                    if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() < 5) {
-                        blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
-                    } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() < 9) {
-                        blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-                    } else {
-                        blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
-                    }
-                    if (blockloc.getBlock().getBlockData() instanceof Directional) {
-                        Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                    NamespacedKey item_model = player.getEquipment().getItemInMainHand().getItemMeta().getItemModel();
+                    String key = item_model.getKey();
 
-                        if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 1 || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 5 ||
-                                player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 9) {
+                    switch (key) {
+                        case "block/nexus/blue" -> {
+                            blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
                             dir.setFacing(BlockFace.EAST);
-                        } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 2 || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 6 ||
-                                player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 10) {
-                            dir.setFacing(BlockFace.NORTH);
-                        } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 3 || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 7 ||
-                                player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 11) {
-                            dir.setFacing(BlockFace.SOUTH);
-                        } else if (player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 4 || player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 8 ||
-                                player.getEquipment().getItemInMainHand().getItemMeta().getCustomModelData() == 12) {
-                            dir.setFacing(BlockFace.WEST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
                         }
-                        blockloc.getBlock().setBlockData(dir);
-                    }
-                    blockloc.getBlock().getState().update();
-                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
-                    pd.blocksplaced++;
-                    if (knockoff.getInstance().DevMode) {
-                        Bukkit.getServer().sendMessage(Component.text("[DEBUG] ")
-                                .append(player.displayName())
-                                .append(Component.text(" has placed a block (mainhand)"))
-                        );
+                        case "block/nexus/cyan" -> {
+                            blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.NORTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/green" -> {
+                            blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.SOUTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/lemon" -> {
+                            blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.WEST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/lime" -> {
+                            blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.EAST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/magenta" -> {
+                            blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.NORTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/orange" -> {
+                            blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.SOUTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/peach" -> {
+                            blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.WEST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/purple" -> {
+                            blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.EAST);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/white" -> {
+                            blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.SOUTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/yellow" -> {
+                            blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.WEST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/red" -> {
+                            blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.NORTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
                     }
                 }, 1);
                 Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
@@ -88,44 +155,98 @@ public class CrystalBlocks implements Listener {
         }
         //OffHand
         if (player.getEquipment().getItemInOffHand().getType().equals(Material.AMETHYST_BLOCK)) {
-            if (player.getEquipment().getItemInOffHand().getItemMeta().hasCustomModelData()) {
+            if (player.getEquipment().getItemInOffHand().getItemMeta().hasItemModel()) {
                 Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
                     if (!blockloc.getBlock().getType().equals(Material.AMETHYST_BLOCK)) {
                         return;
                     }
-                    if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() < 5) {
-                        blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
-                    } else if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() < 9) {
-                        blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-                    } else {
-                        blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
-                    }
-                    if (blockloc.getBlock().getBlockData() instanceof Directional) {
-                        Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                    NamespacedKey item_model = player.getEquipment().getItemInOffHand().getItemMeta().getItemModel();
+                    String key = item_model.getKey();
 
-                        if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 1 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 5 ||
-                                player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 9) {
+                    switch (key) {
+                        case "block/nexus/blue" -> {
+                            blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
                             dir.setFacing(BlockFace.EAST);
-                        } else if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 2 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 6 ||
-                                player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 10) {
-                            dir.setFacing(BlockFace.NORTH);
-                        } else if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 3 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 7 ||
-                                player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 11) {
-                            dir.setFacing(BlockFace.SOUTH);
-                        } else if (player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 4 || player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 8 ||
-                                player.getEquipment().getItemInOffHand().getItemMeta().getCustomModelData() == 12) {
-                            dir.setFacing(BlockFace.WEST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
                         }
-                        blockloc.getBlock().setBlockData(dir);
-                    }
-                    blockloc.getBlock().getState().update();
-                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
-                    pd.blocksplaced++;
-                    if (knockoff.getInstance().DevMode) {
-                        Bukkit.getServer().sendMessage(Component.text("[DEBUG] ")
-                                .append(player.displayName())
-                                .append(Component.text(" has placed a block (offhand)"))
-                        );
+                        case "block/nexus/cyan" -> {
+                            blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.NORTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/green" -> {
+                            blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.SOUTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/lemon" -> {
+                            blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.WEST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/lime" -> {
+                            blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.EAST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/magenta" -> {
+                            blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.NORTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/orange" -> {
+                            blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.SOUTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/peach" -> {
+                            blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.WEST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/purple" -> {
+                            blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.EAST);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/white" -> {
+                            blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.SOUTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/yellow" -> {
+                            blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.WEST);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
+                        case "block/nexus/red" -> {
+                            blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
+                            Directional dir = (Directional) blockloc.getBlock().getBlockData();
+                            dir.setFacing(BlockFace.NORTH);
+                            blockloc.getBlock().setBlockData(dir);
+                            blockloc.getBlock().getState().update();
+                        }
                     }
                 }, 1);
                 Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {

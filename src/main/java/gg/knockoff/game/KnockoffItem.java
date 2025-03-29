@@ -48,7 +48,7 @@ public class KnockoffItem {
 
 
         ItemMeta boostim = BoostOrb.getItemMeta();
-        boostim.setCustomModelData(1);
+        boostim.setItemModel(new NamespacedKey("crystalized", "boost_orb"));
         boostim.displayName(Component.translatable("crystalized.orb.boost.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
         List<Component> boostlore = new ArrayList<>();
         boostlore.add(Component.translatable("crystalized.orb.boost.desc").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
@@ -56,7 +56,7 @@ public class KnockoffItem {
         BoostOrb.setItemMeta(boostim);
 
         ItemMeta bridgeim = BridgeOrb.getItemMeta();
-        bridgeim.setCustomModelData(2);
+        bridgeim.setItemModel(new NamespacedKey("crystalized", "bridge_orb"));
         bridgeim.displayName(Component.translatable("crystalized.orb.bridge.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
         List<Component> bridgelore = new ArrayList<>();
         bridgelore.add(Component.translatable("crystalized.orb.bridge.desc").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
@@ -64,7 +64,7 @@ public class KnockoffItem {
         BridgeOrb.setItemMeta(bridgeim);
 
         ItemMeta explosiveim = ExplosiveOrb.getItemMeta();
-        explosiveim.setCustomModelData(3);
+        explosiveim.setItemModel(new NamespacedKey("crystalized", "explosive_orb"));
         explosiveim.displayName(Component.translatable("crystalized.orb.explosive.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
         List<Component> explosivelore = new ArrayList<>();
         explosivelore.add(Component.translatable("crystalized.orb.explosive.desc").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
@@ -72,7 +72,7 @@ public class KnockoffItem {
         ExplosiveOrb.setItemMeta(explosiveim);
 
         ItemMeta grapplingim = GrapplingOrb.getItemMeta();
-        grapplingim.setCustomModelData(4);
+        grapplingim.setItemModel(new NamespacedKey("crystalized", "grappling_orb"));
         grapplingim.displayName(Component.translatable("crystalized.orb.grappling.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
         List<Component> grapplinglore = new ArrayList<>();
         grapplinglore.add(Component.translatable("crystalized.orb.grappling.desc").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
@@ -80,7 +80,7 @@ public class KnockoffItem {
         GrapplingOrb.setItemMeta(grapplingim);
 
         ItemMeta knockoutim = KnockoutOrb.getItemMeta();
-        knockoutim.setCustomModelData(6);
+        knockoutim.setItemModel(new NamespacedKey("crystalized", "knockout_orb"));
         knockoutim.displayName(Component.translatable("crystalized.orb.knockout.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
         List<Component> knockoutlore = new ArrayList<>();
         knockoutlore.add(Component.translatable("crystalized.orb.knockout.desc").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
@@ -88,7 +88,7 @@ public class KnockoffItem {
         KnockoutOrb.setItemMeta(knockoutim);
 
         ItemMeta cloudtotemim = CloudTotem.getItemMeta();
-        cloudtotemim.setCustomModelData(10);
+        cloudtotemim.setItemModel(new NamespacedKey("crystalized", "cloud_totem"));
         cloudtotemim.displayName(Component.translatable("crystalized.totem.cloud.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
         List<Component> cloudtotemlore = new ArrayList<>();
         cloudtotemlore.add(Component.translatable("crystalized.totem.cloud.desc").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));

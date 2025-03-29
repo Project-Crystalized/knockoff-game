@@ -298,7 +298,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 for (Entity e : Bukkit.getWorld("world").getEntities()) {
                     if (e instanceof Item) {
                         if (((Item) e).getItemStack().getType().equals(Material.COAL)) {
-                            if (!((Item) e).getItemStack().getItemMeta().hasCustomModelData()) {
+                            if (!((Item) e).getItemStack().getItemMeta().hasItemModel()) {
                                 e.remove();
                             }
                             //do nothing, material.coal and wind charges is powerups so we dont clear them
@@ -442,7 +442,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         //Bukkit.getLogger().log(Level.INFO, "[GAMEMANAGER] Player " + player.getName() + "Is in Team " + Teams.GetPlayerTeam(player));
 
 				TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
-        im.setCustomModelData(td.custom_model_data);
+        im.setItemModel(td.item_model);
         inv.setChestplate(colorArmor(td.color, new ItemStack(Material.LEATHER_CHESTPLATE)));
         inv.setLeggings(colorArmor(td.color, new ItemStack(Material.LEATHER_LEGGINGS)));
         inv.setBoots(colorArmor(td.color, new ItemStack(Material.LEATHER_BOOTS)));

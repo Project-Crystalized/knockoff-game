@@ -6,10 +6,7 @@ import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
@@ -75,7 +72,7 @@ public class PlayerListener implements Listener {
 
 			ItemStack leavebutton = new ItemStack(Material.COAL, 1);
 			ItemMeta leavebuttonim = leavebutton.getItemMeta();
-			leavebuttonim.setCustomModelData(16);
+			leavebuttonim.setItemModel(new NamespacedKey("crystalized", "ui/leave"));
 			leavebuttonim.displayName(
 					Component.text("Return to lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
 			leavebutton.setItemMeta(leavebuttonim);
@@ -341,8 +338,13 @@ public class PlayerListener implements Listener {
 			}
 			if (!event.getAction().isLeftClick()) {
 				ItemMeta im = event.getItem().getItemMeta();
-				if ((event.getItem().getType() == Material.COAL && im.hasCustomModelData() && im.getCustomModelData() < 15) ||
-						(event.getItem().getType() == Material.WIND_CHARGE)) {
+				if (im == null) {return;} //temporary fix to this not counting anything based on Material.COAL
+				NamespacedKey item_model = im.getItemModel();
+				if ((event.getItem().getType() == Material.COAL && im.hasItemModel() ||
+						(event.getItem().getType() == Material.WIND_CHARGE))) {
+					if (event.getItem().getType() == Material.COAL && !(item_model.getKey().toLowerCase().contains("orb") || (item_model.getKey().toLowerCase().contains("totem")))) {
+						return;
+					}
 					new BukkitRunnable() {
 						@Override
 						public void run() {
@@ -366,7 +368,7 @@ public class PlayerListener implements Listener {
 			if (event.getAction().isRightClick()) {
 				if (event.getItem().getType().equals(Material.COAL)) {
 					ItemMeta im = event.getItem().getItemMeta();
-					if (im.hasCustomModelData() && im.getCustomModelData() == 16) {
+					if (im.hasItemModel() && im.getItemModel().getKey().equals("ui/leave")) {
 						player.kick();
 					}
 				}

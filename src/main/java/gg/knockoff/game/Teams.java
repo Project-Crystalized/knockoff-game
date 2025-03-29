@@ -4,6 +4,7 @@ import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
@@ -436,23 +437,23 @@ class CustomPlayerNametags {
 class TeamData {
 	public final String name;
 	public final Color color;
-	public final int custom_model_data;
+    public final NamespacedKey item_model;
 	public final String symbol;
 
 	public static List<TeamData> create_teams() {
 		List<TeamData> list = new ArrayList<>();
-		list.add(new TeamData("blue", Color.fromRGB(0x0A42BB), 1, "\uE120 "));
-		list.add(new TeamData("cyan", Color.fromRGB(0x157D91), 2, "\uE121 "));
-		list.add(new TeamData("green", Color.fromRGB(0x0A971E), 3, "\uE122 "));
-		list.add(new TeamData("lemon", Color.fromRGB(0xFFC500), 4, "\uE128 "));
-		list.add(new TeamData("lime", Color.fromRGB(0x67E555), 5, "\uE123 "));
-		list.add(new TeamData("magenta", Color.fromRGB(0xDA50E0), 6, "\uE124 "));
-		list.add(new TeamData("orange", Color.fromRGB(0xFF7900), 7, "\uE129 "));
-		list.add(new TeamData("peach", Color.fromRGB(0xFF8775), 8, "\uE12A "));
-		list.add(new TeamData("purple", Color.fromRGB(0x7525DC), 9, "\uE12B "));
-		list.add(new TeamData("red", Color.fromRGB(0xF74036), 10, "\uE125 "));
-		list.add(new TeamData("white", Color.fromRGB(0xFFFFFF), 11, "\uE126 "));
-		list.add(new TeamData("yellow", Color.fromRGB(0xFBE059), 12, "\uE127 "));
+		list.add(new TeamData("blue", Color.fromRGB(0x0A42BB), "\uE120 "));
+		list.add(new TeamData("cyan", Color.fromRGB(0x157D91), "\uE121 "));
+		list.add(new TeamData("green", Color.fromRGB(0x0A971E), "\uE122 "));
+		list.add(new TeamData("lemon", Color.fromRGB(0xFFC500), "\uE128 "));
+		list.add(new TeamData("lime", Color.fromRGB(0x67E555), "\uE123 "));
+		list.add(new TeamData("magenta", Color.fromRGB(0xDA50E0), "\uE124 "));
+		list.add(new TeamData("orange", Color.fromRGB(0xFF7900), "\uE129 "));
+		list.add(new TeamData("peach", Color.fromRGB(0xFF8775), "\uE12A "));
+		list.add(new TeamData("purple", Color.fromRGB(0x7525DC), "\uE12B "));
+		list.add(new TeamData("red", Color.fromRGB(0xF74036), "\uE125 "));
+		list.add(new TeamData("white", Color.fromRGB(0xFFFFFF), "\uE126 "));
+		list.add(new TeamData("yellow", Color.fromRGB(0xFBE059), "\uE127 "));
 		return list;
 	}
 
@@ -465,10 +466,10 @@ class TeamData {
 		return null;
 	}
 
-	public TeamData(String name, Color color, int custom_model_data, String symbol) {
+	public TeamData(String name, Color color, String symbol) {
 		this.name = name;
 		this.color = color;
-		this.custom_model_data = custom_model_data;
+        this.item_model = new NamespacedKey("crystalized", "block/nexus/" + name);
 		this.symbol = symbol;
 	}
 }

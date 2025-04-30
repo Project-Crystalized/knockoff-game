@@ -36,8 +36,8 @@ public class Hazards {
     public static void StartHazards() {
         IsHazardOver = true;
         HazardList.clear();
-        //HazardList.add(hazards.tnt);
-        //HazardList.add(hazards.slimetime);
+        HazardList.add(hazards.tnt);
+        HazardList.add(hazards.slimetime);
         HazardList.add(hazards.flyingcars);
 
         CarsList.clear();

@@ -40,9 +40,9 @@ public class KnockoffItem {
         ItemList.add("BoostOrb");
         //ItemList.add("BridgeOrb");
         ItemList.add("ExplosiveOrb");
-        //ItemList.add("GrapplingOrb");
+        ItemList.add("GrapplingOrb");
         //ItemList.add("KnockoutOrb");
-        //ItemList.add("CloudTotem");
+        ItemList.add("CloudTotem");
         ItemList.add("WindCharge");
         ItemList.add("BoxingGlove");
 

@@ -10,13 +10,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-public class Commands implements CommandExecutor {
+public class Commands_deprecated implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String label,
                              @NotNull String[] args) {
 
-        switch (label) {
+        /*switch (label) {
             case "knockoff":
                 return run_knockoff(args, commandSender);
             case "knockoff_give":
@@ -27,7 +27,8 @@ public class Commands implements CommandExecutor {
                 return run_debug(args, commandSender);
             default:
                 return false;
-        }
+        }*/
+        return false;
     }
 
     private boolean run_knockoff(String[] args, CommandSender commandSender) {

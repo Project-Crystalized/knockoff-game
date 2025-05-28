@@ -2,33 +2,14 @@ name: knockoff-game
 version: '0.0.1'
 main: gg.knockoff.game.knockoff
 api-version: '1.21.4'
-depend: [FastAsyncWorldEdit, Crystalized_Essentials, ProtocolLib]
-softdepend: [floodgate]
+depend: [FastAsyncWorldEdit, Crystalized_Essentials, ProtocolLib, floodgate]
 authors: [Project Crystalized Team, Callum_Is_Bad]
 prefix: Knockoff
 description: Recreation of TubNet's Knockout! Now open source and remade by Project Crystalized
 commands:
   knockoff:
     description: "Commands for KnockOff"
-    usage: "/knockoff [start/end/reload_config]"
+    usage: "/knockoff"
     aliases: [ ]
-    permission: knockoff.command.game
-    permission-message: "[!] You don't have permission to run the command"
-  knockoff_give:
-    description: "debug"
-    usage: "/knockoff_give"
-    aliases: [ ]
-    permission: knockoff.command.debug
-    permission-message: "[!] You don't have permission to run the command"
-  knockoff_dropitem:
-    description: "debug"
-    usage: "/knockoff_dropitem"
-    aliases: [ ]
-    permission: knockoff.command.debug
-    permission-message: "[!] You don't have permission to run the command"
-  knockoff_debug:
-    description: "debug"
-    usage: "/knockoff_debug"
-    aliases: [ ]
-    permission: knockoff.command.debug
+    permission: knockoff.commands
     permission-message: "[!] You don't have permission to run the command"

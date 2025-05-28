@@ -101,6 +101,9 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
 		event.setCancelled(true);
+		if (player.getGameMode().equals(GameMode.SPECTATOR)) { //If the player was already in spectator, we do nothing to prevent dying while already dead
+			return;
+		}
 		player.setGameMode(GameMode.SPECTATOR);
 		if (player.getKiller() == null) {
 			Bukkit.getServer().sendMessage(text("[\uE103] ")

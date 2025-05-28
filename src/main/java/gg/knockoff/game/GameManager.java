@@ -22,6 +22,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockState;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
@@ -30,6 +31,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.geysermc.floodgate.api.FloodgateApi;
 
@@ -49,6 +52,7 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 public class GameManager { //I honestly think this entire class could be optimised because of how long it is
     public static List<PlayerData> playerDatas;
     public Teams teams;
+    public HazardsManager hazards = new HazardsManager();
 
     public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;
@@ -66,6 +70,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static int RoundCounter =0;
 
     public GameManager() {//Start of the game
+        knockoff.getInstance().reloadConfig();
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
         GameState = "game";
         for (Entity e : Bukkit.getWorld("world").getEntities()) {
@@ -125,10 +130,15 @@ public class GameManager { //I honestly think this entire class could be optimis
             PlayerBorder.setSize(3);
 
             GiveTeamItems(p);
-            p.setGameMode(GameMode.ADVENTURE);
+            if (Teams.GetPlayerTeam(p) == "spectator") {
+                p.setGameMode(GameMode.SPECTATOR);
+            } else {
+                p.setGameMode(GameMode.ADVENTURE);
+                CustomPlayerNametags.CustomPlayerNametags(p);
+            }
             ScoreboardManager.SetPlayerScoreboard(p);
             Teams.SetPlayerDisplayNames(p);
-            CustomPlayerNametags.CustomPlayerNametags(p);
+
 
             p.setSneaking(true);
             p.setSneaking(false);
@@ -198,9 +208,15 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     private void StartGameLoop() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            p.setGameMode(GameMode.SURVIVAL);
+            if (Teams.GetPlayerTeam(p) != "spectator") {
+                p.setGameMode(GameMode.SURVIVAL);
+            } else {
+                p.setGameMode(GameMode.SPECTATOR);
+                PlayerData pd = getPlayerData(p);
+                pd.isEliminated = true;
+                pd.lives = 0;
+            }
         }
-        Hazards.StartHazards();
 
         new BukkitRunnable() {
             @Override
@@ -214,58 +230,63 @@ public class GameManager { //I honestly think this entire class could be optimis
 
                 GameManager.RoundCounter--;
                 if (GameManager.RoundCounter == 30 && GameManager.GameState.equals("game")) {
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        p.playSound(p, "minecraft:block.note_block.pling", 50, 2);
+                    if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_powerup_spawning")) {
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(p, "minecraft:block.note_block.pling", 50, 2);
+                        }
+                        //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
+                        //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
+                        Server s = Bukkit.getServer();
+                        FloodgateApi floodgateapi = FloodgateApi.getInstance();
+                        if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                    p.sendMessage(Component.text("-".repeat(40)));
+                                } else {
+                                    p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                }
+                            }
+                            s.sendMessage(Component.text(" "));
+                            s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
+                            s.sendMessage(Component.text(" "));
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                    p.sendMessage(Component.text("-".repeat(40)));
+                                } else {
+                                    p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                }
+                            }
+                            SpawnRandomPowerup(null);
+                        } else {
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                    p.sendMessage(Component.text("-".repeat(40)));
+                                } else {
+                                    p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                }
+                            }
+                            s.sendMessage(Component.text(" "));
+                            s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
+                            s.sendMessage(Component.text(" "));
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                    p.sendMessage(Component.text("-".repeat(40)));
+                                } else {
+                                    p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                }
+                            }
+                            SpawnRandomPowerup(null);
+                            SpawnRandomPowerup(null);
+                        }
                     }
-                    //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
-                    //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
-                    Server s = Bukkit.getServer();
-                    FloodgateApi floodgateapi = FloodgateApi.getInstance();
-                    if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(40)));
-                            } else {
-                                p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                            }
-                        }
-                        s.sendMessage(Component.text(" "));
-                        s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
-                        s.sendMessage(Component.text(" "));
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(40)));
-                            } else {
-                                p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                            }
-                        }
-                        SpawnRandomPowerup();
-                    } else {
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(40)));
-                            } else {
-                                p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                            }
-                        }
-                        s.sendMessage(Component.text(" "));
-                        s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
-                        s.sendMessage(Component.text(" "));
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(40)));
-                            } else {
-                                p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                            }
-                        }
-                        SpawnRandomPowerup();
-                        SpawnRandomPowerup();
-                    }
+
                 }
                 if (GameManager.RoundCounter == 0 && GameManager.GameState.equals("game")) {
-                    GameManager.CloneNewMapSection();
-                    RoundCounter = 60;
-                    Round++;
+                    if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
+                        GameManager.CloneNewMapSection();
+                        RoundCounter = 60;
+                        Round++;
+                    }
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0 ,20);
@@ -286,13 +307,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                     if (!knockoff.getInstance().DevMode && !pd.isPlayerDead && GameState.equals("game")) {
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
                     }
-                    if (p.getLocation().getY() < -30 && p.getGameMode().equals(GameMode.SURVIVAL)) {//instantly kills the player when they get knocked into the void
+                    if (p.getLocation().getY() < -30) {//instantly kills the player when they get knocked into the void
                         Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                         p.teleport(loc);
-                        p.setHealth(0);
-                    } else if (p.getLocation().getY() < -30 && p.getGameMode().equals(GameMode.SPECTATOR)) {
-                        Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-                        p.teleport(loc);
+                        if (p.getGameMode().equals(GameMode.SURVIVAL)) {
+                            p.setHealth(0);
+                        }
                     }
                 }
                 for (Entity e : Bukkit.getWorld("world").getEntities()) {
@@ -441,19 +461,21 @@ public class GameManager { //I honestly think this entire class could be optimis
         //for debugging
         //Bukkit.getLogger().log(Level.INFO, "[GAMEMANAGER] Player " + player.getName() + "Is in Team " + Teams.GetPlayerTeam(player));
 
-				TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
-        im.setItemModel(td.item_model);
-        inv.setChestplate(colorArmor(td.color, new ItemStack(Material.LEATHER_CHESTPLATE)));
-        inv.setLeggings(colorArmor(td.color, new ItemStack(Material.LEATHER_LEGGINGS)));
-        inv.setBoots(colorArmor(td.color, new ItemStack(Material.LEATHER_BOOTS)));
+        if (Teams.GetPlayerTeam(player) != "spectator") {
+            TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
+            im.setItemModel(td.item_model);
+            inv.setChestplate(colorArmor(td.color, new ItemStack(Material.LEATHER_CHESTPLATE)));
+            inv.setLeggings(colorArmor(td.color, new ItemStack(Material.LEATHER_LEGGINGS)));
+            inv.setBoots(colorArmor(td.color, new ItemStack(Material.LEATHER_BOOTS)));
 
-        im.itemName(Component.translatable("crystalized.item.nexusblock.name"));
-        List<Component> lore = new ArrayList<>();
-        lore.add(Component.translatable("crystalized.item.nexusblock.desc").color(DARK_GRAY));
-        lore.add(Component.translatable("crystalized.item.nexusblock.desc2").color(DARK_GRAY));
-        im.lore(lore);
-        item.setItemMeta(im);
-        player.getInventory().addItem(item);
+            im.itemName(Component.translatable("crystalized.item.nexusblock.name"));
+            List<Component> lore = new ArrayList<>();
+            lore.add(Component.translatable("crystalized.item.nexusblock.desc").color(DARK_GRAY));
+            lore.add(Component.translatable("crystalized.item.nexusblock.desc2").color(DARK_GRAY));
+            im.lore(lore);
+            item.setItemMeta(im);
+            player.getInventory().addItem(item);
+        }
     }
 
     private static ItemStack colorArmor(Color c, ItemStack i) {
@@ -702,7 +724,13 @@ public class GameManager { //I honestly think this entire class could be optimis
         MapManager.CloneNewMapSection();
     }
 
-    private static void SpawnRandomPowerup() {
+    public static void SpawnRandomPowerup(String pu) {
+        String powerup;
+        if (pu == null) {
+            powerup = KnockoffItem.ItemList.get(knockoff.getInstance().getRandomNumber(0, KnockoffItem.ItemList.size())).toString();
+        } else {
+            powerup = pu;
+        }
         boolean IsValidSpot = false;
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
@@ -723,11 +751,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 IsValidSpot = false;
             }
         }
-        DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 1, blockloc.getBlockZ()),
-                KnockoffItem.ItemList.get(
-                        knockoff.getInstance().getRandomNumber(0, KnockoffItem.ItemList.size())
-                ).toString()
-        );
+        DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 1, blockloc.getBlockZ()), powerup);
     }
 }
 
@@ -1167,4 +1191,206 @@ class KnockoffProtocolLib {
         }
         return null;
     }
+}
+
+class HazardsManager {
+
+    public static final List<hazards> HazardList = new ArrayList<>();
+    private static final List<NamespacedKey> CarsList = new ArrayList<>();
+    private static boolean IsHazardOver = false;
+
+    public enum hazards{
+        tnt,
+        slimetime,
+        flyingcars,
+    }
+
+    public HazardsManager() {
+        IsHazardOver = true;
+        HazardList.clear();
+        HazardList.add(hazards.tnt);
+        HazardList.add(hazards.slimetime);
+        HazardList.add(hazards.flyingcars);
+
+        CarsList.clear();
+        CarsList.add(new NamespacedKey("crystalized", "models/car/military_bus"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/military_van"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/abby_car"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/beat_up_truck"));
+
+        new BukkitRunnable() {
+            int timer = knockoff.getInstance().getRandomNumber(30, 60);
+            public void run() {
+                if (knockoff.getInstance().GameManager == null || knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
+                    cancel();
+                }
+                if (timer == 0) {
+                    timer = knockoff.getInstance().getRandomNumber(30, 60);
+                    NewHazard(HazardList.get(knockoff.getInstance().getRandomNumber(0, HazardList.size())));
+                }
+
+                timer--;
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0 ,20);
+    }
+
+    public void NewHazard(hazards type) {
+        IsHazardOver = false;
+        Component HazardMessage = translatable("crystalized.game.knockoff.chat.hazard").color(NamedTextColor.GOLD);
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            switch (type) {
+                case hazards.tnt:
+                    player.sendMessage(HazardMessage.append(translatable("block.minecraft.tnt").color(NamedTextColor.RED)));
+                    player.showTitle(
+                            Title.title(
+                                    HazardMessage, translatable("block.minecraft.tnt").color(NamedTextColor.RED),
+                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
+                    );
+                    break;
+                case hazards.slimetime:
+                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.slimetime").color(NamedTextColor.GREEN)));
+                    player.showTitle(
+                            Title.title(
+                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.slimetime").color(NamedTextColor.GREEN),
+                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
+                    );
+                    break;
+                case hazards.flyingcars:
+                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.flyingcars").color(NamedTextColor.BLUE)));
+                    player.showTitle(
+                            Title.title(
+                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.flyingcars").color(NamedTextColor.BLUE),
+                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
+                    );
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        switch (type) {
+            case hazards.tnt:
+                new BukkitRunnable() {
+                    int timer = 0;
+                    @Override
+                    public void run() {
+                        for (Player player : Bukkit.getOnlinePlayers()) {
+                            PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                            if (!pd.isPlayerDead) {
+                                Location loc = new Location(player.getWorld(), player.getX(), player.getY() + 10, player.getZ(), player.getYaw(), player.getPitch());
+                                TNTPrimed TNT = player.getWorld().spawn(loc, TNTPrimed.class, entity -> {
+
+                                });
+                            }
+                            player.playSound(player, "minecraft:entity.tnt.primed",  50, 1);
+                        }
+                        if (timer == 3) {
+                            IsHazardOver = true;
+                            cancel();
+                        }
+                        timer++;
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 0, 40);
+                break;
+
+            case hazards.slimetime:
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 12 * 20, 2, false, false, true));
+                    player.playSound(player, "minecraft:block.conduit.activate", 50, 1);
+                }
+                new BukkitRunnable() {
+                    int timer = 0;
+                    @Override
+                    public void run() {
+                        if (timer == 12) { //This should last the jump boost's duration
+                            for (Player player : Bukkit.getOnlinePlayers()) {
+                                player.playSound(player, "minecraft:block.beacon.deactivate", 50, 1);
+                            }
+                            IsHazardOver = true;
+                            cancel();
+                        }
+                        timer++;
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 0, 20);
+                break;
+
+            case hazards.flyingcars:
+                new BukkitRunnable() {
+                    int timer = 0;
+                    @Override
+                    public void run() {
+                        if (timer == 12) { //This should last the jump boost's duration
+                            for (Player player : Bukkit.getOnlinePlayers()) {
+                                player.playSound(player, "minecraft:block.beacon.deactivate", 50, 1);
+                            }
+                            IsHazardOver = true;
+                            cancel();
+                        }
+                        spawnFlyingCar();
+                        timer++;
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 0, 20);
+
+                break;
+        }
+    }
+
+    public static void spawnFlyingCar() {
+        boolean IsValidSpot = false;
+        Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
+        Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
+        while (!IsValidSpot) {
+            blockloc = new Location(Bukkit.getWorld("world"),
+                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
+                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
+                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5
+            );
+            blockloc2 = new Location(Bukkit.getWorld("world"),
+                    blockloc.getX(),
+                    blockloc.getY() + 1,
+                    blockloc.getZ()
+            );
+            if ((!blockloc.getBlock().getType().equals(Material.AIR)) && blockloc2.getBlock().getType().equals(Material.AIR)) {
+                IsValidSpot = true;
+            } else {
+                IsValidSpot = false;
+            }
+        }
+
+        Location loc = new Location(Bukkit.getWorld("world"), blockloc.getX(), knockoff.getInstance().mapdata.getCurrentYLength() + 13, blockloc.getZ());
+        ItemStack item = new ItemStack(Material.CHARCOAL);
+        ItemMeta meta = item.getItemMeta();
+        meta.setItemModel(CarsList.get(knockoff.getInstance().getRandomNumber(0, CarsList.size())));
+        item.setItemMeta(meta);
+
+        //No idea how to launch a fireball from the server, this is the next best thing I guess
+        ArmorStand tempentity = Bukkit.getWorld("world").spawn(loc, ArmorStand.class, entity -> {
+            entity.setRotation(0, 90);
+        });
+
+        Fireball ball = tempentity.launchProjectile(Fireball.class, tempentity.getEyeLocation().getDirection());
+        ball.getLocation().add(ball.getVelocity().normalize().multiply(1.05));
+        ball.setYield(6);
+        ball.setVisualFire(false);
+        //ball.setVisibleByDefault(false); //Does weird ass visual bugs, dont uncomment this
+
+        ArmorStand car = Bukkit.getWorld("world").spawn(loc, ArmorStand.class, entity -> {
+            entity.getEquipment().setHelmet(item);
+            entity.setVisible(false);
+            ball.addPassenger(entity);
+            entity.setGlowing(true);
+        });
+        tempentity.remove();
+
+        new BukkitRunnable() {
+            public void run() {
+                if (ball.isDead()) {
+                    car.remove();
+                    cancel();
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 1);
+    }
+
 }

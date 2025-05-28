@@ -200,10 +200,10 @@ public class ScoreboardManager {
             TeamName.addEntry("8");
 						TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
             if (td == null) {
-                TeamName.suffix(text("???").color(NamedTextColor.WHITE));
+                TeamName.suffix(text("Spectator").color(NamedTextColor.WHITE));
             } else {
             		TeamName.suffix(Component.translatable("crystalized.game.generic.team."+td.name).color(TextColor.color(td.color.asRGB())));
-						}
+			}
             obj.getScore("8").setScore(8);
         }
 
@@ -240,13 +240,25 @@ public class ScoreboardManager {
                 } else {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
-                        obj.getScore("5").customName(Component.translatable("crystalized.game.knockoff.round").append(text(": ")).append(text(GameManager.Round)));
-                        obj.getScore("4").customName(Component.translatable("crystalized.game.knockoff.nextround").append(text(": ")).append(text(GameManager.RoundCounter)));
+                        if (knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
+                            obj.getScore("5").customName(Component.translatable("crystalized.game.knockoff.round").append(text(": ")).append(text("??")));
+                            obj.getScore("4").customName(Component.translatable("crystalized.game.knockoff.nextround").append(text(": ")).append(text("??")));
+                        } else {
+                            obj.getScore("5").customName(Component.translatable("crystalized.game.knockoff.round").append(text(": ")).append(text(GameManager.Round)));
+                            obj.getScore("4").customName(Component.translatable("crystalized.game.knockoff.nextround").append(text(": ")).append(text(GameManager.RoundCounter)));
+                        }
+
                         obj.getScore("3").customName(Component.translatable("crystalized.game.knockoff.lives").append(text(": ")).append(text(pd.getLives())));
                         obj.getScore("2").customName(Component.translatable("crystalized.game.generic.kills").append(text(": ")).append(text(pd.getKills())));
                     } else {
-                        RoundCount.suffix(text(GameManager.Round));
-                        NextRound.suffix(text(GameManager.RoundCounter));
+                        if (knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
+                            RoundCount.suffix(text("??"));
+                            NextRound.suffix(text("??"));
+                        } else {
+                            RoundCount.suffix(text(GameManager.Round));
+                            NextRound.suffix(text(GameManager.RoundCounter));
+                        }
+
                         LivesCount.suffix(text(pd.getLives()));
                         KillCount.suffix(text(pd.getKills()));
                     }

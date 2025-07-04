@@ -99,6 +99,7 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("Cloud_Totem").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"CloudTotem"); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("Wind_Charge").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"WindCharge"); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("Boxing_Glove").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"BoxingGlove"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("Winged_Orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"WingedOrb"); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("spawn_hazard")
                     .then(Commands.literal("TNT").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.tnt); return Command.SINGLE_SUCCESS;}))

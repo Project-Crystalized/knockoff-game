@@ -52,12 +52,6 @@ public final class knockoff extends JavaPlugin {
         Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);
         Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
 
-        //Commands dc = new Commands();
-        //this.getCommand("knockoff").setExecutor(dc);
-        //this.getCommand("knockoff_give").setExecutor(dc);
-        //this.getCommand("knockoff_dropitem").setExecutor(dc);
-        //this.getCommand("knockoff_debug").setExecutor(dc);
-
         saveResource("config.yml", false);
         if (getConfig().getInt("version") != 1) {
             configVersion = getConfig().getInt("version");

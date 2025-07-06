@@ -40,7 +40,7 @@ public class KnockoffItem {
 
         ItemList.clear();
         ItemList.add("BoostOrb");
-        //ItemList.add("BridgeOrb");
+        ItemList.add("BridgeOrb");
         ItemList.add("ExplosiveOrb");
         ItemList.add("GrapplingOrb");
         //ItemList.add("KnockoutOrb");

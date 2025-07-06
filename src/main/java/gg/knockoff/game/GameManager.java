@@ -26,6 +26,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
@@ -1224,6 +1225,7 @@ class HazardsManager {
         slimetime,
         flyingcars,
         poisonbushes,
+        flooriscrystals,
     }
 
     public HazardsManager() {
@@ -1232,7 +1234,8 @@ class HazardsManager {
         //HazardList.add(hazards.tnt);
         //HazardList.add(hazards.slimetime);
         //HazardList.add(hazards.flyingcars);
-        HazardList.add(hazards.poisonbushes);
+        //HazardList.add(hazards.poisonbushes);
+        HazardList.add(hazards.flooriscrystals);
 
         CarsList.clear();
         CarsList.add(new NamespacedKey("crystalized", "models/car/military_bus"));
@@ -1294,6 +1297,14 @@ class HazardsManager {
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
                     );
                     break;
+                case hazards.flooriscrystals:
+                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.flooriscrystals").color(LIGHT_PURPLE)));
+                    player.showTitle(
+                            Title.title(
+                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.flooriscrystals").color(LIGHT_PURPLE),
+                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
+                    );
+                    break;
                 default:
                     break;
             }
@@ -1335,7 +1346,7 @@ class HazardsManager {
                     public void run() {
                         if (timer == 12) { //This should last the jump boost's duration
                             for (Player player : Bukkit.getOnlinePlayers()) {
-                                player.playSound(player, "minecraft:block.beacon.deactivate", 50, 1);
+                                player.playSound(player, "minecraft:block.conduit.deactivate", 50, 1);
                             }
                             IsHazardOver = true;
                             cancel();
@@ -1363,7 +1374,6 @@ class HazardsManager {
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
                 break;
             case hazards.poisonbushes:
-
                 new BukkitRunnable() {
                     int timer = 6;
                     public void run() {
@@ -1375,8 +1385,81 @@ class HazardsManager {
                         timer --;
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 2);
+                break;
 
+            case hazards.flooriscrystals:
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.playSound(player, "minecraft:block.conduit.activate", 50, 1);
+                }
+                new BukkitRunnable() {
+                    List<Block> blocks = new ArrayList<>();
+                    public void run() {
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            Location below = p.getLocation().add(0, -1, 0);
+                            //This is dumb, but this should make the radius bigger than 1 singular block
+                            startBlockBreak(below.getBlock());
+                            startBlockBreak(below.clone().add(0.5, 0, 0).getBlock());
+                            startBlockBreak(below.clone().add(0, 0, 0.5).getBlock());
+                            startBlockBreak(below.clone().add(-0.5, 0, 0).getBlock());
+                            startBlockBreak(below.clone().add(0, 0, -0.5).getBlock());
+                            startBlockBreak(below.clone().add(0, -1, 0).getBlock());
+                        }
+                        if (IsHazardOver) {
+                            cancel();
+                        }
+                    }
+                    void startBlockBreak(Block b) {
+                        if (blocks.contains(b) || b.isEmpty()) {
+                            return;
+                        }
 
+                        int entityID = knockoff.getInstance().getRandomNumber(-10000, 0);
+                        if (b.getType().toString().toLowerCase().contains("slab")) {
+                            b.setType(Material.PURPUR_SLAB);
+                        } else if (b.getType().toString().toLowerCase().contains("stairs")) {
+                            b.setType(Material.PURPUR_STAIRS);
+                        } else if (b.getType().toString().toLowerCase().contains("glass")) {
+                            if (b.getType().toString().toLowerCase().contains("pane")) {
+                                b.setType(Material.PINK_STAINED_GLASS_PANE);
+                            } else {
+                                b.setType(Material.PINK_STAINED_GLASS);
+                            }
+                        } else {
+                            b.setType(Material.AMETHYST_BLOCK);
+                        }
+                        blocks.add(b);
+
+                        new BukkitRunnable() {
+                            float breaking = 0;
+                            public void run() {
+                                if (breaking == 1F || breaking > 1F) {
+                                    b.breakNaturally();
+                                    blocks.remove(b);
+                                    cancel();
+                                }
+                                for (Player p : Bukkit.getOnlinePlayers()) {
+                                    p.sendBlockDamage(b.getLocation(), breaking, entityID);
+                                }
+                                breaking = breaking + 0.2F;
+                            }
+                        }.runTaskTimer(knockoff.getInstance(), 0, 10);
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 3, 1);
+
+                new BukkitRunnable() {
+                    int timer = 10;
+                    public void run() {
+                        timer --;
+                        if (timer == 0) {
+                            for (Player p : Bukkit.getOnlinePlayers()) {
+                                p.playSound(p, "minecraft:block.conduit.deactivate", 50, 1);
+                            }
+
+                            IsHazardOver = true;
+                            cancel();
+                        }
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 0, 20);
                 break;
         }
     }

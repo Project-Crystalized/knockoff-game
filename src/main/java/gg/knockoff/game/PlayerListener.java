@@ -53,6 +53,7 @@ public class PlayerListener implements Listener {
 			player.removePotionEffect(PotionEffectType.HUNGER);
 			player.removePotionEffect(PotionEffectType.RESISTANCE);
 			player.removePotionEffect(PotionEffectType.JUMP_BOOST); // Should remove slime time if you somehow still have it
+			player.removePotionEffect(PotionEffectType.POISON); // Removes Poisonous Bushes' effect
 			player.addPotionEffect(
 					new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
 			player.addPotionEffect(

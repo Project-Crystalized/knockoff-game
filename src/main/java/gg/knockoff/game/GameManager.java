@@ -26,6 +26,8 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.damage.DamageSource;
+import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -34,6 +36,7 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import com.google.common.io.ByteArrayDataOutput;
@@ -292,6 +295,19 @@ public class GameManager { //I honestly think this entire class could be optimis
         }.runTaskTimer(knockoff.getInstance(), 0 ,20);
 
 
+
+        new BukkitRunnable() {
+            public void run() {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
+                        p.damage(0.0001, DamageSource.builder(DamageType.SWEET_BERRY_BUSH).build());
+                        p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
+                    }
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 10);
+
+        //TODO clean this shit up this is a mess
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -307,6 +323,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     if (!knockoff.getInstance().DevMode && !pd.isPlayerDead && GameState.equals("game")) {
                         p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
                     }
+
                     if (p.getLocation().getY() < -30) {//instantly kills the player when they get knocked into the void
                         Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                         p.teleport(loc);
@@ -314,6 +331,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                             p.setHealth(0);
                         }
                     }
+
+
+
                 }
                 for (Entity e : Bukkit.getWorld("world").getEntities()) {
                     if (e instanceof Item) {
@@ -734,7 +754,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         boolean IsValidSpot = false;
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-        while (!IsValidSpot) {
+        while (!IsValidSpot && knockoff.getInstance().GameManager != null) { //Last check is here to prevent a rare crash
             blockloc = new Location(Bukkit.getWorld("world"),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
@@ -1203,14 +1223,16 @@ class HazardsManager {
         tnt,
         slimetime,
         flyingcars,
+        poisonbushes,
     }
 
     public HazardsManager() {
         IsHazardOver = true;
         HazardList.clear();
-        HazardList.add(hazards.tnt);
-        HazardList.add(hazards.slimetime);
-        HazardList.add(hazards.flyingcars);
+        //HazardList.add(hazards.tnt);
+        //HazardList.add(hazards.slimetime);
+        //HazardList.add(hazards.flyingcars);
+        HazardList.add(hazards.poisonbushes);
 
         CarsList.clear();
         CarsList.add(new NamespacedKey("crystalized", "models/car/military_bus"));
@@ -1261,6 +1283,14 @@ class HazardsManager {
                     player.showTitle(
                             Title.title(
                                     HazardMessage, translatable("crystalized.game.knockoff.hazard.flyingcars").color(NamedTextColor.BLUE),
+                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
+                    );
+                    break;
+                case hazards.poisonbushes:
+                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.poisonbushes").color(DARK_GREEN)));
+                    player.showTitle(
+                            Title.title(
+                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.poisonbushes").color(DARK_GREEN),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
                     );
                     break;
@@ -1331,6 +1361,21 @@ class HazardsManager {
                         timer++;
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
+                break;
+            case hazards.poisonbushes:
+
+                new BukkitRunnable() {
+                    int timer = 6;
+                    public void run() {
+                        spawnBush();
+                        if (timer == 0) {
+                            IsHazardOver = true;
+                            cancel();
+                        }
+                        timer --;
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 0, 2);
+
 
                 break;
         }
@@ -1393,4 +1438,55 @@ class HazardsManager {
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
     }
 
+    //This can override blocks but who cares, maps get copy pasted for gameplay anyways
+    private static void spawnBush() {
+        boolean IsValidSpot = false;
+        Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
+        Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
+        while (!IsValidSpot) {
+            blockloc = new Location(Bukkit.getWorld("world"),
+                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
+                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
+                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5
+            );
+            blockloc2 = new Location(Bukkit.getWorld("world"),
+                    blockloc.getX(),
+                    blockloc.getY() + 1,
+                    blockloc.getZ()
+            );
+            if ((!blockloc.getBlock().getType().equals(Material.AIR)) && blockloc2.getBlock().getType().equals(Material.AIR)) {
+                IsValidSpot = true;
+            } else {
+                IsValidSpot = false;
+            }
+        }
+
+        blockloc2.getBlock().setType(Material.MANGROVE_LEAVES);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(blockloc2, "minecraft:block.cherry_leaves.place", 1, 1);
+        }
+        blockloc2.clone().add(new Vector(1,0,0)).getBlock().setType(Material.MANGROVE_LEAVES);
+        blockloc2.clone().add(new Vector(0,0,1)).getBlock().setType(Material.MANGROVE_LEAVES);
+        blockloc2.clone().add(new Vector(1,0,1)).getBlock().setType(Material.MANGROVE_LEAVES);
+
+        //Make the bushes look different and slightly less boring and predictable
+        int i = knockoff.getInstance().getRandomNumber(0, 2);
+        switch (i) {
+            case 1 -> {
+                blockloc2.clone().add(new Vector(-1,0,0)).getBlock().setType(Material.MANGROVE_LEAVES);
+                blockloc2.clone().add(new Vector(-1,0,-1)).getBlock().setType(Material.MANGROVE_LEAVES);
+                blockloc2.clone().add(new Vector(0,0,-1)).getBlock().setType(Material.MANGROVE_LEAVES);
+                blockloc2.clone().add(new Vector(0,1,0)).getBlock().setType(Material.MANGROVE_LEAVES);
+            }
+            case 2 -> {
+                blockloc2.clone().add(new Vector(1,1,0)).getBlock().setType(Material.MANGROVE_LEAVES);
+                blockloc2.clone().add(new Vector(0,1,1)).getBlock().setType(Material.MANGROVE_LEAVES);
+                blockloc2.clone().add(new Vector(1,1,1)).getBlock().setType(Material.MANGROVE_LEAVES);
+                blockloc2.clone().add(new Vector(0,1,0)).getBlock().setType(Material.MANGROVE_LEAVES);
+            }
+            default -> {
+                //Do nothing
+            }
+        }
+    }
 }

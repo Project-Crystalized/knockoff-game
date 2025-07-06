@@ -1,7 +1,7 @@
 name: knockoff-game
 version: '0.0.1'
 main: gg.knockoff.game.knockoff
-api-version: '1.21.4'
+api-version: '1.21.6'
 depend: [FastAsyncWorldEdit, Crystalized_Essentials, ProtocolLib, floodgate]
 authors: [Project Crystalized Team, Callum_Is_Bad]
 prefix: Knockoff

@@ -7,11 +7,13 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -384,6 +386,14 @@ public class PlayerListener implements Listener {
 	public void OnInventoryMoveItem(InventoryClickEvent event) {
 		if (knockoff.getInstance().GameManager == null) {
 			event.setCancelled(true);
+		}
+	}
+
+	@EventHandler
+	public void onEntityExplosion(EntityExplodeEvent e) {
+		e.setCancelled(true);
+		for (Block b : e.blockList()) {
+			b.setType(Material.AMETHYST_BLOCK);
 		}
 	}
 }

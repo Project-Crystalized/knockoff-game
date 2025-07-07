@@ -57,6 +57,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static List<PlayerData> playerDatas;
     public Teams teams;
     public HazardsManager hazards = new HazardsManager();
+    public static List<Block> blocksCrystallizing = new ArrayList<>();
 
     public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;
@@ -774,6 +775,14 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
         DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 1, blockloc.getBlockZ()), powerup);
     }
+
+    public static void scheduleCrystalBlockForDeletion(Block b) {
+        if (blocksCrystallizing.contains(b)) {
+            return;
+        } else {
+            blocksCrystallizing.add(b);
+        }
+    }
 }
 
 class MapManager {
@@ -819,6 +828,14 @@ class MapManager {
             //
         }
 
+
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(p, "minecraft:entity.illusioner.mirror_move", 50, 2);
+            p.playSound(p, "minecraft:entity.illusioner.prepare_blindness", 50, 0.5F);
+            p.playSound(p, "minecraft:block.conduit.ambient", 50, 1);
+        }
+
+        /*
         //TODO Temporary sound effect. For Map Movement
         new BukkitRunnable() {
             int timer = 0;
@@ -841,6 +858,7 @@ class MapManager {
                 timer++;
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 10);
+         */
         DecayMapSection();
     }
     public static void DecayMapSection() {
@@ -1433,6 +1451,9 @@ class HazardsManager {
                             float breaking = 0;
                             public void run() {
                                 if (breaking == 1F || breaking > 1F) {
+                                    for (Player p : Bukkit.getOnlinePlayers()) {
+                                        p.sendBlockDamage(b.getLocation(), 0.0F, entityID);
+                                    }
                                     b.breakNaturally();
                                     blocks.remove(b);
                                     cancel();

@@ -10,7 +10,9 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
+import org.bukkit.entity.BreezeWindCharge;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.WindCharge;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityExplodeEvent;
@@ -391,9 +393,15 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onEntityExplosion(EntityExplodeEvent e) {
+		if (e.getEntity() instanceof WindCharge || e.getEntity() instanceof BreezeWindCharge) {
+			return;
+		}
 		e.setCancelled(true);
+		if (knockoff.getInstance().GameManager == null) {return;}
+		e.getLocation().createExplosion(null, 1.5F, false, false);
 		for (Block b : e.blockList()) {
-			b.setType(Material.AMETHYST_BLOCK);
+			knockoff.getInstance().GameManager.convertBlocktoCrystal(b);
+			knockoff.getInstance().GameManager.startBreakingCrystal(b);
 		}
 	}
 }

@@ -105,6 +105,8 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("TNT").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.tnt); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("Slime_Time").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.slimetime); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("Flying_Cars").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.flyingcars); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("Poison_Bushes").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.poisonbushes); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("Floor_Is_Crystals").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.flooriscrystals); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("moveMap").executes(ctx -> {
                 Entity p = ctx.getSource().getExecutor();

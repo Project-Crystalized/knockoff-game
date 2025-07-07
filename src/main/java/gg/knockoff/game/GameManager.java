@@ -776,11 +776,56 @@ public class GameManager { //I honestly think this entire class could be optimis
         DropPowerup.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 1, blockloc.getBlockZ()), powerup);
     }
 
-    public static void scheduleCrystalBlockForDeletion(Block b) {
+    public static void convertBlocktoCrystal(Block b) {
+        if (b.getType().equals(Material.MANGROVE_LEAVES)) {
+            //Do nothing
+        } else {
+            String blockString = b.getType().toString().toLowerCase();
+            if (blockString.contains("slab")) {
+                b.setType(Material.PURPUR_SLAB);
+            } else if (blockString.contains("stairs")) {
+                b.setType(Material.PURPUR_STAIRS);
+            } else if (blockString.contains("glass")) {
+                if (blockString.contains("pane")) {
+                    b.setType(Material.PINK_STAINED_GLASS_PANE);
+                } else {
+                    b.setType(Material.PINK_STAINED_GLASS);
+                }
+            } else {
+                b.setType(Material.AMETHYST_BLOCK);
+            }
+
+        }
+    }
+
+    public static void startBreakingCrystal(Block b) {
         if (blocksCrystallizing.contains(b)) {
             return;
         } else {
             blocksCrystallizing.add(b);
+            new BukkitRunnable() {
+                float breaking = 0.0F;
+                int entityID = knockoff.getInstance().getRandomNumber(1, 10000);
+                public void run() {
+                    if (breaking == 1F || breaking > 1F) {
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.sendBlockDamage(b.getLocation(), 0, entityID);
+                            p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
+                        }
+                        b.setType(Material.AIR);
+                        blocksCrystallizing.remove(b);
+                        cancel();
+                    }
+                    if (b.getType().equals(Material.AIR)) { //For if the blocks get broken during this
+                        blocksCrystallizing.remove(b);
+                        cancel();
+                    }
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.sendBlockDamage(b.getLocation(), breaking, entityID);
+                    }
+                    breaking = breaking + 0.2F;
+                }
+            }.runTaskTimer(knockoff.getInstance(), knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(13, 20));
         }
     }
 }
@@ -1410,61 +1455,29 @@ class HazardsManager {
                     player.playSound(player, "minecraft:block.conduit.activate", 50, 1);
                 }
                 new BukkitRunnable() {
-                    List<Block> blocks = new ArrayList<>();
                     public void run() {
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             Location below = p.getLocation().add(0, -1, 0);
                             //This is dumb, but this should make the radius bigger than 1 singular block
-                            startBlockBreak(below.getBlock());
-                            startBlockBreak(below.clone().add(0.5, 0, 0).getBlock());
-                            startBlockBreak(below.clone().add(0, 0, 0.5).getBlock());
-                            startBlockBreak(below.clone().add(-0.5, 0, 0).getBlock());
-                            startBlockBreak(below.clone().add(0, 0, -0.5).getBlock());
-                            startBlockBreak(below.clone().add(0, -1, 0).getBlock());
+                            crystal(below.getBlock());
+                            crystal(below.clone().add(0.5, 0, 0).getBlock());
+                            crystal(below.clone().add(0, 0, 0.5).getBlock());
+                            crystal(below.clone().add(-0.5, 0, 0).getBlock());
+                            crystal(below.clone().add(0, 0, -0.5).getBlock());
+                            crystal(below.clone().add(0, -1, 0).getBlock());
+
                         }
                         if (IsHazardOver) {
                             cancel();
                         }
                     }
-                    void startBlockBreak(Block b) {
-                        if (blocks.contains(b) || b.isEmpty()) {
-                            return;
-                        }
 
-                        int entityID = knockoff.getInstance().getRandomNumber(-10000, 0);
-                        if (b.getType().toString().toLowerCase().contains("slab")) {
-                            b.setType(Material.PURPUR_SLAB);
-                        } else if (b.getType().toString().toLowerCase().contains("stairs")) {
-                            b.setType(Material.PURPUR_STAIRS);
-                        } else if (b.getType().toString().toLowerCase().contains("glass")) {
-                            if (b.getType().toString().toLowerCase().contains("pane")) {
-                                b.setType(Material.PINK_STAINED_GLASS_PANE);
-                            } else {
-                                b.setType(Material.PINK_STAINED_GLASS);
-                            }
-                        } else {
-                            b.setType(Material.AMETHYST_BLOCK);
-                        }
-                        blocks.add(b);
-
-                        new BukkitRunnable() {
-                            float breaking = 0;
-                            public void run() {
-                                if (breaking == 1F || breaking > 1F) {
-                                    for (Player p : Bukkit.getOnlinePlayers()) {
-                                        p.sendBlockDamage(b.getLocation(), 0.0F, entityID);
-                                    }
-                                    b.breakNaturally();
-                                    blocks.remove(b);
-                                    cancel();
-                                }
-                                for (Player p : Bukkit.getOnlinePlayers()) {
-                                    p.sendBlockDamage(b.getLocation(), breaking, entityID);
-                                }
-                                breaking = breaking + 0.2F;
-                            }
-                        }.runTaskTimer(knockoff.getInstance(), 0, 10);
+                    void crystal(Block b) {
+                        GameManager gm = knockoff.getInstance().GameManager;
+                        gm.convertBlocktoCrystal(b);
+                        gm.startBreakingCrystal(b);
                     }
+
                 }.runTaskTimer(knockoff.getInstance(), 3, 1);
 
                 new BukkitRunnable() {

@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "gg.knockoff.game"
-version = "1.0.0 - build.gradle.kts Build"
+version = "1.0.0"
 
 repositories {
     mavenCentral()

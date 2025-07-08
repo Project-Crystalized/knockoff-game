@@ -302,12 +302,11 @@ public class GameManager { //I honestly think this entire class could be optimis
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
-                        p.damage(0.0001, DamageSource.builder(DamageType.SWEET_BERRY_BUSH).build());
                         p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 0, 10);
+        }.runTaskTimer(knockoff.getInstance(), 0, 1);
 
         //TODO clean this shit up this is a mess
         new BukkitRunnable() {
@@ -777,14 +776,14 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void convertBlocktoCrystal(Block b) {
-        if (b.getType().equals(Material.MANGROVE_LEAVES)) {
+        if (b.getType().equals(Material.MANGROVE_LEAVES) || b.getType().equals(Material.AIR)) {
             //Do nothing
         } else {
             String blockString = b.getType().toString().toLowerCase();
             if (blockString.contains("slab")) {
-                b.setType(Material.PURPUR_SLAB);
+                b.setType(Material.CUT_COPPER_SLAB);
             } else if (blockString.contains("stairs")) {
-                b.setType(Material.PURPUR_STAIRS);
+                b.setType(Material.CUT_COPPER_STAIRS);
             } else if (blockString.contains("glass")) {
                 if (blockString.contains("pane")) {
                     b.setType(Material.PINK_STAINED_GLASS_PANE);
@@ -799,6 +798,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void startBreakingCrystal(Block b) {
+        if (b.getType().equals(Material.AIR)) {return;} //dont crystallize nothing lol
         if (blocksCrystallizing.contains(b)) {
             return;
         } else {

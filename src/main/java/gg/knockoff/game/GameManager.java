@@ -46,6 +46,7 @@ import com.google.common.io.ByteStreams;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -828,6 +829,41 @@ public class GameManager { //I honestly think this entire class could be optimis
             }.runTaskTimer(knockoff.getInstance(), knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(13, 20));
         }
     }
+
+    //For map decaying mostly
+    public static void startBreakingCrystal(Block b, int addedDelay, int addedPeriod) {
+        if (b.getType().equals(Material.AIR)) {return;} //dont crystallize nothing lol
+        if (blocksCrystallizing.contains(b)) {
+            return;
+        } else {
+            blocksCrystallizing.add(b);
+            new BukkitRunnable() {
+                float breaking = 0.0F;
+                int entityID = knockoff.getInstance().getRandomNumber(1, 10000);
+                public void run() {
+                    if (breaking == 1F || breaking > 1F) {
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.sendBlockDamage(b.getLocation(), 0, entityID);
+                            p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
+                        }
+                        b.setType(Material.AIR);
+                        blocksCrystallizing.remove(b);
+                        cancel();
+                    } else if (breaking == 0.0F) {
+                        convertBlocktoCrystal(b);
+                    }
+                    if (b.getType().equals(Material.AIR)) { //For if the blocks get broken during this
+                        blocksCrystallizing.remove(b);
+                        cancel();
+                    }
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.sendBlockDamage(b.getLocation(), breaking, entityID);
+                    }
+                    breaking = breaking + 0.2F;
+                }
+            }.runTaskTimer(knockoff.getInstance(), addedDelay, addedPeriod);
+        }
+    }
 }
 
 class MapManager {
@@ -879,38 +915,56 @@ class MapManager {
             p.playSound(p, "minecraft:entity.illusioner.prepare_blindness", 50, 0.5F);
             p.playSound(p, "minecraft:block.conduit.ambient", 50, 1);
         }
-
-        /*
-        //TODO Temporary sound effect. For Map Movement
-        new BukkitRunnable() {
-            int timer = 0;
-            @Override
-            public void run() {
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    switch (timer) {
-                        case 1, 3:
-                            player.playSound(player, "minecraft:block.note_block.chime", 50, 1);
-                            break;
-                        case 2:
-                            player.playSound(player, "minecraft:block.note_block.chime", 50, 1);
-                            player.playSound(player, "minecraft:block.conduit.ambient", 50, 1);
-                            break;
-                        case 4:
-                            cancel();
-                            break;
-                    }
-                }
-                timer++;
-            }
-        }.runTaskTimer(knockoff.getInstance(), 0, 10);
-         */
+        turnMapIntoCrystals();
         DecayMapSection();
     }
+
+    //Unused for now, planning to use these for particles
+    enum mapDirections{
+        undecided,
+        EAST,
+        SOUTH,
+        WEST,
+    }
+
+    public static void turnMapIntoCrystals() {
+        List<Block> blockList = new ArrayList<>();
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+            Region region = new CuboidRegion(
+                    BlockVector3.at(
+                            GameManager.LastSectionPlaceLocationX,
+                            GameManager.LastSectionPlaceLocationY,
+                            GameManager.LastSectionPlaceLocationZ
+                    ),
+                    BlockVector3.at(
+                            GameManager.LastSectionPlaceLocationX + LastXLength -1,
+                            GameManager.LastSectionPlaceLocationY + LastYLength -1, //Subtracting 1 to prevent a bug where section borders are caught within this
+                            GameManager.LastSectionPlaceLocationZ + LastZLength -1
+                    )
+            );
+            for (BlockVector3 bV3 : region) {
+                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                if (!b.isEmpty()) {
+                    blockList.add(b);
+                }
+            }
+        } catch (Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+            e.printStackTrace();
+        }
+
+        GameManager gm = knockoff.getInstance().GameManager;
+        for (Block b : blockList) {
+            gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(25, 6 * 20), knockoff.getInstance().getRandomNumber(40, 70));
+        }
+    }
+
     public static void DecayMapSection() {
         //WorldEdit/FAWE API documentation is ass, gl understanding this
 
-
-        //Turning map into Crystals
+        /*
+        //DEPRECATED Turning map into Crystals
         new BukkitRunnable() {
             int XPos = 0;
 
@@ -1017,7 +1071,9 @@ class MapManager {
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 10);
+         */
 
+        //TODO this code is shit but idk how to improve it well
         //Filling crystals with air, this has a delay compared to the previous BukkitRunnable
         //This is literally copy pasted code but with the material changed to AIR
         new BukkitRunnable() {
@@ -1126,7 +1182,7 @@ class MapManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 60, 10);
+        }.runTaskTimer(knockoff.getInstance(), 7 * 20, 5);
     }
 
     public static void CopyRandomMapSection() {

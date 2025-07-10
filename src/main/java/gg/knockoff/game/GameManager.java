@@ -302,9 +302,13 @@ public class GameManager { //I honestly think this entire class could be optimis
         new BukkitRunnable() {
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    PlayerData pd = getPlayerData(p);
                     if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
                         p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
                     }
+
+                    //p.sendActionBar(text("" + pd.percent + "%"));
+
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
@@ -321,10 +325,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (knockoff.getInstance().GameManager == null) {cancel();}
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-                    if (!knockoff.getInstance().DevMode && !pd.isPlayerDead && GameState.equals("game")) {
-                        p.getPlayer().sendActionBar(text("" + pd.getDamagepercentage() + "%"));
-                    }
 
                     if (p.getLocation().getY() < -30) {//instantly kills the player when they get knocked into the void
                         Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());

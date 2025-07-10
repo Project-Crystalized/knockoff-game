@@ -485,7 +485,7 @@ class CustomPlayerNametags {
 						displayfront.text(text("")
 								.append(player.displayName())
 								.append(text("\nKB: "))
-								.append(text(pd.getDamagepercentage()))
+								.append(text(pd.percent))
 								.append(text("% | L: "))
 								.append(text(pd.getLives())));
 					}

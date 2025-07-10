@@ -1,10 +1,13 @@
 package gg.knockoff.game;
 
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Comparator;
+
+import static net.kyori.adventure.text.Component.text;
 
 public class PlayerData { //This class probably isn't optimised, but it works so who cares
 
@@ -14,17 +17,65 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     public int lives = 5;
     public int kills = 0;
     public int deaths = 0;
-    public int damagepercentage = 0;
     public int deathtimer = 0;
-    public boolean DamagePercentageStopTimer = false;
     public boolean isOnline = true;
     public int blocksplaced = 0;
     public int blocksbroken = 0;
     public int powerupscollected = 0;
     public int powerupsused = 0;
+    public int percent = 0;
 
     public PlayerData(Player p) {
         player = p.getName();
+
+        new BukkitRunnable() {
+            int timer = 0;
+            int savedPercent = -1;
+            public void run() {
+                if (percent > 0) {
+                    if (savedPercent != percent) {
+                        savedPercent = percent;
+                        timer = 4 * 20;
+                    } else {
+                        timer --;
+                        if (timer == 0) {
+                            percent--;
+                            savedPercent = percent;
+                            timer = 4;
+                        }
+                    }
+                } else {
+                    timer = 0;
+                    savedPercent = -1;
+                }
+
+                if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                    //p.sendActionBar(text("" + percent + "% | T:" + timer + " SP:" + savedPercent));
+                    p.sendActionBar(text(percentToFont("" + percent + "%")));
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 1);
+    }
+
+    private String percentToFont(String input) {
+        String output = "";
+        for (char c : input.toCharArray()) {
+            switch (c) {
+                case '0' -> {output = output + "\uE210";}
+                case '1' -> {output = output + "\uE211";}
+                case '2' -> {output = output + "\uE212";}
+                case '3' -> {output = output + "\uE213";}
+                case '4' -> {output = output + "\uE214";}
+                case '5' -> {output = output + "\uE215";}
+                case '6' -> {output = output + "\uE216";}
+                case '7' -> {output = output + "\uE217";}
+                case '8' -> {output = output + "\uE218";}
+                case '9' -> {output = output + "\uE219";}
+                case '%' -> {output = output + "\uE21A";}
+                default -> {output = output + "?";}
+            }
+        }
+        return output;
     }
 
     public int getLives() {
@@ -57,55 +108,6 @@ public class PlayerData { //This class probably isn't optimised, but it works so
 
     public int getDeathtimer() {
         return this.deathtimer;
-    }
-
-    public int getDamagepercentage() {
-        return this.damagepercentage;
-    }
-
-    public void changepercentage(int amt) {
-        Player p = Bukkit.getPlayer(player);
-        damagepercentage += amt;
-        Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
-            DamagePercentageTimer();
-        }, 1);
-    }
-
-    private void DamagePercentageTimer() {
-        if (damagepercentage > 0) {
-            new BukkitRunnable() {
-                int timer = 0;
-                @Override
-                public void run() {
-                    if (DamagePercentageStopTimer) {
-                        DamagePercentageStopTimer = false;
-                        cancel();
-                    }
-                    switch (timer) {
-                        case 3:
-                            SetDamagePrecentageTo0();
-                            cancel();
-                        default:
-                            //do nothing
-                    }
-                    timer++;
-                }
-            }.runTaskTimer(knockoff.getInstance(), 20 ,1);
-        }
-    }
-
-    private void SetDamagePrecentageTo0() {
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                if (DamagePercentageStopTimer || damagepercentage == 0) {
-                    DamagePercentageStopTimer = false;
-                    cancel();
-                } else {
-                    damagepercentage--;
-                }
-            }
-        }.runTaskTimer(knockoff.getInstance(), 10 ,1);
     }
 
     public int calc_player_score() {

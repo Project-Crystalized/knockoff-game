@@ -147,7 +147,6 @@ public final class knockoff extends JavaPlugin {
                         return;
                     } else {
                         is_force_starting = false;
-                        GameCountdownStarted = false;
                         new BukkitRunnable() {
                             public void run() {
 
@@ -204,13 +203,14 @@ public final class knockoff extends JavaPlugin {
                         .append(text(" " + (timer - 1) ).color(NamedTextColor.DARK_GRAY))
                 );
                 timer--;
-                if (!GameCountdownStarted) {
+                if (!GameCountdownStarted && getInstance().is_force_starting) {
                     Bukkit.getServer().sendMessage(text("Game cancelled, too few players!").color(NamedTextColor.RED));
                     GameCountdownStarted = false;
                     cancel();
                 }
                 if (timer == 0) {
                     knockoff.getInstance().is_force_starting = true;
+                    GameCountdownStarted = false;
                     cancel();
                 }
             }

@@ -212,22 +212,22 @@ public class ScoreboardManager {
 
         Team RoundCount = scoreboard.registerNewTeam("RoundCount");
         RoundCount.addEntry("6");
-        RoundCount.suffix(text("RoundCount"));
+        RoundCount.suffix(text(""));
         obj.getScore("6").setScore(6);
 
         Team NextRound = scoreboard.registerNewTeam("NextRound");
         NextRound.addEntry("5");
-        NextRound.suffix(text("NextRound"));
+        NextRound.suffix(text(""));
         obj.getScore("5").setScore(5);
 
         Team LivesCount = scoreboard.registerNewTeam("LivesCount");
         LivesCount.addEntry("3");
-        LivesCount.suffix(text("LivesCount"));
+        LivesCount.suffix(text(""));
         obj.getScore("3").setScore(3);
 
         Team KillCount = scoreboard.registerNewTeam("KillCount");
         KillCount.addEntry("2");
-        KillCount.suffix(text("KillCount"));
+        KillCount.suffix(text(""));
         obj.getScore("2").setScore(2);
 
         player.setScoreboard(scoreboard);
@@ -298,7 +298,7 @@ class QueueScoreBoard{
 
         Team QueuePlayer = scoreboard.registerNewTeam("QueuePlayers");
         QueuePlayer.addEntry("2");
-        QueuePlayer.suffix(text("Placeholder"));
+        QueuePlayer.suffix(text(""));
         obj.getScore("2").setScore(2);
 
         Team QueueMap = scoreboard.registerNewTeam("QueueMap");

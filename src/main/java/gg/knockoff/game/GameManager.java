@@ -1518,6 +1518,7 @@ class HazardsManager {
                             IsHazardOver = true;
                             cancel();
                         }
+                        if (knockoff.getInstance().GameManager == null) {cancel();}
                         spawnFlyingCar();
                         timer++;
                     }
@@ -1589,7 +1590,7 @@ class HazardsManager {
         boolean IsValidSpot = false;
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-        while (!IsValidSpot) {
+        while (!IsValidSpot && knockoff.getInstance().GameManager != null) {
             blockloc = new Location(Bukkit.getWorld("world"),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
@@ -1605,6 +1606,9 @@ class HazardsManager {
             } else {
                 IsValidSpot = false;
             }
+        }
+        if (knockoff.getInstance().GameManager == null) {
+            return;
         }
 
         Location loc = new Location(Bukkit.getWorld("world"), blockloc.getX(), knockoff.getInstance().mapdata.getCurrentYLength() + 13, blockloc.getZ());
@@ -1647,7 +1651,7 @@ class HazardsManager {
         boolean IsValidSpot = false;
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-        while (!IsValidSpot) {
+        while (!IsValidSpot && knockoff.getInstance().GameManager != null) {
             blockloc = new Location(Bukkit.getWorld("world"),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
@@ -1664,6 +1668,7 @@ class HazardsManager {
                 IsValidSpot = false;
             }
         }
+        if (knockoff.getInstance().GameManager == null) {return;}
 
         blockloc2.getBlock().setType(Material.MANGROVE_LEAVES);
         for (Player p : Bukkit.getOnlinePlayers()) {

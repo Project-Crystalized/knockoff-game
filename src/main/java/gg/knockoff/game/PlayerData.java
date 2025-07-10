@@ -18,6 +18,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     public int kills = 0;
     public int deaths = 0;
     public int deathtimer = 0;
+    public int startingDeathTimerInt = 0;
     public boolean isOnline = true;
     public int blocksplaced = 0;
     public int blocksbroken = 0;
@@ -103,6 +104,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     }
 
     public void setDeathtimer(int amt) {
+        startingDeathTimerInt = amt;
         deathtimer = amt;
     }
 

@@ -26,6 +26,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -191,6 +192,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                                             .append(Component.text(" 2 1").color(GRAY))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
+                        }
+                        break;
+                    case 1:
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            PlayerData pd = getPlayerData(p);
+                            p.getAttribute(Attribute.MAX_HEALTH).setBaseValue(pd.getLives() * 2);
                         }
                         break;
                 }
@@ -808,9 +815,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                 float breaking = 0.0F;
                 int entityID = knockoff.getInstance().getRandomNumber(1, 10000);
                 public void run() {
+                    FloodgateApi fApi = FloodgateApi.getInstance();
                     if (breaking == 1F || breaking > 1F) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
-                            p.sendBlockDamage(b.getLocation(), 0, entityID);
+                            if (!fApi.isFloodgatePlayer(p.getUniqueId())) { //To prevent lagging on low end bedrock devices
+                                p.sendBlockDamage(b.getLocation(), 0, entityID);
+                            }
                             p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
                         }
                         b.setType(Material.AIR);
@@ -822,7 +832,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                         cancel();
                     }
                     for (Player p : Bukkit.getOnlinePlayers()) {
-                        p.sendBlockDamage(b.getLocation(), breaking, entityID);
+                        if (!fApi.isFloodgatePlayer(p.getUniqueId())) { //To prevent lagging on low end bedrock devices
+                            p.sendBlockDamage(b.getLocation(), breaking, entityID);
+                        }
                     }
                     breaking = breaking + 0.2F;
                 }
@@ -841,23 +853,27 @@ public class GameManager { //I honestly think this entire class could be optimis
                 float breaking = 0.0F;
                 int entityID = knockoff.getInstance().getRandomNumber(1, 10000);
                 public void run() {
+                    convertBlocktoCrystal(b);
+                    FloodgateApi fApi = FloodgateApi.getInstance();
                     if (breaking == 1F || breaking > 1F) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
-                            p.sendBlockDamage(b.getLocation(), 0, entityID);
+                            if (!fApi.isFloodgatePlayer(p.getUniqueId())) { //To prevent lagging on low end bedrock devices
+                                p.sendBlockDamage(b.getLocation(), 0, entityID);
+                            }
                             p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
                         }
                         b.setType(Material.AIR);
                         blocksCrystallizing.remove(b);
                         cancel();
-                    } else if (breaking == 0.0F) {
-                        convertBlocktoCrystal(b);
                     }
                     if (b.getType().equals(Material.AIR)) { //For if the blocks get broken during this
                         blocksCrystallizing.remove(b);
                         cancel();
                     }
                     for (Player p : Bukkit.getOnlinePlayers()) {
-                        p.sendBlockDamage(b.getLocation(), breaking, entityID);
+                        if (!fApi.isFloodgatePlayer(p.getUniqueId())) { //To prevent lagging on low end bedrock devices
+                            p.sendBlockDamage(b.getLocation(), breaking, entityID);
+                        }
                     }
                     breaking = breaking + 0.2F;
                 }
@@ -955,8 +971,14 @@ class MapManager {
         }
 
         GameManager gm = knockoff.getInstance().GameManager;
+
         for (Block b : blockList) {
-            gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(25, 6 * 20), knockoff.getInstance().getRandomNumber(40, 70));
+            //I do this hopefully to make performance on shitty bedrock devices slightly better
+            switch (knockoff.getInstance().getRandomNumber(0, 10)) {
+                case 0, 2, 4, 6, 8 -> {
+                    gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(25, 6 * 20), knockoff.getInstance().getRandomNumber(40, 70));
+                }
+            }
         }
     }
 
@@ -1244,7 +1266,7 @@ class TabMenu {
                     if (pd.isEliminated) {
                         StatsPlayerList = text("")
                                 .append(StatsPlayerList)
-                                .append(text("\n [Eliminated] "))
+                                .append(text("\n \uE139 "))
                                 .append(player.displayName())
                                 .append(text(" \uE101 ")
                                 .append(text(pd.getKills()))
@@ -1254,7 +1276,7 @@ class TabMenu {
                     } else {
                         StatsPlayerList = text("")
                                 .append(StatsPlayerList)
-                                .append(text("\n [Dead] "))
+                                .append(text("\n " + getDeathTimerIcon(player) + " "))
                                 .append(player.displayName())
                                 .append(text(" \uE101 ")
                                 .append(text(pd.getKills()))
@@ -1265,7 +1287,7 @@ class TabMenu {
                 } else {
                     StatsPlayerList = text("")
                             .append(StatsPlayerList)
-                            .append(text("\n [Alive] "))
+                            .append(text("\n \uE138 "))
                             .append(player.displayName())
                             .append(text(" \uE101 ")
                             .append(text(pd.getKills()))
@@ -1293,6 +1315,15 @@ class TabMenu {
                 .append(text("\n---------------------------------------------------\n\n").color(GRAY))
                 .append(text("Knockoff Version: " + knockoff.getInstance().getDescription().getVersion()).color(DARK_GRAY)))
         );
+    }
+
+    private static String getDeathTimerIcon(Player p) {
+        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+        //TODO figure out this shit I hate maths
+
+        return "\uE130";
+
+        //return "unknown";
     }
 }
 

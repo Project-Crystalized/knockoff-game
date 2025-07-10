@@ -7,6 +7,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
@@ -49,6 +50,7 @@ public class PlayerListener implements Listener {
 			event.joinMessage(Component.text(""));
 			player.teleport(knockoff.getInstance().mapdata.get_que_spawn(player.getWorld()));
 			player.getInventory().clear();
+			player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
 			player.setHealth(20);
 			player.setFoodLevel(20);
 			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
@@ -141,19 +143,16 @@ public class PlayerListener implements Listener {
 			}
 		}.runTaskTimer(knockoff.getInstance(), 2, 20);
 
-		pd.takeawayLife(1); // takes away 1 life
-		if (pd.getLives() > 0) { // If the player has lives left this code runs
+		pd.takeawayLife(1);
+		if (pd.getLives() > 0) {
+			player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(pd.getLives() * 2);
 
-			if (pd.getLives() == 4) {
-				pd.setDeathtimer(4);
-			} else if (pd.getLives() == 3) {
-				pd.setDeathtimer(8);
-			} else if (pd.getLives() == 2) {
-				pd.setDeathtimer(10);
-			} else if (pd.getLives() == 1) {
-				pd.setDeathtimer(12);
-			} else {
-				pd.setDeathtimer(4); // fallback value in case somehow all of above statements are false
+			switch (pd.getLives()) {
+				case 4 -> {pd.setDeathtimer(4);}
+				case 3 -> {pd.setDeathtimer(8);}
+				case 2 -> {pd.setDeathtimer(10);}
+				case 1 -> {pd.setDeathtimer(12);}
+				default -> {pd.setDeathtimer(4);}
 			}
 
 			new BukkitRunnable() {
@@ -162,22 +161,27 @@ public class PlayerListener implements Listener {
 							.append(Component.text(pd.getDeathtimer()))
 							.append(Component.translatable("crystalized.game.knockoff.respawn2")));
 
-					if (pd.getDeathtimer() == 2) {
-						player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1);
-					} else if (pd.getDeathtimer() == 1) {
-						player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1.25F);
-					} else if (pd.getDeathtimer() == 0) {
-						player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1.5F);
-					} else if (pd.getDeathtimer() == -1) {
-						player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
-						if (GameManager.GameState.equals("game")) {
-							tpPlayersBack(player);
-							player.setGameMode(GameMode.SURVIVAL);
-							pd.setDeathtimer(0);
-							pd.isPlayerDead = false;
-							CustomPlayerNametags.CustomPlayerNametags(player);
+					switch (pd.getDeathtimer()) {
+						case 3 -> {
+							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1);
 						}
-						cancel();
+						case 2 -> {
+							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1.25F);
+						}
+						case 1 -> {
+							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1.5F);
+						}
+						case 0 -> {
+							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
+							if (GameManager.GameState.equals("game")) {
+								tpPlayersBack(player);
+								player.setGameMode(GameMode.SURVIVAL);
+								pd.setDeathtimer(0);
+								pd.isPlayerDead = false;
+								CustomPlayerNametags.CustomPlayerNametags(player);
+							}
+							cancel();
+						}
 					}
 
 					if (!pd.isPlayerDead) {
@@ -333,7 +337,7 @@ public class PlayerListener implements Listener {
 		Bukkit.getServer().sendMessage(Component.text("[!] ")
 				.append(player.displayName())
 				.append(Component.translatable("crystalized.game.knockoff.chat.pickedup"))
-				.append(event.getItem().getItemStack().displayName()));
+				.append(event.getItem().getItemStack().effectiveName()));
 	}
 
 	@EventHandler

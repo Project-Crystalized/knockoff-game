@@ -469,6 +469,7 @@ class CustomPlayerNametags {
 			entity.setBillboard(Display.Billboard.CENTER);
 		});
 		player.addPassenger(displayfront);
+		player.hideEntity(knockoff.getInstance(), displayfront);
 
 		new BukkitRunnable() {
 			@Override

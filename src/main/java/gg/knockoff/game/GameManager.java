@@ -309,12 +309,24 @@ public class GameManager { //I honestly think this entire class could be optimis
         new BukkitRunnable() {
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (knockoff.getInstance().GameManager == null) {
+                        cancel();
+                    }
                     PlayerData pd = getPlayerData(p);
                     if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
                         p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
                     }
 
-                    //p.sendActionBar(text("" + pd.percent + "%"));
+
+
+                    Location loc = p.getLocation();
+                    if (!(loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength()
+                            || loc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength()
+                            || loc.getBlockX() < GameManager.SectionPlaceLocationX
+                            || loc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength()
+                            || loc.getBlockZ() < GameManager.SectionPlaceLocationZ)) {
+                        p.showTitle(Title.title(text(""), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(4), Duration.ofMillis(500))));
+                    }
 
                 }
             }
@@ -476,6 +488,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         SectionPlaceLocationY = 0;
         SectionPlaceLocationZ = 1000;
         knockoff.getInstance().GameManager.teams = null;
+        knockoff.getInstance().GameManager.hazards = null;
         knockoff.getInstance().GameManager = null;
     }
 
@@ -520,6 +533,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
         Bukkit.getServer().sendMessage(text("error occured, a player didnt have associated data"));
         Bukkit.getLogger().warning("player name: " + p.getName());
+        //Thread.dumpStack();
 
         for (PlayerData pd : playerDatas) {
             Bukkit.getLogger().warning(pd.player);
@@ -877,6 +891,10 @@ public class GameManager { //I honestly think this entire class could be optimis
             }.runTaskTimer(knockoff.getInstance(), addedDelay, addedPeriod);
         }
     }
+
+    private static void getMapArrow(Player p) {
+
+    }
 }
 
 class MapManager {
@@ -919,7 +937,6 @@ class MapManager {
         PlaceCurrentlySelectedSection();
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.showTitle(Title.title(text(""), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(4), Duration.ofMillis(500))));
-            //
         }
 
 

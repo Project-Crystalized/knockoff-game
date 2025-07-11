@@ -156,9 +156,15 @@ public final class knockoff extends JavaPlugin {
                                 for (Player p : Bukkit.getOnlinePlayers()) {
                                     out.writeUTF(p.getName());
                                 }
-                                Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
-                                p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
-                                GameManager = new GameManager();
+                                if (Bukkit.getOnlinePlayers().isEmpty()) {
+                                    is_force_starting = false;
+                                    cancel();
+                                    return;
+                                } else {
+                                    Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
+                                    p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
+                                    GameManager = new GameManager();
+                                }
                                 cancel();
                             }
 

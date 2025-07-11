@@ -451,23 +451,20 @@ public class GameManager { //I honestly think this entire class could be optimis
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + (LastSectionPlaceLocationX + MapManager.LastXLength) + "," + (LastSectionPlaceLocationY+ MapManager.LastYLength) + "," + (LastSectionPlaceLocationZ + MapManager.LastZLength));
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
 
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.kick(text(""));
+        }
+
 				// send players back to lobby
+        //This causes a bug where players stay on too long, so a new game starts and everything becomes bugged
+        /*
 				ByteArrayDataOutput out = ByteStreams.newDataOutput();
 				out.writeUTF("Connect");
 				out.writeUTF("lobby");
 				for (Player p : Bukkit.getOnlinePlayers()) {
 						p.sendPluginMessage(knockoff.getInstance(), "crystalized:main", out.toByteArray());
 				}
-
-				// kick people 2 seconds later
-				new BukkitRunnable() {
-						@Override
-						public void run() {
-								for (Player p : Bukkit.getOnlinePlayers()) {
-            				p.kick();
-								}
-						}
-				}.runTaskLater(knockoff.getInstance(), (20 * 2));
+                */
 
         for (Entity e : Bukkit.getWorld("world").getEntities()) {
             if (e instanceof TextDisplay) {

@@ -320,12 +320,12 @@ public class GameManager { //I honestly think this entire class could be optimis
 
 
                     Location loc = p.getLocation();
-                    if (!(loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength()
-                            || loc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength()
-                            || loc.getBlockX() < GameManager.SectionPlaceLocationX
-                            || loc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength()
-                            || loc.getBlockZ() < GameManager.SectionPlaceLocationZ)) {
-                        p.showTitle(Title.title(text(""), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(4), Duration.ofMillis(500))));
+                    if (!(loc.getBlockY() > GameManager.LastSectionPlaceLocationY + MapManager.LastYLength
+                            || loc.getBlockX() > GameManager.LastSectionPlaceLocationX + MapManager.LastXLength
+                            || loc.getBlockX() < GameManager.LastSectionPlaceLocationX
+                            || loc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
+                            || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ)) {
+                        p.showTitle(Title.title(text("" + getMapArrowToMid(p)), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(4), Duration.ofMillis(500))));
                     }
 
                 }
@@ -892,8 +892,43 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
     }
 
-    private static void getMapArrow(Player p) {
+    private static String getMapArrowToMid(Player p) {
+        Location p_loc = p.getLocation().clone();
+        p_loc.setY(0);
+        p_loc.setPitch(0);
 
+        MapData md = knockoff.getInstance().mapdata;
+        Location loc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + md.getCurrentXLength(), md.getCurrentMiddleXLength(), SectionPlaceLocationZ + md.getCurrentZLength());
+        loc.setY(0);
+
+        Vector blockDirection = loc.subtract(p_loc).toVector().normalize();
+
+        double x1 = blockDirection.getX();
+        double z1 = blockDirection.getZ();
+        double x2 = p_loc.getDirection().getX();
+        double z2 = p_loc.getDirection().getZ();
+
+        double angle = Math.toDegrees(Math.atan2(x1 * z2 - z1 * x2, x1 * x2 + z1 * z2));
+
+        if (angle >= -22.5 && angle <= 22.5) {
+            return "\uE110";
+        } else if (angle <= 67.5 && angle > 0) {
+            return "\uE117";
+        } else if (angle <= 112.5 && angle > 0) {
+            return "\uE116";
+        } else if (angle <= 157.5 && angle > 0) {
+            return "\uE115";
+        } else if (angle >= -67.5 && angle < 0) {
+            return "\uE111";
+        } else if (angle >= -112.5 && angle < 0) {
+            return "\uE112";
+        } else if (angle >= -157.5 && angle < 0) {
+            return "\uE113";
+        } else if (angle <= 190 && angle >= -190) {
+            return "\uE114";
+        } else {
+            return "?";
+        }
     }
 }
 

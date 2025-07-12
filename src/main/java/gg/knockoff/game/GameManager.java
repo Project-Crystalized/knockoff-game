@@ -325,7 +325,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             || loc.getBlockX() < GameManager.LastSectionPlaceLocationX
                             || loc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
                             || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ)) {
-                        p.showTitle(Title.title(text("" + getMapArrowToMid(p)), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(4), Duration.ofMillis(500))));
+                        p.showTitle(Title.title(text("" + getMapArrowToMid(p)), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(1), Duration.ofMillis(0))));
                     }
 
                 }
@@ -1420,6 +1420,9 @@ class HazardsManager {
         flyingcars,
         poisonbushes,
         flooriscrystals,
+        splitmapinhalf,
+        train,
+        snowballs,
     }
 
     public HazardsManager() {
@@ -1432,10 +1435,16 @@ class HazardsManager {
         HazardList.add(hazards.flooriscrystals);
 
         CarsList.clear();
+        CarsList.add(new NamespacedKey("crystalized", "models/car/abby_car"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/abby_minicar"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/abby_minicar2"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/abby_truck"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/beat_up_truck"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/broken_car"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/firetruck"));
         CarsList.add(new NamespacedKey("crystalized", "models/car/military_bus"));
         CarsList.add(new NamespacedKey("crystalized", "models/car/military_van"));
-        CarsList.add(new NamespacedKey("crystalized", "models/car/abby_car"));
-        CarsList.add(new NamespacedKey("crystalized", "models/car/beat_up_truck"));
+        CarsList.add(new NamespacedKey("crystalized", "models/car/taxi"));
 
         new BukkitRunnable() {
             int timer = knockoff.getInstance().getRandomNumber(30, 60);
@@ -1496,6 +1505,14 @@ class HazardsManager {
                     player.showTitle(
                             Title.title(
                                     HazardMessage, translatable("crystalized.game.knockoff.hazard.flooriscrystals").color(LIGHT_PURPLE),
+                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
+                    );
+                    break;
+                case hazards.splitmapinhalf:
+                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.splitmapinhalf").color(LIGHT_PURPLE)));
+                    player.showTitle(
+                            Title.title(
+                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.splitmapinhalf").color(LIGHT_PURPLE),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
                     );
                     break;
@@ -1626,6 +1643,15 @@ class HazardsManager {
                         }
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
+                break;
+
+
+            case splitmapinhalf:
+                //TODO
+                // figure out this later
+
+                IsHazardOver = true; //temp
+
                 break;
         }
     }

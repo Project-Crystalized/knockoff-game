@@ -36,7 +36,7 @@ public final class knockoff extends JavaPlugin {
     private static boolean GameCountdownStarted = false;
     //public ConfigData ConfigData;
 
-    private int PlayerStartLimit = 2;
+    private int PlayerStartLimit = 4;
     private int configVersion = 0;
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled

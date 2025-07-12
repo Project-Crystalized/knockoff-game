@@ -898,7 +898,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         p_loc.setPitch(0);
 
         MapData md = knockoff.getInstance().mapdata;
-        Location loc = new Location(Bukkit.getWorld("world"), SectionPlaceLocationX + md.getCurrentMiddleXLength(), md.getCurrentMiddleYLength(), SectionPlaceLocationZ + md.getCurrentMiddleZLength());
+        Location loc = new Location(Bukkit.getWorld("world"), md.getCurrentMiddleXLength(), md.getCurrentMiddleYLength(), md.getCurrentMiddleZLength());
         loc.setY(0);
 
         Vector blockDirection = loc.subtract(p_loc).toVector().normalize();

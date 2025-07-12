@@ -1022,12 +1022,7 @@ class MapManager {
         GameManager gm = knockoff.getInstance().GameManager;
 
         for (Block b : blockList) {
-            //I do this hopefully to make performance on shitty bedrock devices slightly better
-            switch (knockoff.getInstance().getRandomNumber(0, 10)) {
-                case 0, 2, 4, 6, 8 -> {
-                    gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(25, 6 * 20), knockoff.getInstance().getRandomNumber(40, 70));
-                }
-            }
+            gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(25, 6 * 20), knockoff.getInstance().getRandomNumber(40, 70));
         }
     }
 

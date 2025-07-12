@@ -42,7 +42,12 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                         if (timer == 0) {
                             percent--;
                             savedPercent = percent;
-                            timer = 4;
+                            timer = 3;
+                        }
+                        else if (p.getGameMode().equals(GameMode.SPECTATOR)) {
+                            percent = 0;
+                            savedPercent = -1;
+                            timer = 0;
                         }
                     }
                 } else {

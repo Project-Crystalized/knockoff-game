@@ -1606,15 +1606,16 @@ class HazardsManager {
                 new BukkitRunnable() {
                     public void run() {
                         for (Player p : Bukkit.getOnlinePlayers()) {
-                            Location below = p.getLocation().add(0, -1, 0);
-                            //This is dumb, but this should make the radius bigger than 1 singular block
-                            crystal(below.getBlock());
-                            crystal(below.clone().add(0.5, 0, 0).getBlock());
-                            crystal(below.clone().add(0, 0, 0.5).getBlock());
-                            crystal(below.clone().add(-0.5, 0, 0).getBlock());
-                            crystal(below.clone().add(0, 0, -0.5).getBlock());
-                            crystal(below.clone().add(0, -1, 0).getBlock());
-
+                            if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                                Location below = p.getLocation().add(0, -1, 0);
+                                //This is dumb, but this should make the radius bigger than 1 singular block
+                                crystal(below.getBlock());
+                                crystal(below.clone().add(0.5, 0, 0).getBlock());
+                                crystal(below.clone().add(0, 0, 0.5).getBlock());
+                                crystal(below.clone().add(-0.5, 0, 0).getBlock());
+                                crystal(below.clone().add(0, 0, -0.5).getBlock());
+                                crystal(below.clone().add(0, -1, 0).getBlock());
+                            }
                         }
                         if (IsHazardOver) {
                             cancel();

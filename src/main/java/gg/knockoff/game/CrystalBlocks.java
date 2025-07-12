@@ -224,6 +224,7 @@ public class CrystalBlocks implements Listener {
                             blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
                             Directional dir = (Directional) blockloc.getBlock().getBlockData();
                             dir.setFacing(BlockFace.EAST);
+                            blockloc.getBlock().setBlockData(dir);
                             blockloc.getBlock().getState().update();
                         }
                         case "block/nexus/white" -> {

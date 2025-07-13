@@ -760,6 +760,10 @@ public class GameManager { //I honestly think this entire class could be optimis
             p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
         }
     }
+    
+    public static void spawnTempPlatform(Location middleloc, String team) {
+
+    }
 
     public static void CloneNewMapSection() {
         MapManager.CloneNewMapSection();

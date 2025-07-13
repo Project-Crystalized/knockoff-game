@@ -31,6 +31,8 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -334,9 +336,10 @@ public class PlayerListener implements Listener {
 		Player player = (Player) event.getEntity();
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
 		pd.powerupscollected++;
+		List<Component> component = new ArrayList<>();
+		component.add(player.displayName())
 		Bukkit.getServer().sendMessage(Component.text("[!] ")
-				.append(player.displayName())
-				.append(Component.translatable("crystalized.game.knockoff.chat.pickedup"))
+				.append(Component.translatable("crystalized.game.knockoff.chat.pickedup", component))
 				.append(event.getItem().getItemStack().effectiveName()));
 	}
 

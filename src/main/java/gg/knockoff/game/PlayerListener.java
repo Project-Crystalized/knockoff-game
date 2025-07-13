@@ -337,7 +337,7 @@ public class PlayerListener implements Listener {
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
 		pd.powerupscollected++;
 		List<Component> component = new ArrayList<>();
-		component.add(player.displayName())
+		component.add(player.displayName());
 		Bukkit.getServer().sendMessage(Component.text("[!] ")
 				.append(Component.translatable("crystalized.game.knockoff.chat.pickedup", component))
 				.append(event.getItem().getItemStack().effectiveName()));

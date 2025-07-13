@@ -133,6 +133,7 @@ public class KnockoffItem {
         poisondesc.add(text("3"));
         poisondesc.add(text("4"));
         poisonlore.add(Component.translatable("crystalized.orb.poison.desc", poisondesc).decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
+        poison_im.lore(poisonlore);
         poison_im.setItemModel(new NamespacedKey("crystalized", "poison_orb"));
         PoisonOrb.setItemMeta(poison_im);
     }
@@ -188,6 +189,11 @@ class DropPowerup {
             entity.text(DroppedItem.customName());
             entity.setSeeThrough(true);
         });
+        TextDisplay DroppedItemDesc = loc.getWorld().spawn(DroppedItem.getLocation(), TextDisplay.class, entity -> {
+            entity.setBillboard(Display.Billboard.CENTER);
+            entity.text(text("item mini description"));
+            entity.setSeeThrough(true);
+        });
 
         DroppedItem.teleport(loc);
         new BukkitRunnable() {
@@ -196,10 +202,12 @@ class DropPowerup {
                 DroppedItem.setGravity(false);
                 if (DroppedItem.isDead()) {
                     DroppedItemName.remove();
+                    DroppedItemDesc.remove();
                     cancel();
                 }
                 if (knockoff.getInstance().GameManager == null) {
                     DroppedItemName.remove();
+                    DroppedItemDesc.remove();
                     DroppedItem.remove();
                     cancel();
                 }
@@ -208,20 +216,28 @@ class DropPowerup {
                 Location Nameloc = new Location(
                         DroppedItem.getLocation().getWorld(),
                         DroppedItem.getLocation().getX(),
-                        DroppedItem.getLocation().getY() + 1,
+                        DroppedItem.getLocation().getY() + 1.5,
                         DroppedItem.getLocation().getZ()
                         );
-                DroppedItemName.teleport(Nameloc);
-                DroppedItem.teleport(loc);
+                Location Descloc = new Location(
+                        DroppedItem.getLocation().getWorld(),
+                        DroppedItem.getLocation().getX(),
+                        DroppedItem.getLocation().getY() + 1,
+                        DroppedItem.getLocation().getZ()
+                );
+                DroppedItemName.teleportAsync(Nameloc);
+                DroppedItemDesc.teleportAsync(Descloc);
+                DroppedItem.teleportAsync(loc);
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
 
         new BukkitRunnable() {
-            int timer = 30;
+            int timer = knockoff.getInstance().getRandomNumber(31, 40);
             @Override
             public void run() {
                 if (timer == 0) {
                     DroppedItemName.remove();
+                    DroppedItemDesc.remove();
                     DroppedItem.remove();
                     cancel();
                 }

@@ -64,9 +64,9 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;
     public static int SectionPlaceLocationZ = 1000;
-    public static int LastSectionPlaceLocationX = 1000;
+    public static int LastSectionPlaceLocationX = -1000;
     public static int LastSectionPlaceLocationY = 0;
-    public static int LastSectionPlaceLocationZ = 1000;
+    public static int LastSectionPlaceLocationZ = -1000;
     public ArrayList<String> PlayerList = new ArrayList<String>();
     public static String GameState = "game"; //can be "game" (game running), "end" (game ending)
 
@@ -322,7 +322,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             || loc.getBlockX() > GameManager.LastSectionPlaceLocationX + MapManager.LastXLength
                             || loc.getBlockX() < GameManager.LastSectionPlaceLocationX
                             || loc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
-                            || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ) && SectionPlaceLocationX != LastSectionPlaceLocationX) { //Last check is to fix a bug
+                            || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ)) {
                         p.showTitle(Title.title(text("" + getMapArrowToMid(p)), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(1), Duration.ofMillis(0))));
                     }
 
@@ -1255,9 +1255,9 @@ class MapManager {
     }
 
     private static void finishDecay() {
-        GameManager.LastSectionPlaceLocationX = GameManager.SectionPlaceLocationX;
-        GameManager.LastSectionPlaceLocationY = GameManager.SectionPlaceLocationY;
-        GameManager.LastSectionPlaceLocationZ = GameManager.SectionPlaceLocationZ;
+        GameManager.LastSectionPlaceLocationX = -1000;
+        GameManager.LastSectionPlaceLocationY = 0;
+        GameManager.LastSectionPlaceLocationZ = -1000;
     }
 
     public static void CopyRandomMapSection() {

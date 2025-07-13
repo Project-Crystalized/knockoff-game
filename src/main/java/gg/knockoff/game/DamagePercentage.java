@@ -27,10 +27,10 @@ public class DamagePercentage implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if (ds.getDamageType().equals(DamageType.EXPLOSION)) {
-                pd.percent = pd.percent + 5;
+            if (ds.getDamageType().equals(DamageType.EXPLOSION) || ds.getDamageType().equals(DamageType.PLAYER_EXPLOSION)) {
+                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(4, 7);
             } else if (ds.getDamageType().equals(DamageType.MAGIC)) {
-                pd.percent = pd.percent + 2;
+                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(1, 2);
             }
 
             //pd.percent = pd.percent + 20; //testing
@@ -59,9 +59,9 @@ public class DamagePercentage implements Listener {
 
 
         if (e.isCritical()) {
-            ppd.percent = ppd.percent + 7;
+            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(6, 8);
         } else {
-            ppd.percent = ppd.percent + 3;
+            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(1, 3);
         }
 
     }

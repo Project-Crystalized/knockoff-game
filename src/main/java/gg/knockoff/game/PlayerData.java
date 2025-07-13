@@ -24,6 +24,8 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     public int blocksbroken = 0;
     public int powerupscollected = 0;
     public int powerupsused = 0;
+
+
     public int percent = 0;
 
     public PlayerData(Player p) {

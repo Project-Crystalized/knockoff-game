@@ -4,6 +4,7 @@ import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import org.bukkit.*;
 import org.bukkit.enchantments.Enchantment;
@@ -143,13 +144,13 @@ class DropPowerup {
         Item DroppedItem = loc.getWorld().spawn(loc, Item.class, entity -> {
             if (powerup.equals("BoostOrb")) {
                 entity.setItemStack(KnockoffItem.BoostOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.boost.name").color(NamedTextColor.AQUA)));
+                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.boost.name").color(TextColor.color(0x9215DE))));
             } else if (powerup.equals("BridgeOrb")) {
                 entity.setItemStack(KnockoffItem.BridgeOrb);
                 entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.bridge.name").color(NamedTextColor.GRAY)));
             } else if (powerup.equals("ExplosiveOrb")) {
                 entity.setItemStack(KnockoffItem.ExplosiveOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.explosive.name").color(NamedTextColor.GOLD)));
+                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.explosive.name").color(TextColor.color(0xFFB44D))));
             } else if (powerup.equals("GrapplingOrb")) {
                 entity.setItemStack(KnockoffItem.GrapplingOrb);
                 entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.grappling.name").color(NamedTextColor.YELLOW)));
@@ -167,10 +168,10 @@ class DropPowerup {
                 entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.item.boxingglove.name").color(NamedTextColor.GOLD)));
             } else if (powerup.equals("WingedOrb")) {
                 entity.setItemStack(KnockoffItem.WingedOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.winged.name").color(NamedTextColor.BLUE)));
+                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.winged.name").color(TextColor.color(0x4177ED))));
             } else if (powerup.equals("PoisonOrb")) {
                 entity.setItemStack(KnockoffItem.PoisonOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.poison.name").color(NamedTextColor.GREEN)));
+                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.poison.name").color(TextColor.color(0x084C00))));
             }
 
             else {

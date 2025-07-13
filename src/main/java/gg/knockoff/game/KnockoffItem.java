@@ -154,10 +154,10 @@ class DropPowerup {
                 entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.explosive.name").color(TextColor.color(0xFFB44D))));
             } else if (powerup.equals("GrapplingOrb")) {
                 entity.setItemStack(KnockoffItem.GrapplingOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.grappling.name").color(NamedTextColor.YELLOW)));
+                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.grappling.name").color(TextColor.color(0xDA662C))));
             } else if (powerup.equals("KnockoutOrb")) {
                 entity.setItemStack(KnockoffItem.KnockoutOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.knockout.name").color(NamedTextColor.LIGHT_PURPLE)));
+                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.knockout.name").color(TextColor.color(0xFFDB00))));
             } else if (powerup.equals("CloudTotem")) {
                 entity.setItemStack(KnockoffItem.CloudTotem);
                 entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.totem.cloud.name").color(NamedTextColor.WHITE)));

@@ -34,6 +34,7 @@ public class KnockoffItem {
     public static ItemStack WindCharge = new ItemStack(Material.WIND_CHARGE);
     public static ItemStack BoxingGlove = new ItemStack(Material.GOLDEN_SWORD);
     public static ItemStack WingedOrb = new ItemStack(Material.COAL);
+    public static ItemStack PoisonOrb = new ItemStack(Material.COAL);
 
     public static void SetupKnockoffItems() {
         //Commented out powerups aren't functional yet and give a debug message. Commented out for a chance for players to always get usable powerups
@@ -47,6 +48,7 @@ public class KnockoffItem {
         ItemList.add("CloudTotem");
         ItemList.add("WindCharge");
         ItemList.add("BoxingGlove");
+        ItemList.add("PoisonOrb");
 
 
         ItemMeta boostim = BoostOrb.getItemMeta();
@@ -122,6 +124,16 @@ public class KnockoffItem {
         wingedorb_im.lore(wingedorblore);
         wingedorb_im.setItemModel(new NamespacedKey("crystalized", "winged_orb"));
         WingedOrb.setItemMeta(wingedorb_im);
+
+        ItemMeta poison_im = PoisonOrb.getItemMeta();
+        poison_im.customName(translatable("crystalized.orb.poison.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
+        List<Component> poisonlore = new ArrayList<>();
+        List<Component> poisondesc = new ArrayList<>();
+        poisondesc.add(text("3"));
+        poisondesc.add(text("4"));
+        poisonlore.add(Component.translatable("crystalized.orb.poison.desc", poisondesc).decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
+        poison_im.setItemModel(new NamespacedKey("crystalized", "poison_orb"));
+        PoisonOrb.setItemMeta(poison_im);
     }
 }
 
@@ -156,6 +168,9 @@ class DropPowerup {
             } else if (powerup.equals("WingedOrb")) {
                 entity.setItemStack(KnockoffItem.WingedOrb);
                 entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.winged.name").color(NamedTextColor.BLUE)));
+            } else if (powerup.equals("PoisonOrb")) {
+                entity.setItemStack(KnockoffItem.PoisonOrb);
+                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.poison.name").color(NamedTextColor.GREEN)));
             }
 
             else {

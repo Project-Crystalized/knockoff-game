@@ -39,16 +39,21 @@ public class CrystalBlocks implements Listener {
         //Block block = player.getTargetBlock(null, 5);
         Block block = event.getBlock();
         Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
-        if ((blockloc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength()
+        if (
+                (blockloc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength()
                 || blockloc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength()
                 || blockloc.getBlockX() < GameManager.SectionPlaceLocationX
                 || blockloc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength()
-                || blockloc.getBlockZ() < GameManager.SectionPlaceLocationZ) &&
-                (blockloc.getBlockY() > GameManager.LastSectionPlaceLocationY + MapManager.LastYLength
-                || blockloc.getBlockX() > GameManager.LastSectionPlaceLocationX + MapManager.LastXLength
-                || blockloc.getBlockX() < GameManager.LastSectionPlaceLocationX
-                || blockloc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
-                || blockloc.getBlockZ() < GameManager.LastSectionPlaceLocationZ)) {
+                || blockloc.getBlockZ() < GameManager.SectionPlaceLocationZ
+                || blockloc.getBlockY() < GameManager.SectionPlaceLocationY) &&
+                (
+                        blockloc.getBlockY() > GameManager.LastSectionPlaceLocationY + MapManager.LastYLength
+                        || blockloc.getBlockX() > GameManager.LastSectionPlaceLocationX + MapManager.LastXLength
+                        || blockloc.getBlockX() < GameManager.LastSectionPlaceLocationX
+                        || blockloc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
+                        || blockloc.getBlockZ() < GameManager.LastSectionPlaceLocationZ
+                        || blockloc.getBlockY() < GameManager.LastSectionPlaceLocationY)
+        ) {
             event.setCancelled(true);
             return;
         }

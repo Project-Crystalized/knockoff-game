@@ -1155,7 +1155,7 @@ class MapManager {
                     case "EAST" -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
                         if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
-                            //TODO, Clear area
+                            finishDecay();
                             cancel();
                         } else {
                             try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
@@ -1188,6 +1188,7 @@ class MapManager {
                     case "SOUTH" -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
                         if ((GameManager.LastSectionPlaceLocationZ + XPos) == (GameManager.LastSectionPlaceLocationZ + LastZLength + 1)) {
+                            finishDecay();
                             cancel();
                         } else {
                             try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
@@ -1220,6 +1221,7 @@ class MapManager {
                     case "WEST" -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
                         if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
+                            finishDecay();
                             cancel();
                         } else {
                             try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
@@ -1252,6 +1254,12 @@ class MapManager {
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 7 * 20, 5);
+    }
+
+    private static void finishDecay() {
+        GameManager.LastSectionPlaceLocationX = GameManager.SectionPlaceLocationX;
+        GameManager.LastSectionPlaceLocationY = GameManager.SectionPlaceLocationY;
+        GameManager.LastSectionPlaceLocationZ = GameManager.SectionPlaceLocationZ;
     }
 
     public static void CopyRandomMapSection() {

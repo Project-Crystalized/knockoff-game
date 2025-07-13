@@ -317,14 +317,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                         p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
                     }
 
-
-
                     Location loc = p.getLocation();
                     if (!(loc.getBlockY() > GameManager.LastSectionPlaceLocationY + MapManager.LastYLength
                             || loc.getBlockX() > GameManager.LastSectionPlaceLocationX + MapManager.LastXLength
                             || loc.getBlockX() < GameManager.LastSectionPlaceLocationX
                             || loc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
-                            || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ)) {
+                            || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ) && SectionPlaceLocationX != LastSectionPlaceLocationX) { //Last check is to fix a bug
                         p.showTitle(Title.title(text("" + getMapArrowToMid(p)), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(1), Duration.ofMillis(0))));
                     }
 

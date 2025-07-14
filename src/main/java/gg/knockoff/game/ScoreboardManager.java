@@ -325,7 +325,7 @@ class QueueScoreBoard{
                                     .append(Component.text("" + Bukkit.getMaxPlayers()))
                                     .append(Component.text(")"))
                     );
-                    QueueMap.suffix(Component.text(knockoff.getInstance().mapdata.map_name));
+                    QueueMap.suffix(knockoff.getInstance().mapdata.map_name);
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0 ,1);

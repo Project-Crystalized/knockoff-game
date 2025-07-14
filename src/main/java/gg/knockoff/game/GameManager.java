@@ -7,6 +7,8 @@ import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.fastasyncworldedit.core.Fawe;
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -113,8 +115,9 @@ public class GameManager { //I honestly think this entire class could be optimis
             e.printStackTrace();
         }
 
-        MapManager.CopyRandomMapSection();
-        MapManager.PlaceCurrentlySelectedSection();
+        //MapManager.CopyRandomMapSection();
+        //MapManager.PlaceCurrentlySelectedSection();
+        MapManager.placeNewSection();
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -547,11 +550,11 @@ public class GameManager { //I honestly think this entire class could be optimis
     @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     private static void SetupFirstSpawns() {
         MapData md = knockoff.getInstance().mapdata;
-        int offset = md.getCurrentsection().get(8).getAsInt();
+        int offset = md.currentSection.getAsJsonObject().get("spawn_offset").getAsInt();
         if (!Teams.blue.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset , SectionPlaceLocationZ + 5),
-                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 7));
+                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 7));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.BLUE_STAINED_GLASS.createBlockData());
@@ -565,7 +568,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.cyan.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 5),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 7));
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 7));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.CYAN_STAINED_GLASS.createBlockData());
@@ -579,7 +582,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.green.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 5),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 7));
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 7));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.GREEN_STAINED_GLASS.createBlockData());
@@ -593,7 +596,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.lemon.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 5),
-                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 7));
+                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 7));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.YELLOW_STAINED_GLASS.createBlockData());
@@ -607,7 +610,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.lime.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 5),
-                    BlockVector3.at(SectionPlaceLocationX + 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 7));
+                    BlockVector3.at(SectionPlaceLocationX + 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 7));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.LIME_STAINED_GLASS.createBlockData());
@@ -621,7 +624,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.magenta.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 5),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 7));
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 7));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.MAGENTA_STAINED_GLASS.createBlockData());
@@ -635,7 +638,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.orange.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 5),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 7));
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 7));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.ORANGE_STAINED_GLASS.createBlockData());
@@ -649,7 +652,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.peach.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 5),
-                    BlockVector3.at(SectionPlaceLocationX + 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 7));
+                    BlockVector3.at(SectionPlaceLocationX + 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 7));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.PINK_STAINED_GLASS.createBlockData());
@@ -663,7 +666,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.purple.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 15),
-                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 17));
+                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 17));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.PURPLE_STAINED_GLASS.createBlockData());
@@ -677,7 +680,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.red.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 15),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 17));
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 17));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.RED_STAINED_GLASS.createBlockData());
@@ -691,7 +694,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.white.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 15),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), SectionPlaceLocationZ + 17));
+                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 17));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.WHITE_STAINED_GLASS.createBlockData());
@@ -705,7 +708,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (!Teams.yellow.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 15),
-                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentZLength() - 17));
+                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 17));
             try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                 RandomPattern pat = new RandomPattern();
                 BlockState a = BukkitAdapter.adapt(Material.YELLOW_STAINED_GLASS.createBlockData());
@@ -721,43 +724,43 @@ public class GameManager { //I honestly think this entire class could be optimis
         for (Player p : Bukkit.getOnlinePlayers()) {
 						World w = Bukkit.getWorld("world");
             if (Teams.GetPlayerTeam(p).equals("blue")) {
-                Location blueloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+                Location blueloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 6);
                 p.teleport(blueloc);
             } else if (Teams.GetPlayerTeam(p).equals("cyan")) {
-                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
                 p.teleport(cyanloc);
             } else if (Teams.GetPlayerTeam(p).equals("green")) {
-                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 6);
                 p.teleport(greenloc);
             } else if (Teams.GetPlayerTeam(p).equals("lemon")) {
-                Location greenloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+                Location greenloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
                 p.teleport(greenloc);
             } else if (Teams.GetPlayerTeam(p).equals("lime")) { //Yes im aware this has blueloc as its variable, I copy pasted the first 4 lol
-                Location blueloc = new Location(w, SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+                Location blueloc = new Location(w, SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 6);
                 p.teleport(blueloc);
             } else if (Teams.GetPlayerTeam(p).equals("magenta")) {
-                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
                 p.teleport(cyanloc);
             } else if (Teams.GetPlayerTeam(p).equals("orange")) {
-                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 6);
+                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 6);
                 p.teleport(greenloc);
             } else if (Teams.GetPlayerTeam(p).equals("peach")) {
-                Location greenloc = new Location(w, SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
+                Location greenloc = new Location(w, SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
                 p.teleport(greenloc);
             } else if (Teams.GetPlayerTeam(p).equals("purple")) {
-                Location blueloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
+                Location blueloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 16);
                 p.teleport(blueloc);
             } else if (Teams.GetPlayerTeam(p).equals("red")) {
-                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
+                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
                 p.teleport(cyanloc);
             } else if (Teams.GetPlayerTeam(p).equals("white")) {
-                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, SectionPlaceLocationZ + 16);
+                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 16);
                 p.teleport(greenloc);
             } else if (Teams.GetPlayerTeam(p).equals("yellow")) {
-                Location greenloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
+                Location greenloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
                 p.teleport(greenloc);
             } else {
-                Location loc = new Location(w, knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+                Location loc = new Location(w, knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10 + offset, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                 p.teleport(loc);
             }
             p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
@@ -973,7 +976,7 @@ class MapManager {
         Bukkit.getServer().sendMessage(translatable("crystalized.game.knockoff.chat.movetosafety1").color(GOLD)
                 .append(translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED).decoration(TextDecoration.BOLD, true))
         );
-        CopyRandomMapSection();
+        //CopyRandomMapSection();
 
         switch (knockoff.getInstance().getRandomNumber(1, 3)) {
             case 1:
@@ -994,7 +997,7 @@ class MapManager {
         }
 
 
-        PlaceCurrentlySelectedSection();
+        placeNewSection();
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.showTitle(Title.title(text(""), translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(4), Duration.ofMillis(500))));
         }
@@ -1284,15 +1287,25 @@ class MapManager {
         GameManager.LastSectionPlaceLocationZ = -1000;
     }
 
-    public static void CopyRandomMapSection() {
-        knockoff.getInstance().mapdata.getrandommapsection();
-    }
+    //DEPRECATED
+    //public static void CopyRandomMapSection() {
+    //    knockoff.getInstance().mapdata.getrandommapsection();
+    //}
 
-    public static void PlaceCurrentlySelectedSection() {
-        JsonArray data = knockoff.getInstance().mapdata.getCurrentsection();
+    public static void placeNewSection() {
+        //JsonArray data = knockoff.getInstance().mapdata.getCurrentsection();
+        JsonElement sectionData = knockoff.getInstance().mapdata.getNewRandomSection();
+        JsonObject sectionJson = sectionData.getAsJsonObject();
+        JsonArray from = sectionJson.get("from").getAsJsonArray();
+        JsonArray to = sectionJson.get("to").getAsJsonArray();
         World world = Bukkit.getWorld("world");
+
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
-            CuboidRegion region = new CuboidRegion(BukkitAdapter.adapt(world), BlockVector3.at(data.get(1).getAsInt(), data.get(2).getAsInt(), data.get(3).getAsInt()), BlockVector3.at(data.get(4).getAsInt(), data.get(5).getAsInt(), data.get(6).getAsInt()));
+            CuboidRegion region = new CuboidRegion(
+                    BukkitAdapter.adapt(world),
+                    BlockVector3.at(from.get(0).getAsInt(), from.get(1).getAsInt(), from.get(2).getAsInt()),
+                    BlockVector3.at(to.get(0).getAsInt(), to.get(1).getAsInt(), to.get(2).getAsInt())
+            );
             BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 
             ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(
@@ -1311,7 +1324,7 @@ class MapManager {
         }
         if (!knockoff.getInstance().DevMode) {
             //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this
-            String a = knockoff.getInstance().mapdata.getCurrentsection().get(7).getAsString().toLowerCase();
+            String a = sectionJson.get("remove_block").getAsString();
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.SectionPlaceLocationX + "," + GameManager.SectionPlaceLocationY + "," + GameManager.SectionPlaceLocationZ);
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());

@@ -54,7 +54,7 @@ public class KnockoffDatabase {
 
         try (Connection conn = DriverManager.getConnection(URL)) {
             PreparedStatement game_stmt = conn.prepareStatement(save_game);
-            game_stmt.setString(1, knockoff.getInstance().mapdata.map_name);
+            game_stmt.setString(1, knockoff.getInstance().mapdata.map_nameString);
             game_stmt.setString(2, WinningTeam);
             game_stmt.setString(3, GameManager.GameType);
             game_stmt.executeUpdate();

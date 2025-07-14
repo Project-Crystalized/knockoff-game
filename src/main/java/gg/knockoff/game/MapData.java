@@ -1,29 +1,39 @@
 package gg.knockoff.game;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 
 public class MapData {
 
-    public final double[] que_spawn;
-    public final JsonArray sections;
+    public final double[] queue_spawn;
+    //public final JsonArray sections;
     public final JsonArray sectionslist = new JsonArray();
     public static JsonArray currentsection = new JsonArray();
+    public static JsonElement currentSection;
+
+    public static List<JsonElement> newSectionsList = new ArrayList<>();
 
     public int CurrentXLength = 0;
     public int CurrentYLength = 0;
     public int CurrentZLength = 0;
 
-    public final String map_name;
+    public final Component map_name;
+    public final String map_nameString;
     public final String game;
+    private final int version;
 
 
     public MapData() {
@@ -31,20 +41,22 @@ public class MapData {
             String file_content = Files.readString(Paths.get("./world/map_config.json"));
             JsonObject json = JsonParser.parseString(file_content).getAsJsonObject();
 
-            JsonArray q_spawn = json.get("que_spawn").getAsJsonArray();
-            this.que_spawn = new double[] { q_spawn.get(0).getAsDouble(), q_spawn.get(1).getAsDouble(),
+            JsonArray q_spawn = json.get("spawn").getAsJsonArray();
+            this.queue_spawn = new double[] { q_spawn.get(0).getAsDouble(), q_spawn.get(1).getAsDouble(),
                     q_spawn.get(2).getAsDouble() };
 
-            this.map_name = json.get("map_name").getAsString();
+            this.map_name = MiniMessage.miniMessage().deserialize(json.get("name").getAsString());
+            this.map_nameString = json.get("name").getAsString();
             this.game = json.get("game").getAsString();
+            this.version = json.get("version").getAsInt();
 
-            if (!this.game.equals("knockoff")) {
-                Bukkit.getLogger().log(Level.SEVERE, "You've inserted a game config for \"" + this.game + "\", Please update the world file to be compatible with KnockOff");
+            if (!this.game.toLowerCase().equals("knockoff")) {
+                Bukkit.getLogger().log(Level.SEVERE, "You've inserted a game config for \"" + this.game + "\", Please update the world file to be compatible with knockoff");
                 throw new Exception();
             }
 
             //this is a pain to figure out - Callum
-            JsonArray sections = json.get("sections").getAsJsonArray();
+            /*JsonArray sections = json.get("sections").getAsJsonArray();
             this.sections = json.get("sections").getAsJsonArray();
             int i = 0;
             for (int s = this.sections.size()/8;;) {
@@ -62,10 +74,21 @@ public class MapData {
                     sectionslist.add(sections.get(7 + i*8));
                 }
                 i++;
-            }
+            }*/
             // for statement above should generate something similar to this
             // ["section1", -18, 19, 34, 46, -6, -29, "waxed_copper_block, 1"]
             // Format is: Name, From X, From Y, From Z, To X, To Y, To Z, border block, platform offset
+
+            JsonArray SectionData = json.get("section_data").getAsJsonArray();
+            for (JsonElement j : SectionData) {
+                newSectionsList.add(j);
+            }
+            Bukkit.getLogger().log(Level.INFO, "" + newSectionsList.toString());
+
+            if (this.version != 2) {
+                throw new Exception("Invalid map_config Version! Expected 2 but found " + this.version);
+            }
+
 
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, "Could not load the maps configuration file!\n Error: " + e);
@@ -73,21 +96,18 @@ public class MapData {
             Bukkit.getLogger().log(Level.SEVERE, "The Plugin will be disabled!");
             // disable plugin when failure
             Bukkit.getPluginManager().disablePlugin(knockoff.getInstance());
-            throw new RuntimeException(new Exception());
+            throw new RuntimeException(e);
         }
     }
 
     public Location get_que_spawn(World w) {
-        return new Location(w, que_spawn[0], que_spawn[1], que_spawn[2]);
+        return new Location(w, queue_spawn[0], queue_spawn[1], queue_spawn[2]);
     }
 
-    public String toString() {
-        return "" + this.sections;
-    }
+    //DEPRECATED
+    public JsonElement getrandommapsection() {
 
-    public JsonArray getrandommapsection() {
-
-        //Bukkit.getLogger().log(Level.INFO, "OLD: " + currentsection); //for debugging
+        /*Bukkit.getLogger().log(Level.INFO, "OLD: " + currentsection); //for debugging
         while(currentsection.size()>0) {
             currentsection.remove(0);
         }
@@ -109,7 +129,16 @@ public class MapData {
         CurrentYLength = getNewCurrentYlength();
         CurrentZLength = getNewCurrentZlength();
 
-        return currentsection;
+        return currentsection;*/
+        return null;
+    }
+
+    public JsonElement getNewRandomSection() {
+        currentSection = newSectionsList.get(knockoff.getInstance().getRandomNumber(0, newSectionsList.size()));
+        CurrentXLength = getNewCurrentXlength();
+        CurrentYLength = getNewCurrentYlength();
+        CurrentZLength = getNewCurrentZlength();
+        return currentSection;
     }
 
     public JsonArray getCurrentsection() {
@@ -117,20 +146,22 @@ public class MapData {
     }
 
     private int getNewCurrentXlength() {
-        int a = currentsection.get(1).getAsInt();
-        int b = currentsection.get(4).getAsInt();
+        //int a = currentsection.get(1).getAsInt();
+        //int b = currentsection.get(4).getAsInt();
+        int a = currentSection.getAsJsonObject().get("from").getAsJsonArray().get(0).getAsInt();
+        int b = currentSection.getAsJsonObject().get("to").getAsJsonArray().get(0).getAsInt();
         return Math.abs(a - b);
     }
 
     private int getNewCurrentYlength() {
-        int a = currentsection.get(2).getAsInt();
-        int b = currentsection.get(5).getAsInt();
+        int a = currentSection.getAsJsonObject().get("from").getAsJsonArray().get(1).getAsInt();
+        int b = currentSection.getAsJsonObject().get("to").getAsJsonArray().get(1).getAsInt();
         return Math.abs(a - b);
     }
 
     private int getNewCurrentZlength() {
-        int a = currentsection.get(3).getAsInt();
-        int b = currentsection.get(6).getAsInt();
+        int a = currentSection.getAsJsonObject().get("from").getAsJsonArray().get(2).getAsInt();
+        int b = currentSection.getAsJsonObject().get("to").getAsJsonArray().get(2).getAsInt();
         return Math.abs(a - b);
     }
 
@@ -143,7 +174,6 @@ public class MapData {
     public int getCurrentZLength() {
         return GameManager.SectionPlaceLocationZ + CurrentZLength;
     }
-
 
     public int getCurrentMiddleXLength() {
         int i = CurrentXLength/2 + GameManager.SectionPlaceLocationX;

@@ -224,91 +224,132 @@ public class PlayerListener implements Listener {
 
 	private static void tpPlayersBack(Player p) {
 
-		Location blockloc = new Location(Bukkit.getWorld("world"),
-				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX,
-						knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
-				knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 5, // TODO temp
-				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ,
-						knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
-		Location ploc = new Location(Bukkit.getWorld("world"), blockloc.getX(), blockloc.getY() + 2, blockloc.getZ());
+		Location middleLoc = new Location(Bukkit.getWorld("world"),
+				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
+				knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8), // TODO temp
+				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
+		Location ploc = new Location(Bukkit.getWorld("world"), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
 		if (knockoff.getInstance().GameManager == null || p == null) {
 			return;
 		}
+		List<Block> tempBlockList = new ArrayList<>();
+		tempBlockList.add(middleLoc.getBlock());
+		tempBlockList.add(middleLoc.clone().add(1, 0, 0).getBlock());
+		tempBlockList.add(middleLoc.clone().add(-1, 0, 0).getBlock());
+		tempBlockList.add(middleLoc.clone().add(0, 0, 1).getBlock());
+		tempBlockList.add(middleLoc.clone().add(1, 0, 1).getBlock());
+		tempBlockList.add(middleLoc.clone().add(-1, 0, 1).getBlock());
+		tempBlockList.add(middleLoc.clone().add(0, 0, -1).getBlock());
+		tempBlockList.add(middleLoc.clone().add(1, 0, -1).getBlock());
+		tempBlockList.add(middleLoc.clone().add(-1, 0, -1).getBlock());
 		switch (Teams.GetPlayerTeam(p)) {
 			case "blue" -> {
-				blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.EAST);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.WHITE_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.EAST);
+					b.setBlockData(dir);
+				}
 			}
 			case "cyan" -> {
-				blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.NORTH);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.WHITE_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.NORTH);
+					b.setBlockData(dir);
+				}
 			}
 			case "green" -> {
-				blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.SOUTH);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.WHITE_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.SOUTH);
+					b.setBlockData(dir);
+				}
 			}
 			case "lemon" -> {
-				blockloc.getBlock().setType(Material.WHITE_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.WEST);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.WHITE_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.WEST);
+					b.setBlockData(dir);
+				}
 			}
 			case "lime" -> {
-				blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.EAST);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.EAST);
+					b.setBlockData(dir);
+				}
 			}
 			case "magenta" -> {
-				blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.NORTH);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.NORTH);
+					b.setBlockData(dir);
+				}
 			}
 			case "orange" -> {
-				blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.SOUTH);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.SOUTH);
+					b.setBlockData(dir);
+				}
 			}
 			case "peach" -> {
-				blockloc.getBlock().setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.WEST);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.WEST);
+					b.setBlockData(dir);
+				}
 			}
 			case "purple" -> {
-				blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.EAST);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.GRAY_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.EAST);
+					b.setBlockData(dir);
+				}
 			}
 			case "red" -> {
-				blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.NORTH);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.GRAY_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.NORTH);
+					b.setBlockData(dir);
+				}
 			}
 			case "white" -> {
-				blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.SOUTH);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.GRAY_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.SOUTH);
+					b.setBlockData(dir);
+				}
 			}
 			case "yellow" -> {
-				blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
-				Directional dir = (Directional) blockloc.getBlock().getBlockData();
-				dir.setFacing(BlockFace.WEST);
-				blockloc.getBlock().setBlockData(dir);
+				for (Block b : tempBlockList) {
+					b.setType(Material.GRAY_GLAZED_TERRACOTTA);
+					Directional dir = (Directional) b.getBlockData();
+					dir.setFacing(BlockFace.WEST);
+					b.setBlockData(dir);
+				}
+			}
+			default -> {
+				for (Block b : tempBlockList) {
+					b.setType(Material.AMETHYST_BLOCK);
+				}
 			}
 		}
-		blockloc.getBlock().getState().update();
+		for (Block b : tempBlockList) {
+			GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30));
+		}
+
+		middleLoc.getBlock().getState().update();
 		p.teleport(ploc);
 		p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
 				knockoff.getInstance().mapdata.getCurrentMiddleYLength(),

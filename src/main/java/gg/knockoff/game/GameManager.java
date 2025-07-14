@@ -5,6 +5,7 @@ import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
+import com.fastasyncworldedit.core.Fawe;
 import com.google.gson.JsonArray;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
@@ -28,6 +29,8 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.block.data.Directional;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
@@ -172,7 +175,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     case 6:
                         for (Player player : Bukkit.getOnlinePlayers()) {
                             player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(GREEN), text("3 2 ").color(GRAY)
-                                            .append(Component.text("1").color(RED))
+                                            .append(text("1").color(RED))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
                         }
@@ -180,8 +183,8 @@ public class GameManager { //I honestly think this entire class could be optimis
                     case 5:
                         for (Player player : Bukkit.getOnlinePlayers()) {
                             player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(GREEN), text("3").color(GRAY)
-                                            .append(Component.text(" 2").color(RED))
-                                            .append(Component.text(" 1").color(GRAY))
+                                            .append(text(" 2").color(RED))
+                                            .append(text(" 1").color(GRAY))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
                         }
@@ -189,7 +192,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     case 4:
                         for (Player player : Bukkit.getOnlinePlayers()) {
                             player.showTitle(Title.title(translatable("crystalized.game.generic.startingin").color(GREEN), text("3").color(RED)
-                                            .append(Component.text(" 2 1").color(GRAY))
+                                            .append(text(" 2 1").color(GRAY))
                                     ,Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown", 50, 1);
                         }
@@ -254,38 +257,38 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                    p.sendMessage(Component.text("-".repeat(40)));
+                                    p.sendMessage(text("-".repeat(40)));
                                 } else {
-                                    p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                    p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                                 }
                             }
-                            s.sendMessage(Component.text(" "));
-                            s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
-                            s.sendMessage(Component.text(" "));
+                            s.sendMessage(text(" "));
+                            s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
+                            s.sendMessage(text(" "));
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                    p.sendMessage(Component.text("-".repeat(40)));
+                                    p.sendMessage(text("-".repeat(40)));
                                 } else {
-                                    p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                    p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                                 }
                             }
                             SpawnRandomPowerup(null);
                         } else {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                    p.sendMessage(Component.text("-".repeat(40)));
+                                    p.sendMessage(text("-".repeat(40)));
                                 } else {
-                                    p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                    p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                                 }
                             }
-                            s.sendMessage(Component.text(" "));
-                            s.sendMessage(Component.translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
-                            s.sendMessage(Component.text(" "));
+                            s.sendMessage(text(" "));
+                            s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
+                            s.sendMessage(text(" "));
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                    p.sendMessage(Component.text("-".repeat(40)));
+                                    p.sendMessage(text("-".repeat(40)));
                                 } else {
-                                    p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                    p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                                 }
                             }
                             SpawnRandomPowerup(null);
@@ -323,7 +326,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             || loc.getBlockX() < GameManager.LastSectionPlaceLocationX
                             || loc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
                             || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ)) {
-                        p.showTitle(Title.title(text("" + getMapArrowToMid(p)), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(1), Duration.ofMillis(0))));
+                        p.showTitle(Title.title(text("" + getMapArrowToMid(p)), translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(1), Duration.ofMillis(0))));
                     }
 
                 }
@@ -336,7 +339,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             public void run() {
                 if (knockoff.getInstance().DevMode) {
                     //This line provides debug info on the current map section
-                    Bukkit.getServer().sendActionBar(Component.text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection + ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength() + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
+                    Bukkit.getServer().sendActionBar(text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection + ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength() + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
                 }
                 //Should stop this bukkitrunnable once the game ends
                 if (knockoff.getInstance().GameManager == null) {cancel();}
@@ -398,42 +401,42 @@ public class GameManager { //I honestly think this entire class could be optimis
                         Collections.reverse(playerDatas);
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(40)).color(GOLD));
+                                p.sendMessage(text("-".repeat(40)).color(GOLD));
                             } else {
-                                p.sendMessage(Component.text(" ".repeat(55)).color(GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                p.sendMessage(text(" ".repeat(55)).color(GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
                         }
-                        Bukkit.getServer().sendMessage(Component.text("")
-                                .append(Component.text("\n").append(Component.translatable("crystalized.game.knockoff.name").color(GOLD)).append(Component.text(" \uE108").color(WHITE)))
-                                .append(Component.text("\n").append(Component.translatable("crystalized.game.generic.gameresults").color(BLUE)))
+                        Bukkit.getServer().sendMessage(text("")
+                                .append(text("\n").append(translatable("crystalized.game.knockoff.name").color(GOLD)).append(text(" \uE108").color(WHITE)))
+                                .append(text("\n").append(translatable("crystalized.game.generic.gameresults").color(BLUE)))
                         );
                         if (playerDatas.size() > 0) {
                             PlayerData first = playerDatas.get(0);
-                            Bukkit.getServer().sendMessage(Component.text("   1st. ")
-                                    .append(Component.text(first.player)).color(GREEN).append(text(" ".repeat(20 - first.player.length())))
-                                    .append(Component.text("" + first.kills))
+                            Bukkit.getServer().sendMessage(text("   1st. ")
+                                    .append(text(first.player)).color(GREEN).append(text(" ".repeat(20 - first.player.length())))
+                                    .append(text("" + first.kills))
                             );
                         }
                         if (playerDatas.size() > 1) {
                             PlayerData second = playerDatas.get(1);
-                            Bukkit.getServer().sendMessage(Component.text("   2nd. ")
-                                    .append(Component.text(second.player)).color(YELLOW).append(text(" ".repeat(20 - second.player.length())))
-                                    .append(Component.text("" + second.kills))
+                            Bukkit.getServer().sendMessage(text("   2nd. ")
+                                    .append(text(second.player)).color(YELLOW).append(text(" ".repeat(20 - second.player.length())))
+                                    .append(text("" + second.kills))
                             );
                         }
                         if (playerDatas.size() > 2) {
                             PlayerData third = playerDatas.get(2);
-                            Bukkit.getServer().sendMessage(Component.text("   3rd. ")
-                                    .append(Component.text(third.player)).color(YELLOW).append(text(" ".repeat(20 - third.player.length())))
-                                    .append(Component.text("" + third.kills))
+                            Bukkit.getServer().sendMessage(text("   3rd. ")
+                                    .append(text(third.player)).color(YELLOW).append(text(" ".repeat(20 - third.player.length())))
+                                    .append(text("" + third.kills))
                             );
                         }
 
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(Component.text("-".repeat(40)).color(GOLD));
+                                p.sendMessage(text("-".repeat(40)).color(GOLD));
                             } else {
-                                p.sendMessage(Component.text(" ".repeat(55)).color(GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
+                                p.sendMessage(text(" ".repeat(55)).color(GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
                         }
                         break;
@@ -505,10 +508,10 @@ public class GameManager { //I honestly think this entire class could be optimis
             inv.setLeggings(colorArmor(td.color, new ItemStack(Material.LEATHER_LEGGINGS)));
             inv.setBoots(colorArmor(td.color, new ItemStack(Material.LEATHER_BOOTS)));
 
-            im.itemName(Component.translatable("crystalized.item.nexusblock.name"));
+            im.itemName(translatable("crystalized.item.nexusblock.name"));
             List<Component> lore = new ArrayList<>();
-            lore.add(Component.translatable("crystalized.item.nexusblock.desc").color(DARK_GRAY));
-            lore.add(Component.translatable("crystalized.item.nexusblock.desc2").color(DARK_GRAY));
+            lore.add(translatable("crystalized.item.nexusblock.desc").color(DARK_GRAY));
+            lore.add(translatable("crystalized.item.nexusblock.desc2").color(DARK_GRAY));
             im.lore(lore);
             item.setItemMeta(im);
             player.getInventory().addItem(item);
@@ -761,8 +764,25 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
     }
     
-    public static void spawnTempPlatform(Location middleloc, String team) {
+    private static void spawnSpawnPlatformAndTP(Location middleLoc, String team, Material glassType) {
+        List<Block> tempBlockList = new ArrayList<>();
+        tempBlockList.add(middleLoc.getBlock());
+        tempBlockList.add(middleLoc.clone().add(1, 0, 0).getBlock());
+        tempBlockList.add(middleLoc.clone().add(-1, 0, 0).getBlock());
+        tempBlockList.add(middleLoc.clone().add(0, 0, 1).getBlock());
+        tempBlockList.add(middleLoc.clone().add(1, 0, 1).getBlock());
+        tempBlockList.add(middleLoc.clone().add(-1, 0, 1).getBlock());
+        tempBlockList.add(middleLoc.clone().add(0, 0, -1).getBlock());
+        tempBlockList.add(middleLoc.clone().add(1, 0, -1).getBlock());
+        tempBlockList.add(middleLoc.clone().add(-1, 0, -1).getBlock());
+        for (Block b : tempBlockList) {
+            b.setType(glassType);
+        }
 
+        for (String s : Teams.get_team_from_string(team)) {
+            Player p = Bukkit.getPlayer(s);
+            p.teleportAsync(middleLoc.clone().add(0, 2, 0));
+        }
     }
 
     public static void CloneNewMapSection() {
@@ -950,8 +970,8 @@ class MapManager {
         LastXLength = knockoff.getInstance().mapdata.CurrentXLength;
         LastYLength = knockoff.getInstance().mapdata.CurrentYLength;
         LastZLength = knockoff.getInstance().mapdata.CurrentZLength;
-        Bukkit.getServer().sendMessage(Component.translatable("crystalized.game.knockoff.chat.movetosafety1").color(GOLD)
-                .append(Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED).decoration(TextDecoration.BOLD, true))
+        Bukkit.getServer().sendMessage(translatable("crystalized.game.knockoff.chat.movetosafety1").color(GOLD)
+                .append(translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED).decoration(TextDecoration.BOLD, true))
         );
         CopyRandomMapSection();
 
@@ -976,7 +996,7 @@ class MapManager {
 
         PlaceCurrentlySelectedSection();
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.showTitle(Title.title(text(""), Component.translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(4), Duration.ofMillis(500))));
+            player.showTitle(Title.title(text(""), translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(4), Duration.ofMillis(500))));
         }
 
 
@@ -1000,7 +1020,7 @@ class MapManager {
     public static void turnMapIntoCrystals() {
         List<Block> blockList = new ArrayList<>();
         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-        try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+        try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
             Region region = new CuboidRegion(
                     BlockVector3.at(
                             GameManager.LastSectionPlaceLocationX,
@@ -1160,7 +1180,7 @@ class MapManager {
                             finishDecay();
                             cancel();
                         } else {
-                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+                            try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
                                 Region region = new CuboidRegion(
                                         BlockVector3.at(
                                                 GameManager.LastSectionPlaceLocationX + XPos,
@@ -1193,7 +1213,7 @@ class MapManager {
                             finishDecay();
                             cancel();
                         } else {
-                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+                            try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
                                 Region region = new CuboidRegion(
                                         BlockVector3.at(
                                                 GameManager.LastSectionPlaceLocationX,
@@ -1226,7 +1246,7 @@ class MapManager {
                             finishDecay();
                             cancel();
                         } else {
-                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+                            try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
                                 Region region = new CuboidRegion(
                                         BlockVector3.at(
                                                 GameManager.LastSectionPlaceLocationX + LastXLength - XPos,
@@ -1477,31 +1497,31 @@ class HazardsManager {
 
     public void NewHazard(hazards type) {
         IsHazardOver = false;
-        Component HazardMessage = translatable("crystalized.game.knockoff.chat.hazard").color(NamedTextColor.GOLD);
+        Component HazardMessage = translatable("crystalized.game.knockoff.chat.hazard").color(GOLD);
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             switch (type) {
                 case hazards.tnt:
-                    player.sendMessage(HazardMessage.append(translatable("block.minecraft.tnt").color(NamedTextColor.RED)));
+                    player.sendMessage(HazardMessage.append(translatable("block.minecraft.tnt").color(RED)));
                     player.showTitle(
                             Title.title(
-                                    HazardMessage, translatable("block.minecraft.tnt").color(NamedTextColor.RED),
+                                    HazardMessage, translatable("block.minecraft.tnt").color(RED),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
                     );
                     break;
                 case hazards.slimetime:
-                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.slimetime").color(NamedTextColor.GREEN)));
+                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.slimetime").color(GREEN)));
                     player.showTitle(
                             Title.title(
-                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.slimetime").color(NamedTextColor.GREEN),
+                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.slimetime").color(GREEN),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
                     );
                     break;
                 case hazards.flyingcars:
-                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.flyingcars").color(NamedTextColor.BLUE)));
+                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.flyingcars").color(BLUE)));
                     player.showTitle(
                             Title.title(
-                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.flyingcars").color(NamedTextColor.BLUE),
+                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.flyingcars").color(BLUE),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
                     );
                     break;

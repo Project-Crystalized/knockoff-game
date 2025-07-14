@@ -11,6 +11,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -113,7 +114,13 @@ public final class knockoff extends JavaPlugin {
                         return Command.SINGLE_SUCCESS;
                     }
                     if (getConfig().getBoolean("tourneys.manual_map_movement") && getConfig().getBoolean("tourneys.enable")) {
-                        knockoff.getInstance().GameManager.CloneNewMapSection();
+                        Player pl = (Player) p;
+                        if (pl.hasCooldown(Material.DIRT)) {
+                            p.sendMessage(text("[!] This command is on cooldown for " + pl.getCooldown(Material.DIRT) + " ticks."));
+                        } else {
+                            pl.setCooldown(Material.DIRT, 20 * 20);
+                            knockoff.getInstance().GameManager.CloneNewMapSection();
+                        }
                     } else {
                         p.sendMessage(text("[!] Manual Map movement is disabled in config.yml, This command cannot be used unless it is enabled"));
                     }

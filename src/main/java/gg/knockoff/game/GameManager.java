@@ -1663,7 +1663,7 @@ class HazardsManager {
                                 crystal(below.clone().add(0, -1, 0).getBlock());
                             }
                         }
-                        if (IsHazardOver) {
+                        if (IsHazardOver || knockoff.getInstance().GameManager == null) {
                             cancel();
                         }
                     }

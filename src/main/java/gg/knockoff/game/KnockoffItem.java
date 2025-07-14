@@ -142,6 +142,7 @@ public class KnockoffItem {
 class DropPowerup {
     public static void DropPowerup(Location loc, String powerup) {
 
+        //Messy
         Item DroppedItem = loc.getWorld().spawn(loc, Item.class, entity -> {
             if (powerup.equals("BoostOrb")) {
                 entity.setItemStack(KnockoffItem.BoostOrb);
@@ -189,10 +190,45 @@ class DropPowerup {
             entity.text(DroppedItem.customName());
             entity.setSeeThrough(true);
         });
+        TextColor yellow = NamedTextColor.YELLOW;
         TextDisplay DroppedItemDesc = loc.getWorld().spawn(DroppedItem.getLocation(), TextDisplay.class, entity -> {
             entity.setBillboard(Display.Billboard.CENTER);
-            entity.text(text("item mini description"));
             entity.setSeeThrough(true);
+            switch (powerup) {
+                case "BoostOrb" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.boostorb").color(yellow));
+                }
+                case "BridgeOrb" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.bridgeorb").color(yellow));
+                }
+                case "ExplosiveOrb" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.explosiveorb").color(yellow));
+                }
+                case "GrapplingOrb" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.grappleorb").color(yellow));
+                }
+                case "KnockoutOrb" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.knockoutorb").color(yellow));
+                }
+                case "CloudTotem" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.cloudtotem").color(yellow));
+                }
+                case "WindCharge" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.windcharge").color(yellow));
+                }
+                case "BoxingGlove" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.boxingglove").color(yellow));
+                }
+                case "WingedOrb" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.wingedorb").color(yellow));
+                }
+                case "PoisonOrb" -> {
+                    entity.text(translatable("crystalized.game.knockoff.minidescs.poisonorb").color(yellow));
+                }
+                default -> {
+                    entity.text(text("This item has no mini description! Report this pls"));
+                }
+            }
         });
 
         DroppedItem.teleport(loc);

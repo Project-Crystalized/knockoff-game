@@ -25,16 +25,11 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockState;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Directional;
-import org.bukkit.damage.DamageSource;
-import org.bukkit.damage.DamageType;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -46,13 +41,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.geysermc.floodgate.api.FloodgateApi;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -115,8 +106,6 @@ public class GameManager { //I honestly think this entire class could be optimis
             e.printStackTrace();
         }
 
-        //MapManager.CopyRandomMapSection();
-        //MapManager.PlaceCurrentlySelectedSection();
         MapManager.placeNewSection();
         new BukkitRunnable() {
             @Override
@@ -257,45 +246,31 @@ public class GameManager { //I honestly think this entire class could be optimis
                         //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
                         Server s = Bukkit.getServer();
                         FloodgateApi floodgateapi = FloodgateApi.getInstance();
-                        if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
-                            for (Player p : Bukkit.getOnlinePlayers()) {
-                                if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                    p.sendMessage(text("-".repeat(40)));
-                                } else {
-                                    p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                                }
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(text("-".repeat(40)));
+                            } else {
+                                p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
+                        }
+                        if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
                             s.sendMessage(text(" "));
                             s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
                             s.sendMessage(text(" "));
-                            for (Player p : Bukkit.getOnlinePlayers()) {
-                                if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                    p.sendMessage(text("-".repeat(40)));
-                                } else {
-                                    p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                                }
-                            }
                             SpawnRandomPowerup(null);
                         } else {
-                            for (Player p : Bukkit.getOnlinePlayers()) {
-                                if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                    p.sendMessage(text("-".repeat(40)));
-                                } else {
-                                    p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                                }
-                            }
                             s.sendMessage(text(" "));
                             s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
                             s.sendMessage(text(" "));
-                            for (Player p : Bukkit.getOnlinePlayers()) {
-                                if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                    p.sendMessage(text("-".repeat(40)));
-                                } else {
-                                    p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                                }
+                            SpawnRandomPowerup(null);
+                            SpawnRandomPowerup(null);
+                        }
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(text("-".repeat(40)));
+                            } else {
+                                p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
-                            SpawnRandomPowerup(null);
-                            SpawnRandomPowerup(null);
                         }
                     }
 
@@ -303,6 +278,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (GameManager.RoundCounter == 0 && GameManager.GameState.equals("game")) {
                     if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
                         GameManager.CloneNewMapSection();
+                        SpawnRandomPowerup(null);
                         RoundCounter = 60;
                         Round++;
                     }
@@ -318,7 +294,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                     if (knockoff.getInstance().GameManager == null) {
                         cancel();
                     }
-                    PlayerData pd = getPlayerData(p);
                     if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
                         p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
                     }
@@ -340,15 +315,10 @@ public class GameManager { //I honestly think this entire class could be optimis
         new BukkitRunnable() {
             @Override
             public void run() {
-                if (knockoff.getInstance().DevMode) {
-                    //This line provides debug info on the current map section
-                    Bukkit.getServer().sendActionBar(text("[Debugging] Section data " + knockoff.getInstance().mapdata.currentsection + ". X:" + knockoff.getInstance().mapdata.getCurrentXLength() + ". Y:" + knockoff.getInstance().mapdata.getCurrentYLength() + ". Z:" + knockoff.getInstance().mapdata.getCurrentZLength() + ". MX:" + knockoff.getInstance().mapdata.getCurrentMiddleXLength() + ". MY:" + knockoff.getInstance().mapdata.getCurrentMiddleYLength() + ". MZ:" + knockoff.getInstance().mapdata.getCurrentMiddleZLength()));
-                }
                 //Should stop this bukkitrunnable once the game ends
                 if (knockoff.getInstance().GameManager == null) {cancel();}
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
-
                     if (p.getLocation().getY() < -30) {//instantly kills the player when they get knocked into the void
                         Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                         p.teleport(loc);
@@ -356,9 +326,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                             p.setHealth(0);
                         }
                     }
-
-
-
                 }
                 for (Entity e : Bukkit.getWorld("world").getEntities()) {
                     if (e instanceof Item) {

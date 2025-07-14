@@ -1,0 +1,50 @@
+# Crystalized: Knockoff config
+
+teams:
+    # When true, enables the below options to work, allowing for teams to be created manually instead of randomly generated.
+    # These should be changed either when the server is shutdown, or when the game hasn't started (aka, in the waiting lobby)
+    enable: false
+
+    # Configure Teams here
+    # These values will be read when the game starts, no need for a server restart.
+    # When adding Bedrock players, make sure to include the floodgate prefix ("." by default) to their username.
+    spectator: ["iCorrosion", "Delieve"]
+    blue: ["Callum_Is_Bad"]
+    cyan: [".CallumIsBad6502"]
+    green: []
+    lemon: []
+    lime: []
+    magenta: []
+    orange: []
+    peach: []
+    purple: []
+    red: []
+    yellow: []
+    white: []
+
+tourneys:
+    # When true, enables the below options to work.
+    enable: false
+
+    # When true, allows for Spectators (with op) to use "/Knockoff spawn" to spawn powerups anytime during the game.
+    manual_powerup_spawning: false
+    
+    # When true, allows for Spectators (with op) to use "/Knockoff hazard" to spawn hazards anytime during the game.
+    manual_hazard_control: false
+    
+    # When true, allows for Spectators (with op) to use "/Knockoff MapChange" to manually start the map decaying anytime during the game.
+    manual_map_movement: false
+
+other:
+    # Was a bug during development, now turned into an optional feature!
+    # When true, Blocks in Wind Charges' explosion radius will crystallize
+    explosive_wind_charges : false
+
+    # Recreation of the Showdown mode from TubNet Knockout Tournaments.
+    # When true, when 2 teams/players (in solo) are left, no new map sections will generate and the current one will start slowly decaying,
+    # eventually leading to there being no map section left and one (or both) players/teams falling into the void.
+    showdown: false
+
+
+# Don't change this
+version: 2

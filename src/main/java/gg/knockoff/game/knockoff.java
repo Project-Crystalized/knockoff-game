@@ -76,16 +76,11 @@ public final class knockoff extends JavaPlugin {
                 return Command.SINGLE_SUCCESS;
             }));
             command.then(Commands.literal("end").executes(ctx -> {
-                Entity p = ctx.getSource().getExecutor();
-                if (p.isOp()) {
-                    if (knockoff.getInstance().GameManager != null) {
-                        knockoff.getInstance().DevMode = false;
-                        knockoff.getInstance().GameManager.ForceEndGame();
-                    } else {
-                        ctx.getSource().getExecutor().sendMessage(text("[!] This command cannot be used in the queue").color(NamedTextColor.RED));
-                    }
+                if (knockoff.getInstance().GameManager != null) {
+                    knockoff.getInstance().DevMode = false;
+                    knockoff.getInstance().GameManager.ForceEndGame();
                 } else {
-                    p.sendMessage(text("[!] You need Operator permissions to use this command."));
+                    ctx.getSource().getExecutor().sendMessage(text("[!] This command cannot be used in the queue").color(NamedTextColor.RED));
                 }
                 return Command.SINGLE_SUCCESS;
             }));

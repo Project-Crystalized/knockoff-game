@@ -19,9 +19,6 @@ import java.util.logging.Level;
 public class MapData {
 
     public final double[] queue_spawn;
-    //public final JsonArray sections;
-    public final JsonArray sectionslist = new JsonArray();
-    public static JsonArray currentsection = new JsonArray();
     public static JsonElement currentSection;
 
     public static List<JsonElement> newSectionsList = new ArrayList<>();
@@ -54,31 +51,6 @@ public class MapData {
                 Bukkit.getLogger().log(Level.SEVERE, "You've inserted a game config for \"" + this.game + "\", Please update the world file to be compatible with knockoff");
                 throw new Exception();
             }
-
-            //this is a pain to figure out - Callum
-            /*JsonArray sections = json.get("sections").getAsJsonArray();
-            this.sections = json.get("sections").getAsJsonArray();
-            int i = 0;
-            for (int s = this.sections.size()/8;;) {
-                if (i*8 == this.sections.size() == true) {
-                    return;
-                } else {
-                    sectionslist.add("section" + i);
-                    sectionslist.add(sections.get(0 + i*8));
-                    sectionslist.add(sections.get(1 + i*8));
-                    sectionslist.add(sections.get(2 + i*8));
-                    sectionslist.add(sections.get(3 + i*8));
-                    sectionslist.add(sections.get(4 + i*8));
-                    sectionslist.add(sections.get(5 + i*8));
-                    sectionslist.add(sections.get(6 + i*8));
-                    sectionslist.add(sections.get(7 + i*8));
-                }
-                i++;
-            }*/
-            // for statement above should generate something similar to this
-            // ["section1", -18, 19, 34, 46, -6, -29, "waxed_copper_block, 1"]
-            // Format is: Name, From X, From Y, From Z, To X, To Y, To Z, border block, platform offset
-
             JsonArray SectionData = json.get("section_data").getAsJsonArray();
             for (JsonElement j : SectionData) {
                 newSectionsList.add(j);
@@ -104,35 +76,6 @@ public class MapData {
         return new Location(w, queue_spawn[0], queue_spawn[1], queue_spawn[2]);
     }
 
-    //DEPRECATED
-    public JsonElement getrandommapsection() {
-
-        /*Bukkit.getLogger().log(Level.INFO, "OLD: " + currentsection); //for debugging
-        while(currentsection.size()>0) {
-            currentsection.remove(0);
-        }
-
-        int n = (int)(Math.random() * sectionslist.size()/8 - 1);
-        currentsection.add(sectionslist.get(0 + n * 9));
-        currentsection.add(sectionslist.get(1 + n * 9));
-        currentsection.add(sectionslist.get(2 + n * 9));
-        currentsection.add(sectionslist.get(3 + n * 9));
-        currentsection.add(sectionslist.get(4 + n * 9));
-        currentsection.add(sectionslist.get(5 + n * 9));
-        currentsection.add(sectionslist.get(6 + n * 9));
-        currentsection.add(sectionslist.get(7 + n * 9));
-        currentsection.add(sectionslist.get(8 + n * 9));
-
-        //Bukkit.getLogger().log(Level.INFO, "NEW: " + currentsection); //for debugging
-
-        CurrentXLength = getNewCurrentXlength();
-        CurrentYLength = getNewCurrentYlength();
-        CurrentZLength = getNewCurrentZlength();
-
-        return currentsection;*/
-        return null;
-    }
-
     public JsonElement getNewRandomSection() {
         currentSection = newSectionsList.get(knockoff.getInstance().getRandomNumber(0, newSectionsList.size()));
         CurrentXLength = getNewCurrentXlength();
@@ -141,13 +84,7 @@ public class MapData {
         return currentSection;
     }
 
-    public JsonArray getCurrentsection() {
-        return currentsection;
-    }
-
     private int getNewCurrentXlength() {
-        //int a = currentsection.get(1).getAsInt();
-        //int b = currentsection.get(4).getAsInt();
         int a = currentSection.getAsJsonObject().get("from").getAsJsonArray().get(0).getAsInt();
         int b = currentSection.getAsJsonObject().get("to").getAsJsonArray().get(0).getAsInt();
         return Math.abs(a - b);

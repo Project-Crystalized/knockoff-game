@@ -156,7 +156,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 switch (timer) {
                     case 7:
                         for (Player player : Bukkit.getOnlinePlayers()) {
-                            player.showTitle(Title.title(translatable("crystalized.game.generic.go").color(GOLD), text(" "),
+                            player.showTitle(Title.title(translatable("crystalized.game.knockoff.go").color(GOLD), text(" "),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown_end", 50, 1);
                             player.getWorldBorder().reset();

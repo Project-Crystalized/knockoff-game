@@ -42,13 +42,30 @@ public class Teams {
 		Collections.shuffle(playerlist);
 		//We need to revisit this at some point
 		if (knockoff.getInstance().getConfig().getBoolean("teams.enable")) {
+			blue.clear();
+			cyan.clear();
+			green.clear();
+			lemon.clear();
+			lime.clear();
+			magenta.clear();
+			orange.clear();
+			peach.clear();
+			purple.clear();
+			red.clear();
+			yellow.clear();
+			white.clear();
+
 			FileConfiguration config = knockoff.getInstance().getConfig();
 			Object[] config_spectator = config.getList("teams.spectator").toArray();
 			Object[] config_blue = config.getList("teams.blue").toArray();
 			Object[] config_cyan = config.getList("teams.cyan").toArray();
 			Object[] config_green = config.getList("teams.green").toArray();
+			Object[] config_lemon = config.getList("teams.lemon").toArray();
 			Object[] config_lime = config.getList("teams.lime").toArray();
 			Object[] config_magenta = config.getList("teams.magenta").toArray();
+			Object[] config_orange = config.getList("teams.orange").toArray();
+			Object[] config_peach = config.getList("teams.peach").toArray();
+			Object[] config_purple = config.getList("teams.purple").toArray();
 			Object[] config_red = config.getList("teams.red").toArray();
 			Object[] config_yellow = config.getList("teams.yellow").toArray();
 			Object[] config_white = config.getList("teams.white").toArray();
@@ -68,6 +85,10 @@ public class Teams {
 				String s = (String) o;
 				green.add(Bukkit.getPlayer(s).getName());
 			}
+			for (Object o : config_lemon) {
+				String s = (String) o;
+				lemon.add(Bukkit.getPlayer(s).getName());
+			}
 			for (Object o : config_lime) {
 				String s = (String) o;
 				lime.add(Bukkit.getPlayer(s).getName());
@@ -75,6 +96,18 @@ public class Teams {
 			for (Object o : config_magenta) {
 				String s = (String) o;
 				magenta.add(Bukkit.getPlayer(s).getName());
+			}
+			for (Object o : config_orange) {
+				String s = (String) o;
+				orange.add(Bukkit.getPlayer(s).getName());
+			}
+			for (Object o : config_peach) {
+				String s = (String) o;
+				peach.add(Bukkit.getPlayer(s).getName());
+			}
+			for (Object o : config_purple) {
+				String s = (String) o;
+				purple.add(Bukkit.getPlayer(s).getName());
 			}
 			for (Object o : config_red) {
 				String s = (String) o;

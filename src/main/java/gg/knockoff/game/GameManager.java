@@ -25,6 +25,7 @@ import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockState;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
@@ -1314,7 +1315,6 @@ class MapManager {
 }
 
 class TabMenu {
-    //static String StatsPlayerList = "";
     static Component StatsPlayerList = text("");
 
     public static void SendTabMenu(Player p) {
@@ -1323,7 +1323,7 @@ class TabMenu {
         //Header
         p.sendPlayerListHeader(
                 text("\n")
-                        .append(text("Crystalized: ").color(LIGHT_PURPLE).append(text("KnockOff (Work in Progress)").color(GOLD)))
+                        .append(text("Crystalized: ").color(LIGHT_PURPLE).append(text("Knockoff").color(GOLD)))
                         .append(text("\n"))
         );
 
@@ -1337,7 +1337,7 @@ class TabMenu {
                         StatsPlayerList = text("")
                                 .append(StatsPlayerList)
                                 .append(text("\n \uE139 "))
-                                .append(player.displayName())
+                                .append(player.displayName().color(DARK_GRAY).decoration(TextDecoration.STRIKETHROUGH, true))
                                 .append(text(" \uE101 ")
                                 .append(text(pd.getKills()))
                                 .append(text(" \uE103 "))

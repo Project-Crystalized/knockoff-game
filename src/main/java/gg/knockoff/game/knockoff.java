@@ -35,7 +35,6 @@ public final class knockoff extends JavaPlugin {
     public boolean DevMode = false;
     public ProtocolManager protocolmanager;
     private static boolean GameCountdownStarted = false;
-    //public ConfigData ConfigData;
 
     private int PlayerStartLimit = 4;
     private int configVersion = 0;
@@ -52,6 +51,7 @@ public final class knockoff extends JavaPlugin {
 
         Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);
         Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
+        Bukkit.getWorld("world").setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
 
         saveResource("config.yml", false);
         if (getConfig().getInt("version") != 1) {

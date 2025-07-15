@@ -233,18 +233,13 @@ class DropPowerup {
 
         DroppedItem.teleport(loc);
         new BukkitRunnable() {
-            @Override
+            int timer = knockoff.getInstance().getRandomNumber(31, 40) * 20;
             public void run() {
                 DroppedItem.setGravity(false);
-                if (DroppedItem.isDead()) {
-                    DroppedItemName.remove();
-                    DroppedItemDesc.remove();
-                    cancel();
-                }
-                if (knockoff.getInstance().GameManager == null) {
-                    DroppedItemName.remove();
-                    DroppedItemDesc.remove();
+                if (DroppedItem.isDead() || knockoff.getInstance().GameManager == null || timer == 0) {
                     DroppedItem.remove();
+                    DroppedItemName.remove();
+                    DroppedItemDesc.remove();
                     cancel();
                 }
 
@@ -252,33 +247,40 @@ class DropPowerup {
                 Location Nameloc = new Location(
                         DroppedItem.getLocation().getWorld(),
                         DroppedItem.getLocation().getX(),
-                        DroppedItem.getLocation().getY() + 1.5,
+                        DroppedItem.getLocation().getY() + 1,
                         DroppedItem.getLocation().getZ()
                         );
                 Location Descloc = new Location(
                         DroppedItem.getLocation().getWorld(),
                         DroppedItem.getLocation().getX(),
-                        DroppedItem.getLocation().getY() + 1,
+                        DroppedItem.getLocation().getY() + 0.75,
                         DroppedItem.getLocation().getZ()
                 );
                 DroppedItemName.teleportAsync(Nameloc);
                 DroppedItemDesc.teleportAsync(Descloc);
                 DroppedItem.teleportAsync(loc);
+                timer--;
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
 
+
         new BukkitRunnable() {
-            int timer = knockoff.getInstance().getRandomNumber(31, 40);
-            @Override
+            int timer = 1;
             public void run() {
-                if (timer == 0) {
-                    DroppedItemName.remove();
-                    DroppedItemDesc.remove();
-                    DroppedItem.remove();
+                if (DroppedItem.isDead()) {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.stopSound("minecraft:block.beacon.ambient");
+                    }
                     cancel();
+                }
+                if (timer == 0) {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.playSound(DroppedItem.getLocation(), "minecraft:block.beacon.ambient", 2.5F, 1);
+                    }
+                    timer = 5 * 20;
                 }
                 timer--;
             }
-        }.runTaskTimer(knockoff.getInstance(), 0, 20);
+        }.runTaskTimer(knockoff.getInstance(), 0, 1);
     }
 }

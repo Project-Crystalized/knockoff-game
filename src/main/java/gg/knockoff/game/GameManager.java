@@ -278,9 +278,15 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (GameManager.RoundCounter == 0 && GameManager.GameState.equals("game")) {
                     if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
                         GameManager.CloneNewMapSection();
-                        SpawnRandomPowerup(null);
                         RoundCounter = 60;
                         Round++;
+                        new BukkitRunnable() {
+                            public void run() {
+                                SpawnRandomPowerup(null);
+                                cancel();
+                            }
+                        }.runTaskTimer(knockoff.getInstance(), 2, 1);
+
                     }
                 }
             }
@@ -289,6 +295,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
 
         new BukkitRunnable() {
+            int timerMoveToSafety = -1;
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (knockoff.getInstance().GameManager == null) {
@@ -305,6 +312,13 @@ public class GameManager { //I honestly think this entire class could be optimis
                             || loc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
                             || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ)) {
                         p.showTitle(Title.title(text("" + getMapArrowToMid(p)), translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(1), Duration.ofMillis(0))));
+                        if (timerMoveToSafety < 0) {
+                            timerMoveToSafety = 4 * 20;
+                            p.playSound(p, "minecraft:block.conduit.ambient", 2, 1);
+                        }
+                        timerMoveToSafety--;
+                    } else {
+                        timerMoveToSafety = -1;
                     }
 
                 }
@@ -973,7 +987,6 @@ class MapManager {
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(p, "minecraft:entity.illusioner.mirror_move", 50, 2);
             p.playSound(p, "minecraft:entity.illusioner.prepare_blindness", 50, 0.5F);
-            p.playSound(p, "minecraft:block.conduit.ambient", 50, 1);
         }
         turnMapIntoCrystals();
         DecayMapSection();

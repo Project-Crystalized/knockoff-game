@@ -129,6 +129,10 @@ public class PlayerListener implements Listener {
 			attacker.showTitle(Title.title(text(" "), text("[\uE103] ").append(player.displayName()),
 					Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
 			attacker.playSound(attacker, "crystalized:effect.ally_kill", 50, 1);
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				p.playSound(player.getLocation(), "minecraft:block.anvil.place", 3, 0.5f);
+				p.playSound(player.getLocation(), "minecraft:entity.firework_rocket.blast_far", 4, 1); //TODO make actual firework
+			}
 		}
 		pd.addDeath(1);
 		pd.isPlayerDead = true;
@@ -162,7 +166,6 @@ public class PlayerListener implements Listener {
 					player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
 							.append(Component.text(pd.getDeathtimer()))
 							.append(Component.translatable("crystalized.game.knockoff.respawn2")));
-
 					switch (pd.getDeathtimer()) {
 						case 3 -> {
 							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1);
@@ -185,7 +188,6 @@ public class PlayerListener implements Listener {
 							cancel();
 						}
 					}
-
 					if (!pd.isPlayerDead) {
 						cancel();
 					}

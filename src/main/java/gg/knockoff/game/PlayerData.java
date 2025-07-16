@@ -59,9 +59,8 @@ public class PlayerData { //This class probably isn't optimised, but it works so
 
                 if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                     //p.sendActionBar(text("" + percent + "% | T:" + timer + " SP:" + savedPercent));
-                    //p.sendActionBar(text(percentToFont("" + percent + "%")));
+                    p.sendActionBar(text(percentToFont("" + percent + "%")));
                 }
-                p.sendActionBar(text("" + TeamStatus.team_statuses.toString()));
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
     }

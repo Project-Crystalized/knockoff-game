@@ -155,9 +155,9 @@ public class PlayerListener implements Listener {
 
 			switch (pd.getLives()) {
 				case 4 -> {pd.setDeathtimer(4);} //4
-				case 3 -> {pd.setDeathtimer(4);} //8
-				case 2 -> {pd.setDeathtimer(4);} //10
-				case 1 -> {pd.setDeathtimer(4);} //12
+				case 3 -> {pd.setDeathtimer(8);} //8
+				case 2 -> {pd.setDeathtimer(10);} //10
+				case 1 -> {pd.setDeathtimer(12);} //12
 				default -> {pd.setDeathtimer(4);} //4
 			}
 

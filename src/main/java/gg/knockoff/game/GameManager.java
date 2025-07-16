@@ -71,9 +71,17 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static boolean mapMoving = false;
 
     public static String GameType = "Solo";
+    public static mapDirections plannedDirection;
 
     public static int Round = 0;
     public static int RoundCounter =0;
+
+    enum mapDirections{
+        undecided,
+        EAST,
+        SOUTH,
+        WEST,
+    }
 
     public GameManager() {//Start of the game
         knockoff.getInstance().reloadConfig();
@@ -250,42 +258,39 @@ public class GameManager { //I honestly think this entire class could be optimis
 
                 GameManager.RoundCounter--;
                 if (GameManager.RoundCounter == 30 && GameManager.GameState.equals("game")) {
-                    if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_powerup_spawning")) {
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            p.playSound(p, "minecraft:block.note_block.pling", 50, 2);
-                        }
-                        //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
-                        //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
-                        Server s = Bukkit.getServer();
-                        FloodgateApi floodgateapi = FloodgateApi.getInstance();
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(text("-".repeat(40)));
-                            } else {
-                                p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                            }
-                        }
-                        if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
-                            s.sendMessage(text(" "));
-                            s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
-                            s.sendMessage(text(" "));
-                            SpawnRandomPowerup(null);
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.playSound(p, "minecraft:block.note_block.pling", 50, 2);
+                    }
+                    //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
+                    //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
+                    Server s = Bukkit.getServer();
+                    FloodgateApi floodgateapi = FloodgateApi.getInstance();
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                            p.sendMessage(text("-".repeat(40)));
                         } else {
-                            s.sendMessage(text(" "));
-                            s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
-                            s.sendMessage(text(" "));
-                            SpawnRandomPowerup(null);
-                            SpawnRandomPowerup(null);
-                        }
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                                p.sendMessage(text("-".repeat(40)));
-                            } else {
-                                p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
-                            }
+                            p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                         }
                     }
-
+                    if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
+                        s.sendMessage(text(" "));
+                        s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
+                        s.sendMessage(text(" "));
+                        SpawnRandomPowerup(null);
+                    } else {
+                        s.sendMessage(text(" "));
+                        s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
+                        s.sendMessage(text(" "));
+                        SpawnRandomPowerup(null);
+                        SpawnRandomPowerup(null);
+                    }
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                            p.sendMessage(text("-".repeat(40)));
+                        } else {
+                            p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                        }
+                    }
                 }
                 if (TeamStatus.getAliveTeams().size() == 2) {
                     showdownModeStarted = true;
@@ -301,7 +306,11 @@ public class GameManager { //I honestly think this entire class could be optimis
                     cancel();
                 }
 
-                if (GameManager.RoundCounter == 0 && GameManager.GameState.equals("game") && !showdownModeStarted) {
+                if (RoundCounter == 7 && GameManager.GameState.equals("game") && !showdownModeStarted) {
+                    decideMapDirection(); //TODO spawn particles
+                }
+
+                if (RoundCounter == 0 && GameManager.GameState.equals("game") && !showdownModeStarted) {
                     if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
                         GameManager.CloneNewMapSection();
                         RoundCounter = 60;
@@ -1009,13 +1018,26 @@ public class GameManager { //I honestly think this entire class could be optimis
             GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(3 * 20, 15 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20));
         }
     }
+
+    public static void decideMapDirection() {
+        switch (knockoff.getInstance().getRandomNumber(1, 3)) {
+            case 1 -> {
+                GameManager.plannedDirection = mapDirections.EAST;
+            }
+            case 2 -> {
+                GameManager.plannedDirection = mapDirections.SOUTH;
+            }
+            case 3 -> {
+                GameManager.plannedDirection = mapDirections.WEST;
+            }
+        }
+    }
 }
 
 class MapManager {
     public static int LastXLength = 0;
     public static int LastYLength = 0;
     public static int LastZLength = 0;
-    static String MoveDir = "";
 
     public static void CloneNewMapSection() {
         GameManager.LastSectionPlaceLocationX = GameManager.SectionPlaceLocationX;
@@ -1030,30 +1052,30 @@ class MapManager {
         //CopyRandomMapSection();
         knockoff.getInstance().GameManager.mapMoving = true;
 
-        switch (knockoff.getInstance().getRandomNumber(1, 3)) {
-            case 1:
-                MoveDir = "EAST";
+        //In the case the command is used instead of this being called naturally
+        if (GameManager.plannedDirection.equals(GameManager.mapDirections.undecided)) {
+            GameManager.decideMapDirection();
+        }
+
+        switch (GameManager.plannedDirection) {
+            case GameManager.mapDirections.EAST:
                 GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX + LastXLength;
                 GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
                 break;
-            case 2:
-                MoveDir = "SOUTH";
+            case GameManager.mapDirections.SOUTH:
                 GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX;
                 GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ + LastZLength;
                 break;
-            case 3:
-                MoveDir = "WEST";
+            case GameManager.mapDirections.WEST:
                 GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX - knockoff.getInstance().mapdata.CurrentXLength;
                 GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
                 break;
         }
 
-
         placeNewSection();
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.showTitle(Title.title(text(""), translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(4), Duration.ofMillis(500))));
         }
-
 
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(p, "minecraft:entity.illusioner.mirror_move", 50, 2);
@@ -1061,14 +1083,6 @@ class MapManager {
         }
         turnMapIntoCrystals();
         DecayMapSection();
-    }
-
-    //Unused for now, planning to use these for particles
-    enum mapDirections{
-        undecided,
-        EAST,
-        SOUTH,
-        WEST,
     }
 
     public static void turnMapIntoCrystals() {
@@ -1108,116 +1122,6 @@ class MapManager {
     public static void DecayMapSection() {
         //WorldEdit/FAWE API documentation is ass, gl understanding this
 
-        /*
-        //DEPRECATED Turning map into Crystals
-        new BukkitRunnable() {
-            int XPos = 0;
-
-            @Override
-            public void run() {
-                if (knockoff.getInstance().GameManager == null) {cancel();}
-                switch (MoveDir) {
-                    case "EAST" -> {
-                        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-                        if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
-                            cancel();
-                        } else {
-                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
-                                Region region = new CuboidRegion(
-                                        BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + XPos,
-                                                GameManager.LastSectionPlaceLocationY,
-                                                GameManager.LastSectionPlaceLocationZ
-                                        ),
-                                        BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + XPos,
-                                                GameManager.LastSectionPlaceLocationY + LastYLength,
-                                                GameManager.LastSectionPlaceLocationZ + LastZLength
-                                        )
-                                );
-                                //Mask mask = new BlockMask(editSession.getExtent(), new BaseBlock(BlockTypes.AIR));
-                                ExistingBlockMask mask = new ExistingBlockMask(editSession.getExtent());
-                                RandomPattern pat = new RandomPattern();
-                                BlockState a = BukkitAdapter.adapt(Material.AMETHYST_BLOCK.createBlockData());
-                                pat.add(a, 1);
-                                editSession.replaceBlocks(region, mask, pat);
-                                editSession.flushQueue();
-                            } catch (Exception e) {
-                                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                                e.printStackTrace();
-                            }
-                            XPos++;
-                        }
-                    }
-                    case "SOUTH" -> {
-                        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-                        if ((GameManager.LastSectionPlaceLocationZ + XPos) == (GameManager.LastSectionPlaceLocationZ + LastZLength + 1)) {
-                            cancel();
-                        } else {
-                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
-                                Region region = new CuboidRegion(
-                                        BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX,
-                                                GameManager.LastSectionPlaceLocationY,
-                                                GameManager.LastSectionPlaceLocationZ + XPos
-                                        ),
-                                        BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + LastXLength,
-                                                GameManager.LastSectionPlaceLocationY + LastYLength,
-                                                GameManager.LastSectionPlaceLocationZ + XPos
-                                        )
-                                );
-                                //Mask mask = new BlockMask(editSession.getExtent(), new BaseBlock(BlockTypes.AIR));
-                                ExistingBlockMask mask = new ExistingBlockMask(editSession.getExtent());
-                                RandomPattern pat = new RandomPattern();
-                                BlockState a = BukkitAdapter.adapt(Material.AMETHYST_BLOCK.createBlockData());
-                                pat.add(a, 1);
-                                editSession.replaceBlocks(region, mask, pat);
-                                editSession.flushQueue();
-                            } catch (Exception e) {
-                                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                                e.printStackTrace();
-                            }
-                            XPos++; //cba renaming
-                        }
-                    }
-                    case "WEST" -> {
-                        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-                        if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
-                            cancel();
-                        } else {
-                            try (EditSession editSession = com.fastasyncworldedit.core.Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
-                                Region region = new CuboidRegion(
-                                        BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + LastXLength - XPos,
-                                                GameManager.LastSectionPlaceLocationY,
-                                                GameManager.LastSectionPlaceLocationZ
-                                        ),
-                                        BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + LastXLength - XPos,
-                                                GameManager.LastSectionPlaceLocationY + LastYLength,
-                                                GameManager.LastSectionPlaceLocationZ + LastZLength
-                                        )
-                                );
-                                //Mask mask = new BlockMask(editSession.getExtent(), new BaseBlock(BlockTypes.AIR));
-                                ExistingBlockMask mask = new ExistingBlockMask(editSession.getExtent());
-                                RandomPattern pat = new RandomPattern();
-                                BlockState a = BukkitAdapter.adapt(Material.AMETHYST_BLOCK.createBlockData());
-                                pat.add(a, 1);
-                                editSession.replaceBlocks(region, mask, pat);
-                                editSession.flushQueue();
-                            } catch (Exception e) {
-                                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                                e.printStackTrace();
-                            }
-                            XPos++;
-                        }
-                    }
-                }
-            }
-        }.runTaskTimer(knockoff.getInstance(), 0, 10);
-         */
-
         //TODO this code is shit but idk how to improve it well
         //Filling crystals with air, this has a delay compared to the previous BukkitRunnable
         //This is literally copy pasted code but with the material changed to AIR
@@ -1227,8 +1131,8 @@ class MapManager {
             @Override
             public void run() {
                 if (knockoff.getInstance().GameManager == null) {cancel();}
-                switch (MoveDir) {
-                    case "EAST" -> {
+                switch (GameManager.plannedDirection) {
+                    case GameManager.mapDirections.EAST -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
                         if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
                             finishDecay();
@@ -1261,7 +1165,7 @@ class MapManager {
                             XPos++;
                         }
                     }
-                    case "SOUTH" -> {
+                    case GameManager.mapDirections.SOUTH -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
                         if ((GameManager.LastSectionPlaceLocationZ + XPos) == (GameManager.LastSectionPlaceLocationZ + LastZLength + 1)) {
                             finishDecay();
@@ -1294,7 +1198,7 @@ class MapManager {
                             XPos++; //cba renaming
                         }
                     }
-                    case "WEST" -> {
+                    case GameManager.mapDirections.WEST -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
                         if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
                             finishDecay();
@@ -1337,6 +1241,7 @@ class MapManager {
         GameManager.LastSectionPlaceLocationY = 0;
         GameManager.LastSectionPlaceLocationZ = -1000;
         knockoff.getInstance().GameManager.mapMoving = false;
+        GameManager.plannedDirection = GameManager.mapDirections.undecided;
     }
 
     //DEPRECATED
@@ -1546,7 +1451,7 @@ class HazardsManager {
         new BukkitRunnable() {
             int timer = knockoff.getInstance().getRandomNumber(30, 60);
             public void run() {
-                if (knockoff.getInstance().GameManager == null || knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
+                if (knockoff.getInstance().GameManager == null) {
                     cancel();
                 }
                 if (timer == 0 && !knockoff.getInstance().GameManager.showdownModeStarted) {

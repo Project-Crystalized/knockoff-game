@@ -162,7 +162,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         GameManager.RoundCounter = 30;
 
         if (knockoff.getInstance().getConfig().getBoolean("other.showdown")) {
-            if (TeamStatus.team_statuses.size() == 2 || TeamStatus.team_statuses.size() < 2) {
+            if (Bukkit.getOnlinePlayers().size() < 2) {
                 Bukkit.getServer().sendMessage(text("Showdown mode disabled due to player size."));
             } else {
                 showdownModeEnabled = true;

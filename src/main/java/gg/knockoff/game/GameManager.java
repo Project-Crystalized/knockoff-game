@@ -292,7 +292,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         }
                     }
                 }
-                if (TeamStatus.getAliveTeams().size() == 2) {
+                if (TeamStatus.getAliveTeams().size() == 2 && showdownModeEnabled) {
                     showdownModeStarted = true;
                     for (Player p : Bukkit.getOnlinePlayers()) {
                         p.showTitle(Title.title(

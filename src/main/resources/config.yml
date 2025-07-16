@@ -35,6 +35,16 @@ tourneys:
     # When true, allows for Spectators (with op) to use "/Knockoff MapChange" to manually start the map decaying anytime during the game.
     manual_map_movement: false
 
+other:
+    # Was a bug during development, now turned into an optional feature!
+    # When true, Blocks in Wind Charges' explosion radius will crystallize
+    explosive_wind_charges : false
+
+    # Recreation of the Showdown mode from TubNet Knockout Tournaments.
+    # When true, when 2 teams/players (in solo) are left, no new map sections will generate and the current one will start slowly decaying,
+    # eventually leading to there being no map section left and one (or both) players/teams falling into the void.
+    showdown: false
+
 
 # Don't change this
-version: 1
+version: 2

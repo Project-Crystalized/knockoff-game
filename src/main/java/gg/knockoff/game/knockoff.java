@@ -54,9 +54,9 @@ public final class knockoff extends JavaPlugin {
         Bukkit.getWorld("world").setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
 
         saveResource("config.yml", false);
-        if (getConfig().getInt("version") != 1) {
+        if (getConfig().getInt("version") != 2) {
             configVersion = getConfig().getInt("version");
-            getLogger().log(Level.SEVERE, "Invalid Version, Please update your config. Expecting 1 but found " + configVersion + ". You may experience fatal issues.");
+            getLogger().log(Level.SEVERE, "Invalid Version, Please update your config. Expecting 2 but found " + configVersion + ". You may experience fatal issues.");
         }
 
         //This is weird

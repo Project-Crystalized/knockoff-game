@@ -207,8 +207,6 @@ public class PlayerListener implements Listener {
 					.append(Component.text("] "))
 					.append(player.displayName())
 					.append(Component.translatable("crystalized.game.knockoff.chat.eliminated")));
-			// player.getPlayer().sendMessage(text("Your final stats: Kills: " +
-			// pd.getKills() + " Deaths: " + pd.getDeaths()));
 			pd.isPlayerDead = true;
 			pd.isEliminated = true;
 		}
@@ -368,7 +366,7 @@ public class PlayerListener implements Listener {
 		if (knockoff.getInstance().GameManager != null) {
 			Teams.DisconnectPlayer(event.getPlayerName());
 		}
-		if (knockoff.getInstance().GameManager != null && Bukkit.getOnlinePlayers().equals(0)) {
+		if (knockoff.getInstance().GameManager != null && Bukkit.getOnlinePlayers().size() == 0) {
 			Bukkit.getLogger().log(Level.INFO, "All players have disconnected. The Game will now end.");
 			knockoff.getInstance().GameManager.ForceEndGame();
 		}
@@ -443,7 +441,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onEntityExplosion(EntityExplodeEvent e) {
-		if (e.getEntity() instanceof WindCharge || e.getEntity() instanceof BreezeWindCharge) {
+		if ((e.getEntity() instanceof WindCharge || e.getEntity() instanceof BreezeWindCharge) && !knockoff.getInstance().getConfig().getBoolean("other.explosive_wind_charges")) {
 			return;
 		}
 		e.setCancelled(true);

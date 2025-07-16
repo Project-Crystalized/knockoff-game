@@ -154,11 +154,11 @@ public class PlayerListener implements Listener {
 			player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(pd.getLives() * 2);
 
 			switch (pd.getLives()) {
-				case 4 -> {pd.setDeathtimer(4);}
-				case 3 -> {pd.setDeathtimer(8);}
-				case 2 -> {pd.setDeathtimer(10);}
-				case 1 -> {pd.setDeathtimer(12);}
-				default -> {pd.setDeathtimer(4);}
+				case 4 -> {pd.setDeathtimer(4);} //4
+				case 3 -> {pd.setDeathtimer(4);} //8
+				case 2 -> {pd.setDeathtimer(4);} //10
+				case 1 -> {pd.setDeathtimer(4);} //12
+				default -> {pd.setDeathtimer(4);} //4
 			}
 
 			new BukkitRunnable() {

@@ -407,7 +407,7 @@ class TeamStatus {
 		Dead,
 	}
 
-	public static HashMap<String, Status> team_statuses = new HashMap<>();
+	public static HashMap<String, Integer> team_statuses = new HashMap<>();
 
 	private static void update_team_status(String team) {
 		int counter = 0;
@@ -422,17 +422,19 @@ class TeamStatus {
 			}
 		}
 		List<String> td = Teams.get_team_from_string(team);
-		if (td.size() == 0) {
-			team_statuses.put(team, Status.Dead);
-		} else if (counter == Teams.cyan.size()) {
-			team_statuses.put(team, Status.Alive);
-		} else {
-			team_statuses.put(team, Status.Dead);
-		}
+		team_statuses.put(team, counter);
+		//if (td.size() == 0) {
+		//
+		//} else if (counter == td.size()) {
+		//	team_statuses.put(team, Status.Alive);
+		//}
+		//else {
+		//	team_statuses.put(team, Status.Dead);
+		//}
 	}
 
 	private static boolean is_only_team_alive(String team) {
-		if (team_statuses.get(team) == Status.Dead) {
+		if (team_statuses.get(team) == 0) {
 			return false;
 		}
 
@@ -440,7 +442,7 @@ class TeamStatus {
 			if (loop_team == team) {
 				continue;
 			}
-			if (team_statuses.get(loop_team) == Status.Alive) {
+			if (team_statuses.get(loop_team) > 0) {
 				return false;
 			}
 		}
@@ -456,9 +458,9 @@ class TeamStatus {
 		team_statuses.clear();
 		for (TeamData td : Teams.team_datas) {
 			if (Teams.get_team_from_string(td.name).isEmpty()) {
-				team_statuses.put(td.name, Status.Dead);
+				team_statuses.put(td.name, 0);
 			} else {
-				team_statuses.put(td.name, Status.Alive);
+				team_statuses.put(td.name, Teams.get_team_from_string(td.name).size());
 			}
 		}
 

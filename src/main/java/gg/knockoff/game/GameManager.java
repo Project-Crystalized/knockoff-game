@@ -66,8 +66,10 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static int LastSectionPlaceLocationZ = -1000;
     public ArrayList<String> PlayerList = new ArrayList<String>();
     public static String GameState = "game"; //can be "game" (game running), "end" (game ending)
+    public static boolean showdownModeEnabled = false;
+    public static boolean showdownModeStarted = false; //This is enabled when its effects actually start, above checks if its enabled in config.
+    public static boolean mapMoving = false;
 
-    //Can be "solo" or "team"
     public static String GameType = "Solo";
 
     public static int Round = 0;
@@ -90,6 +92,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         PlayerList.clear();
         teams = new Teams();
+        showdownModeStarted = false;
 
         // Sets the target area to air to prevent previous game's sections to interfere with the current game
         // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
@@ -149,6 +152,14 @@ public class GameManager { //I honestly think this entire class could be optimis
         TeamStatus.Init();
         GameManager.Round = 1;
         GameManager.RoundCounter = 30;
+
+        if (knockoff.getInstance().getConfig().getBoolean("other.showdown")) {
+            if (TeamStatus.team_statuses.size() == 2 || TeamStatus.team_statuses.size() < 2) {
+                Bukkit.getServer().sendMessage(text("Showdown mode disabled due to player size."));
+            } else {
+                showdownModeEnabled = true;
+            }
+        }
 
         new BukkitRunnable() {
             int timer = 0;
@@ -276,7 +287,21 @@ public class GameManager { //I honestly think this entire class could be optimis
                     }
 
                 }
-                if (GameManager.RoundCounter == 0 && GameManager.GameState.equals("game")) {
+                if (TeamStatus.getAliveTeams().size() == 2) {
+                    showdownModeStarted = true;
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.showTitle(Title.title(
+                                text("SHOWDOWN").color(WHITE).decoration(TextDecoration.BOLD, true),
+                                translatable("HAS BEGUN!").color(WHITE).decoration(TextDecoration.BOLD, true),
+                                Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(4), Duration.ofSeconds(1)))
+                        );
+                        p.playSound(p, "minecraft:entity.lightning_bolt.thunder", 1, 1);
+                    }
+                    showdownCrystallizeMap();
+                    cancel();
+                }
+
+                if (GameManager.RoundCounter == 0 && GameManager.GameState.equals("game") && !showdownModeStarted) {
                     if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
                         GameManager.CloneNewMapSection();
                         RoundCounter = 60;
@@ -940,6 +965,50 @@ public class GameManager { //I honestly think this entire class could be optimis
             return "?";
         }
     }
+
+    public static List<Block> showdownBlockList = new ArrayList<>();
+
+    private static void showdownCrystallizeMap() {
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+            MapData md = knockoff.getInstance().mapdata;
+            Region region = new CuboidRegion(
+                    BlockVector3.at(
+                            GameManager.SectionPlaceLocationX,
+                            GameManager.SectionPlaceLocationY,
+                            GameManager.SectionPlaceLocationZ
+                    ),
+                    BlockVector3.at(
+                            GameManager.SectionPlaceLocationX + md.CurrentXLength -1,
+                            GameManager.SectionPlaceLocationY + md.CurrentYLength -1, //Subtracting 1 to prevent a bug where section borders are caught within this
+                            GameManager.SectionPlaceLocationZ + md.CurrentZLength -1
+                    )
+            );
+            for (BlockVector3 bV3 : region) {
+                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                if (!b.isEmpty()) {
+                    showdownBlockList.add(b);
+                }
+            }
+        } catch (Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+            e.printStackTrace();
+        }
+        //Collections.shuffle(showdownBlockList);
+
+        /*new BukkitRunnable() {
+            public void run() {
+                if (!showdownBlockList.isEmpty()) {
+                    Block b = showdownBlockList.getFirst();
+                    GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(25, 4 * 20), knockoff.getInstance().getRandomNumber(80, 100));
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 5);*/
+
+        for (Block b : showdownBlockList) {
+            GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(3 * 20, 15 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20));
+        }
+    }
 }
 
 class MapManager {
@@ -959,6 +1028,7 @@ class MapManager {
                 .append(translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED).decoration(TextDecoration.BOLD, true))
         );
         //CopyRandomMapSection();
+        knockoff.getInstance().GameManager.mapMoving = true;
 
         switch (knockoff.getInstance().getRandomNumber(1, 3)) {
             case 1:
@@ -1266,6 +1336,7 @@ class MapManager {
         GameManager.LastSectionPlaceLocationX = -1000;
         GameManager.LastSectionPlaceLocationY = 0;
         GameManager.LastSectionPlaceLocationZ = -1000;
+        knockoff.getInstance().GameManager.mapMoving = false;
     }
 
     //DEPRECATED
@@ -1478,7 +1549,7 @@ class HazardsManager {
                 if (knockoff.getInstance().GameManager == null || knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
                     cancel();
                 }
-                if (timer == 0) {
+                if (timer == 0 && !knockoff.getInstance().GameManager.showdownModeStarted) {
                     timer = knockoff.getInstance().getRandomNumber(30, 60);
                     NewHazard(HazardList.get(knockoff.getInstance().getRandomNumber(0, HazardList.size())));
                 }

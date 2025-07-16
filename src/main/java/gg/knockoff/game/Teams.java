@@ -449,6 +449,16 @@ class TeamStatus {
 		return true;
 	}
 
+	public static List<String> getAliveTeams() {
+		List<String> output = new ArrayList<>();
+		for (String a : team_statuses.keySet()) {
+			if (team_statuses.get(a) > 0) {
+				output.add(a);
+			}
+		}
+		return output;
+	}
+
 	// I hate this class
 
 	// This could also cause performance issues since this class runs every tick

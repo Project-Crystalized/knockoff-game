@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -58,6 +57,10 @@ public class CrystalBlocks implements Listener {
             return;
         }
         //I had to rewrite this because || statements are weird
+        GameManager gm = knockoff.getInstance().GameManager;
+        if (gm.showdownModeStarted) {
+            gm.startBreakingCrystal(blockloc.getBlock(), knockoff.getInstance().getRandomNumber(3 * 20, 15 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20));
+        }
         //MainHand
         if (player.getEquipment().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK)) {
             if (player.getEquipment().getItemInMainHand().getItemMeta().hasItemModel()) {
@@ -126,6 +129,7 @@ public class CrystalBlocks implements Listener {
                             blockloc.getBlock().setType(Material.GRAY_GLAZED_TERRACOTTA);
                             Directional dir = (Directional) blockloc.getBlock().getBlockData();
                             dir.setFacing(BlockFace.EAST);
+                            blockloc.getBlock().setBlockData(dir);
                             blockloc.getBlock().getState().update();
                         }
                         case "block/nexus/white" -> {

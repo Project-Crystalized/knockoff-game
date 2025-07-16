@@ -54,8 +54,7 @@ public class DamagePercentage implements Listener {
             return;
         }
 
-        p.setVelocity(new Vector(p.getVelocity().getX(), p.getVelocity().getY(), p.getVelocity().getZ()));
-        p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12));
+        p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
 
 
         if (e.isCritical()) {

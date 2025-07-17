@@ -31,6 +31,8 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -843,17 +845,32 @@ public class GameManager { //I honestly think this entire class could be optimis
             //Do nothing
         } else {
             String blockString = b.getType().toString().toLowerCase();
-            if (blockString.contains("slab")) {
-                b.setType(Material.CUT_COPPER_SLAB);
-            } else if (blockString.contains("stairs")) {
-                b.setType(Material.CUT_COPPER_STAIRS);
+            if (Tag.SLABS.isTagged(b.getType())) {
+                BlockData bd = b.getBlockData();
+                BlockData bd2 = Material.CUT_COPPER_SLAB.createBlockData();
+                bd.copyTo(bd2);
+                b.setBlockData(bd2);
+            } else if (Tag.STAIRS.isTagged(b.getType())) {
+                BlockData bd = b.getBlockData();
+                BlockData bd2 = Material.CUT_COPPER_STAIRS.createBlockData();
+                bd.copyTo(bd2);
+                b.setBlockData(bd2);
             } else if (blockString.contains("glass")) {
                 if (blockString.contains("pane")) {
-                    b.setType(Material.PINK_STAINED_GLASS_PANE);
+                    BlockData bd = b.getBlockData();
+                    BlockData bd2 = Material.PINK_STAINED_GLASS_PANE.createBlockData();
+                    bd.copyTo(bd2);
+                    b.setBlockData(bd2);
                 } else {
                     b.setType(Material.PINK_STAINED_GLASS);
                 }
-            } else {
+            } else if (Tag.WOOL_CARPETS.isTagged(b.getType()) || Tag.RAILS.isTagged(b.getType())) {
+                b.setType(Material.PINK_CARPET);
+            } else if (Tag.FENCES.isTagged(b.getType()) || Tag.WALLS.isTagged(b.getType())) {
+                b.setType(Material.PINK_STAINED_GLASS_PANE);
+            }
+
+            else {
                 b.setType(Material.AMETHYST_BLOCK);
             }
 
@@ -1003,19 +1020,9 @@ public class GameManager { //I honestly think this entire class could be optimis
             Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
             e.printStackTrace();
         }
-        //Collections.shuffle(showdownBlockList);
-
-        /*new BukkitRunnable() {
-            public void run() {
-                if (!showdownBlockList.isEmpty()) {
-                    Block b = showdownBlockList.getFirst();
-                    GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(25, 4 * 20), knockoff.getInstance().getRandomNumber(80, 100));
-                }
-            }
-        }.runTaskTimer(knockoff.getInstance(), 0, 5);*/
 
         for (Block b : showdownBlockList) {
-            GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(3 * 20, 15 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20));
+            GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(3 * 20, 25 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20));
         }
     }
 
@@ -1617,6 +1624,7 @@ class HazardsManager {
                                 crystal(below.clone().add(-0.5, 0, 0).getBlock());
                                 crystal(below.clone().add(0, 0, -0.5).getBlock());
                                 crystal(below.clone().add(0, -1, 0).getBlock());
+                                crystal(below.clone().add(0, 1, 0).getBlock());
                             }
                         }
                         if (IsHazardOver || knockoff.getInstance().GameManager == null) {

@@ -184,6 +184,7 @@ class DropPowerup {
             entity.setGlowing(true);
             entity.setCanPlayerPickup(true);
             entity.setCustomNameVisible(false);
+            entity.setInvisible(true);
         });
         TextDisplay DroppedItemName = loc.getWorld().spawn(DroppedItem.getLocation(), TextDisplay.class, entity -> {
             entity.setBillboard(Display.Billboard.CENTER);

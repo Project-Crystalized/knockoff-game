@@ -55,7 +55,6 @@ public class MapData {
             for (JsonElement j : SectionData) {
                 newSectionsList.add(j);
             }
-            Bukkit.getLogger().log(Level.INFO, "" + newSectionsList.toString());
 
             if (this.version != 2) {
                 throw new Exception("Invalid map_config Version! Expected 2 but found " + this.version);

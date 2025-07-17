@@ -266,8 +266,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                     for (Player p : Bukkit.getOnlinePlayers()) {
                         p.playSound(p, "minecraft:block.note_block.pling", 50, 2);
                     }
-                    //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
-                    //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
                     Server s = Bukkit.getServer();
                     FloodgateApi floodgateapi = FloodgateApi.getInstance();
                     for (Player p : Bukkit.getOnlinePlayers()) {
@@ -277,6 +275,8 @@ public class GameManager { //I honestly think this entire class could be optimis
                             p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                         }
                     }
+                    //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
+                    //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
                     if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
                         s.sendMessage(text(" "));
                         s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
@@ -301,7 +301,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     showdownModeStarted = true;
                     for (Player p : Bukkit.getOnlinePlayers()) {
                         p.showTitle(Title.title(
-                                text("SHOWDOWN").color(WHITE).decoration(TextDecoration.BOLD, true),
+                                text("SHOWDOWN").color(WHITE).decoration(TextDecoration.BOLD, true), //TODO make this translatable
                                 translatable("HAS BEGUN!").color(WHITE).decoration(TextDecoration.BOLD, true),
                                 Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(4), Duration.ofSeconds(1)))
                         );
@@ -373,7 +373,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (knockoff.getInstance().GameManager == null) {cancel();}
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (p.getLocation().getY() < -30) {//instantly kills the player when they get knocked into the void
+                    if (p.getLocation().getY() < -20) {//instantly kills the player when they get knocked into the void
                         Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                         p.teleport(loc);
                         if (p.getGameMode().equals(GameMode.SURVIVAL)) {
@@ -1156,7 +1156,7 @@ class MapManager {
                                 Region region = new CuboidRegion(
                                         BlockVector3.at(
                                                 GameManager.LastSectionPlaceLocationX + XPos,
-                                                GameManager.LastSectionPlaceLocationY,
+                                                GameManager.LastSectionPlaceLocationY - 20,
                                                 GameManager.LastSectionPlaceLocationZ
                                         ),
                                         BlockVector3.at(
@@ -1189,7 +1189,7 @@ class MapManager {
                                 Region region = new CuboidRegion(
                                         BlockVector3.at(
                                                 GameManager.LastSectionPlaceLocationX,
-                                                GameManager.LastSectionPlaceLocationY,
+                                                GameManager.LastSectionPlaceLocationY - 20,
                                                 GameManager.LastSectionPlaceLocationZ + XPos
                                         ),
                                         BlockVector3.at(
@@ -1222,7 +1222,7 @@ class MapManager {
                                 Region region = new CuboidRegion(
                                         BlockVector3.at(
                                                 GameManager.LastSectionPlaceLocationX + LastXLength - XPos,
-                                                GameManager.LastSectionPlaceLocationY,
+                                                GameManager.LastSectionPlaceLocationY - 20,
                                                 GameManager.LastSectionPlaceLocationZ
                                         ),
                                         BlockVector3.at(

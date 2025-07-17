@@ -44,14 +44,14 @@ public class CrystalBlocks implements Listener {
                 || blockloc.getBlockX() < GameManager.SectionPlaceLocationX
                 || blockloc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength()
                 || blockloc.getBlockZ() < GameManager.SectionPlaceLocationZ
-                || blockloc.getBlockY() < GameManager.SectionPlaceLocationY) &&
+                || blockloc.getBlockY() < (GameManager.SectionPlaceLocationY - 20)) &&
                 (
                         blockloc.getBlockY() > GameManager.LastSectionPlaceLocationY + MapManager.LastYLength
                         || blockloc.getBlockX() > GameManager.LastSectionPlaceLocationX + MapManager.LastXLength
                         || blockloc.getBlockX() < GameManager.LastSectionPlaceLocationX
                         || blockloc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
                         || blockloc.getBlockZ() < GameManager.LastSectionPlaceLocationZ
-                        || blockloc.getBlockY() < GameManager.LastSectionPlaceLocationY)
+                        || blockloc.getBlockY() < (GameManager.LastSectionPlaceLocationY - 20))
         ) {
             event.setCancelled(true);
             return;

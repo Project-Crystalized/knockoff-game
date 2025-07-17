@@ -85,7 +85,7 @@ public final class knockoff extends JavaPlugin {
                             if (getConfig().getBoolean("teams.enable")) {
                                 GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.Custom);
                             } else {
-                                if (Bukkit.getOnlinePlayers().size() < 13) {
+                                if (Bukkit.getOnlinePlayers().size() > 13) {
                                     GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedDuos);
                                 } else {
                                     GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);
@@ -104,7 +104,7 @@ public final class knockoff extends JavaPlugin {
                             if (getConfig().getBoolean("teams.enable")) {
                                 GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.Custom);
                             } else {
-                                if (Bukkit.getOnlinePlayers().size() < 13) {
+                                if (Bukkit.getOnlinePlayers().size() > 13) {
                                     ctx.getSource().getSender().sendMessage(text("[!] You cant for a solos game with over 13 players online."));
                                 } else {
                                     GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);

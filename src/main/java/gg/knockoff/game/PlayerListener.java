@@ -130,7 +130,7 @@ public class PlayerListener implements Listener {
 					Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
 			attacker.playSound(attacker, "crystalized:effect.ally_kill", 50, 1);
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				p.playSound(player.getLocation(), "minecraft:block.anvil.place", 3, 0.5f);
+				p.playSound(p, "minecraft:block.anvil.place", 0.5F, 0.5f);
 				p.playSound(player.getLocation(), "minecraft:entity.firework_rocket.blast_far", 4, 1); //TODO make actual firework
 			}
 		}

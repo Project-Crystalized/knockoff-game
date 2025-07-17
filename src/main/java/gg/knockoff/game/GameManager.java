@@ -1029,7 +1029,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
 
         for (Block b : showdownBlockList) {
-            GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(3 * 20, 25 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20));
+            GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(4 * 20, 25 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20));
         }
     }
 
@@ -1129,7 +1129,7 @@ class MapManager {
         GameManager gm = knockoff.getInstance().GameManager;
 
         for (Block b : blockList) {
-            gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(25, 6 * 20), knockoff.getInstance().getRandomNumber(40, 70));
+            gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(2 * 20, 8 * 20), knockoff.getInstance().getRandomNumber(3 * 20, 5 * 20));
         }
     }
 
@@ -1247,7 +1247,7 @@ class MapManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 7 * 20, 5);
+        }.runTaskTimer(knockoff.getInstance(), 8 * 20, 10);
     }
 
     private static void finishDecay() {

@@ -42,6 +42,7 @@ public class Teams {
 		Collections.shuffle(playerlist);
 		//We need to revisit this at some point
 		if (knockoff.getInstance().getConfig().getBoolean("teams.enable")) {
+			spectator.clear();
 			blue.clear();
 			cyan.clear();
 			green.clear();
@@ -71,56 +72,130 @@ public class Teams {
 			Object[] config_white = config.getList("teams.white").toArray();
 			for (Object o : config_spectator) {
 				String s = (String) o;
-				spectator.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					spectator.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_blue) {
 				String s = (String) o;
-				blue.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					blue.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_cyan) {
 				String s = (String) o;
-				cyan.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					cyan.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_green) {
 				String s = (String) o;
-				green.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					green.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_lemon) {
 				String s = (String) o;
-				lemon.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					lemon.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_lime) {
 				String s = (String) o;
-				lime.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					lime.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_magenta) {
 				String s = (String) o;
-				magenta.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					magenta.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_orange) {
 				String s = (String) o;
-				orange.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					orange.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_peach) {
 				String s = (String) o;
-				peach.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					peach.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_purple) {
 				String s = (String) o;
-				purple.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					purple.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_red) {
 				String s = (String) o;
-				red.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					red.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_yellow) {
 				String s = (String) o;
-				yellow.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					yellow.add(Bukkit.getPlayer(s).getName());
+				}
 			}
 			for (Object o : config_white) {
 				String s = (String) o;
-				white.add(Bukkit.getPlayer(s).getName());
+				Player p = Bukkit.getPlayer(s);
+				if (p == null) {
+					knockoff.getInstance().getLogger().log(Level.WARNING, "Player \"" + s + "\" is not online. cannot add them to a team.");
+				} else {
+					white.add(Bukkit.getPlayer(s).getName());
+				}
 			}
+
+			//sanity check
+			for (Player p : Bukkit.getOnlinePlayers()) {
+				if (GetPlayerTeam(p) == null) {
+					spectator.add(p.getName());
+					p.sendMessage(text("[!] Tourneys mode is enabled but you weren't assigned to a custom team, we've put you in Spectator Team."));
+				}
+			}
+
 		} else {
 			if (playerlist.size() > 13) {
 				Bukkit.getLogger().log(Level.INFO, "Sorting Players into teams (duos)...");

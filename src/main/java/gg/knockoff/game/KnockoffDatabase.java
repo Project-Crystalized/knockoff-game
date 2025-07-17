@@ -56,7 +56,7 @@ public class KnockoffDatabase {
             PreparedStatement game_stmt = conn.prepareStatement(save_game);
             game_stmt.setString(1, knockoff.getInstance().mapdata.map_nameString);
             game_stmt.setString(2, WinningTeam);
-            game_stmt.setString(3, GameManager.GameType);
+            game_stmt.setString(3, GameManager.GameType.toString());
             game_stmt.executeUpdate();
 
             String save_player = "INSERT INTO KoGamesPlayers(player_uuid, team, kills, deaths, blocks_placed, blocks_broken, items_collected, items_used, games_won)"

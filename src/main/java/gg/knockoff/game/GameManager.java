@@ -72,7 +72,14 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static boolean showdownModeStarted = false; //This is enabled when its effects actually start, above checks if its enabled in config.
     public static boolean mapMoving = false;
 
-    public static String GameType = "Solo";
+    public enum GameTypes {
+        StanderedSolos,
+        StanderedDuos,
+        Custom,
+    }
+
+    //public static String GameType = "Solo";
+    public static GameTypes GameType;
     public static mapDirections plannedDirection;
 
     public static int Round = 0;
@@ -85,7 +92,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         WEST,
     }
 
-    public GameManager() {//Start of the game
+    public GameManager(GameTypes type) {//Start of the game
         knockoff.getInstance().reloadConfig();
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
         GameState = "game";
@@ -94,14 +101,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                 e.remove();
             }
         }
-        if (Bukkit.getOnlinePlayers().size() > 13) {
-            GameType = "duos";
-        } else {
-            GameType = "solo";
-        }
+        GameType = type;
 
         PlayerList.clear();
-        teams = new Teams();
+        teams = new Teams(GameType);
         showdownModeStarted = false;
 
         // Sets the target area to air to prevent previous game's sections to interfere with the current game
@@ -400,7 +403,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static void StartEndGame(String WinningTeam) {
         GameState = "end";
         for (Player player : Bukkit.getOnlinePlayers()) {
-            if (GameManager.GameType.equals("solo")) {
+            if (GameManager.GameType.equals(GameTypes.StanderedSolos)) {
 								Player lastPlayer = Bukkit.getPlayer(Teams.get_team_from_string(WinningTeam).getFirst());
                 player.showTitle(Title.title(lastPlayer.displayName(), translatable("crystalized.game.knockoff.win").color(YELLOW),
 										Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));

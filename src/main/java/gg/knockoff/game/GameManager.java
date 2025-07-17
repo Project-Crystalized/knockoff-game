@@ -893,10 +893,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                     FloodgateApi fApi = FloodgateApi.getInstance();
                     if (breaking == 1F || breaking > 1F) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (!fApi.isFloodgatePlayer(p.getUniqueId())) { //To prevent lagging on low end bedrock devices
+                            if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 250)) { //To prevent lagging on low end bedrock devices
                                 p.sendBlockDamage(b.getLocation(), 0, entityID);
                             }
-                            p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
+                            if (!b.isEmpty() && b.getLocation().getNearbyEntities(10, 10, 10).contains(p)) {
+                                p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
+                            }
                         }
                         b.setType(Material.AIR);
                         blocksCrystallizing.remove(b);
@@ -907,7 +909,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         cancel();
                     }
                     for (Player p : Bukkit.getOnlinePlayers()) {
-                        if (!fApi.isFloodgatePlayer(p.getUniqueId())) { //To prevent lagging on low end bedrock devices
+                        if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 250)) { //To prevent lagging on low end bedrock devices
                             p.sendBlockDamage(b.getLocation(), breaking, entityID);
                         }
                     }
@@ -932,10 +934,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                     FloodgateApi fApi = FloodgateApi.getInstance();
                     if (breaking == 1F || breaking > 1F) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (!fApi.isFloodgatePlayer(p.getUniqueId())) { //To prevent lagging on low end bedrock devices
+                            if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 250)) { //To prevent lagging on low end bedrock devices
                                 p.sendBlockDamage(b.getLocation(), 0, entityID);
                             }
-                            p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
+                            if (!b.isEmpty() && b.getLocation().getNearbyEntities(10, 10, 10).contains(p)) {
+                                p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
+                            }
                         }
                         b.setType(Material.AIR);
                         blocksCrystallizing.remove(b);
@@ -946,7 +950,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         cancel();
                     }
                     for (Player p : Bukkit.getOnlinePlayers()) {
-                        if (!fApi.isFloodgatePlayer(p.getUniqueId())) { //To prevent lagging on low end bedrock devices
+                        if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 250)) { //To prevent lagging on low end bedrock devices
                             p.sendBlockDamage(b.getLocation(), breaking, entityID);
                         }
                     }

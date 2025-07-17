@@ -105,7 +105,7 @@ public final class knockoff extends JavaPlugin {
                                 GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.Custom);
                             } else {
                                 if (Bukkit.getOnlinePlayers().size() > 13) {
-                                    ctx.getSource().getSender().sendMessage(text("[!] You cant for a solos game with over 13 players online."));
+                                    ctx.getSource().getSender().sendMessage(text("[!] You cant start a solos game with over 13 players online."));
                                 } else {
                                     GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);
                                 }

@@ -1484,11 +1484,11 @@ class HazardsManager {
     public HazardsManager() {
         IsHazardOver = true;
         HazardList.clear();
-        /*HazardList.add(hazards.tnt);
+        HazardList.add(hazards.tnt);
         HazardList.add(hazards.slimetime);
         HazardList.add(hazards.flyingcars);
         HazardList.add(hazards.poisonbushes);
-        HazardList.add(hazards.flooriscrystals);*/
+        HazardList.add(hazards.flooriscrystals);
         HazardList.add(hazards.watersprouts);
 
         CarsList.clear();

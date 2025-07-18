@@ -258,8 +258,8 @@ public final class knockoff extends JavaPlugin {
                     GameCountdownStarted = false;
                 } else {
                     if (!GameCountdownStarted) {
-                        if (Bukkit.getOnlinePlayers().size() > PlayerStartLimit || Bukkit.getOnlinePlayers().size() == PlayerStartLimit
-                                && (!getConfig().getBoolean("teams.enable")) || (!getConfig().getBoolean("tourneys.enable"))) {
+                        if ((Bukkit.getOnlinePlayers().size() > PlayerStartLimit || Bukkit.getOnlinePlayers().size() == PlayerStartLimit)
+                                && (!getConfig().getBoolean("teams.enable") || !getConfig().getBoolean("tourneys.enable"))) {
                             GameCountdown();
                         }
                     } else if (Bukkit.getOnlinePlayers().size() < PlayerStartLimit) {

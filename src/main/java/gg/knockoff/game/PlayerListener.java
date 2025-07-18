@@ -16,6 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.WindCharge;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFromToEvent;
+import org.bukkit.event.block.FluidLevelChangeEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -452,4 +454,14 @@ public class PlayerListener implements Listener {
 			knockoff.getInstance().GameManager.startBreakingCrystal(b);
 		}
 	}
+
+    @EventHandler
+    public void onWaterFlow(FluidLevelChangeEvent e) {
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockUpdate(BlockFromToEvent e) {
+        e.setCancelled(true);
+    }
 }

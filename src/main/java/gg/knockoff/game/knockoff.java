@@ -57,6 +57,7 @@ public final class knockoff extends JavaPlugin {
         Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);
         Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
         Bukkit.getWorld("world").setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
+        Bukkit.getWorld("world").setGameRule(GameRule.LOCATOR_BAR, false);
 
         saveResource("config.yml", false);
         if (getConfig().getInt("version") != 2) {
@@ -257,7 +258,8 @@ public final class knockoff extends JavaPlugin {
                     GameCountdownStarted = false;
                 } else {
                     if (!GameCountdownStarted) {
-                        if (Bukkit.getOnlinePlayers().size() > PlayerStartLimit || Bukkit.getOnlinePlayers().size() == PlayerStartLimit && !getConfig().getBoolean("teams.enable")) {
+                        if (Bukkit.getOnlinePlayers().size() > PlayerStartLimit || Bukkit.getOnlinePlayers().size() == PlayerStartLimit
+                                && (!getConfig().getBoolean("teams.enable")) || (!getConfig().getBoolean("tourneys.enable"))) {
                             GameCountdown();
                         }
                     } else if (Bukkit.getOnlinePlayers().size() < PlayerStartLimit) {

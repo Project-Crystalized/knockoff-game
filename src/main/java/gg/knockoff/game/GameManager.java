@@ -14,6 +14,7 @@ import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
+import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
@@ -26,6 +27,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
 import org.bukkit.*;
@@ -332,8 +334,6 @@ public class GameManager { //I honestly think this entire class could be optimis
             }
         }.runTaskTimer(knockoff.getInstance(), 0 ,20);
 
-
-
         new BukkitRunnable() {
             int timerMoveToSafety = -1;
             public void run() {
@@ -364,6 +364,33 @@ public class GameManager { //I honestly think this entire class could be optimis
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
+
+        //for water sprouts hazard
+        new BukkitRunnable() {
+            public void run() {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    PlayerData pd = getPlayerData(p);
+                    if (p.isInWater() && isInSoulSandWater(p)) {
+                        pd.percent++;
+                    }
+                }
+            }
+
+            boolean isInSoulSandWater(Player p) {
+                List<Location> list = new ArrayList<>();
+                list.add(p.getLocation().clone().add(0.5, 0, 0.5));
+                list.add(p.getLocation().clone().add(-0.5, 0, -0.5));
+                list.add(p.getLocation().clone().add(-0.5, 0, 0.5));
+                list.add(p.getLocation().clone().add(0.5, 0, -0.5));
+                for (Location loc : list) {
+                    Block b = loc.getBlock();
+                    if (b.getType().equals(Material.WATER)) {
+                        //TODO WIP
+                    }
+                }
+                return false;
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 3);
 
         //TODO clean this shit up this is a mess
         new BukkitRunnable() {
@@ -1247,7 +1274,7 @@ class MapManager {
                     }
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 8 * 20, 10);
+        }.runTaskTimer(knockoff.getInstance(), 8 * 20, 7);
     }
 
     private static void finishDecay() {
@@ -1301,6 +1328,18 @@ class MapManager {
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
         }
+    }
+
+    public static boolean isInsideCurrentSection(Location loc) {
+        if (!(loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength()
+                || loc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength()
+                || loc.getBlockX() < GameManager.SectionPlaceLocationX
+                || loc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength()
+                || loc.getBlockZ() < GameManager.SectionPlaceLocationZ
+                || loc.getBlockY() < (GameManager.SectionPlaceLocationY - 20))) {
+            return true;
+        }
+        return false;
     }
 }
 
@@ -1439,16 +1478,18 @@ class HazardsManager {
         splitmapinhalf,
         train,
         snowballs,
+        watersprouts,
     }
 
     public HazardsManager() {
         IsHazardOver = true;
         HazardList.clear();
-        HazardList.add(hazards.tnt);
+        /*HazardList.add(hazards.tnt);
         HazardList.add(hazards.slimetime);
         HazardList.add(hazards.flyingcars);
         HazardList.add(hazards.poisonbushes);
-        HazardList.add(hazards.flooriscrystals);
+        HazardList.add(hazards.flooriscrystals);*/
+        HazardList.add(hazards.watersprouts);
 
         CarsList.clear();
         CarsList.add(new NamespacedKey("crystalized", "models/car/abby_car"));
@@ -1480,67 +1521,32 @@ class HazardsManager {
 
     public void NewHazard(hazards type) {
         IsHazardOver = false;
-        Component HazardMessage = translatable("crystalized.game.knockoff.chat.hazard").color(GOLD);
-
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            switch (type) {
-                case hazards.tnt:
-                    player.sendMessage(HazardMessage.append(translatable("block.minecraft.tnt").color(RED)));
-                    player.showTitle(
-                            Title.title(
-                                    HazardMessage, translatable("block.minecraft.tnt").color(RED),
-                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
-                    );
-                    break;
-                case hazards.slimetime:
-                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.slimetime").color(GREEN)));
-                    player.showTitle(
-                            Title.title(
-                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.slimetime").color(GREEN),
-                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
-                    );
-                    break;
-                case hazards.flyingcars:
-                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.flyingcars").color(BLUE)));
-                    player.showTitle(
-                            Title.title(
-                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.flyingcars").color(BLUE),
-                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
-                    );
-                    break;
-                case hazards.poisonbushes:
-                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.poisonbushes").color(DARK_GREEN)));
-                    player.showTitle(
-                            Title.title(
-                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.poisonbushes").color(DARK_GREEN),
-                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
-                    );
-                    break;
-                case hazards.flooriscrystals:
-                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.flooriscrystals").color(LIGHT_PURPLE)));
-                    player.showTitle(
-                            Title.title(
-                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.flooriscrystals").color(LIGHT_PURPLE),
-                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
-                    );
-                    break;
-                case hazards.splitmapinhalf:
-                    player.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard.splitmapinhalf").color(LIGHT_PURPLE)));
-                    player.showTitle(
-                            Title.title(
-                                    HazardMessage, translatable("crystalized.game.knockoff.hazard.splitmapinhalf").color(LIGHT_PURPLE),
-                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
-                    );
-                    break;
-                default:
-                    break;
-            }
-        }
-
         switch (type) {
             case hazards.tnt:
+                title(type, null); //Due to TNT's different translation string, we set the color to null since its already set in its special switch case.
+                break;
+            case hazards.slimetime:
+                title(type, GREEN);
+                break;
+            case hazards.flyingcars, hazards.watersprouts:
+                title(type, BLUE);
+                break;
+            case hazards.poisonbushes:
+                title(type, DARK_GREEN);
+                break;
+            case hazards.flooriscrystals, splitmapinhalf:
+                title(type, LIGHT_PURPLE);
+                break;
+            default:
+                break;
+        }
+
+        //If using intellij, would recommend collapsing these case statements by the arrow at the left side of the IDE
+        switch (type) {
+            case hazards.tnt -> {
                 new BukkitRunnable() {
                     int timer = 0;
+
                     @Override
                     public void run() {
                         for (Player player : Bukkit.getOnlinePlayers()) {
@@ -1551,7 +1557,7 @@ class HazardsManager {
 
                                 });
                             }
-                            player.playSound(player, "minecraft:entity.tnt.primed",  50, 1);
+                            player.playSound(player, "minecraft:entity.tnt.primed", 50, 1);
                         }
                         if (timer == 3) {
                             IsHazardOver = true;
@@ -1560,15 +1566,15 @@ class HazardsManager {
                         timer++;
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 40);
-                break;
-
-            case hazards.slimetime:
+            }
+            case hazards.slimetime -> {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 12 * 20, 2, false, false, true));
                     player.playSound(player, "minecraft:block.conduit.activate", 50, 1);
                 }
                 new BukkitRunnable() {
                     int timer = 0;
+
                     @Override
                     public void run() {
                         if (timer == 12) { //This should last the jump boost's duration
@@ -1581,11 +1587,11 @@ class HazardsManager {
                         timer++;
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
-                break;
-
-            case hazards.flyingcars:
+            }
+            case hazards.flyingcars -> {
                 new BukkitRunnable() {
                     int timer = 0;
+
                     @Override
                     public void run() {
                         if (timer == 12) { //This should last the jump boost's duration
@@ -1595,27 +1601,29 @@ class HazardsManager {
                             IsHazardOver = true;
                             cancel();
                         }
-                        if (knockoff.getInstance().GameManager == null) {cancel();}
+                        if (knockoff.getInstance().GameManager == null) {
+                            cancel();
+                        }
                         spawnFlyingCar();
                         timer++;
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
-                break;
-            case hazards.poisonbushes:
+            }
+            case hazards.poisonbushes -> {
                 new BukkitRunnable() {
                     int timer = 6;
+
                     public void run() {
                         spawnBush();
                         if (timer == 0) {
                             IsHazardOver = true;
                             cancel();
                         }
-                        timer --;
+                        timer--;
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 2);
-                break;
-
-            case hazards.flooriscrystals:
+            }
+            case hazards.flooriscrystals -> {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.playSound(player, "minecraft:block.conduit.activate", 50, 1);
                 }
@@ -1646,11 +1654,11 @@ class HazardsManager {
                     }
 
                 }.runTaskTimer(knockoff.getInstance(), 3, 1);
-
                 new BukkitRunnable() {
                     int timer = 10;
+
                     public void run() {
-                        timer --;
+                        timer--;
                         if (timer == 0) {
                             for (Player p : Bukkit.getOnlinePlayers()) {
                                 p.playSound(p, "minecraft:block.conduit.deactivate", 50, 1);
@@ -1661,20 +1669,70 @@ class HazardsManager {
                         }
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
-                break;
-
-
-            case splitmapinhalf:
-                //TODO
-                // figure out this later
+            }
+            case splitmapinhalf -> {
+                //TODO WIP
 
                 IsHazardOver = true; //temp
+                com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+                try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                    editSession.setMask(null);
+                    //editSession.drawLine()
+                } catch (Exception e) {
+                    Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                    e.printStackTrace();
+                }
+            }
+            case watersprouts -> {
+                //Play sound to indicate this hazard started
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.playSound(p, "minecraft:item.trident.riptide_1", 1, 1);
+                }
+                new BukkitRunnable() {
+                    int timer = 7;
 
-                break;
+                    public void run() {
+                        spawnWaterSprout();
+                        if (timer == 0 || knockoff.getInstance().GameManager == null) {
+                            cancel();
+                            IsHazardOver = true; //temp
+                        }
+                        timer--;
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 0, 20);
+
+
+            }
         }
     }
 
-    public static void spawnFlyingCar() {
+    private static void title(hazards h, TextColor color) {
+        Component HazardMessage = translatable("crystalized.game.knockoff.chat.hazard").color(GOLD);
+        switch (h) {
+            case hazards.tnt -> {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.sendMessage(HazardMessage.append(translatable("block.minecraft.tnt").color(RED)));
+                    p.showTitle(
+                            Title.title(
+                                    HazardMessage, translatable("block.minecraft.tnt").color(RED),
+                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
+                    );
+                }
+            }
+            default -> {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard." + h.toString()).color(color)));
+                    p.showTitle(
+                            Title.title(
+                                    HazardMessage, translatable("crystalized.game.knockoff.hazard." + h.toString()).color(color),
+                                    Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
+                    );
+                }
+            }
+        }
+    }
+
+    private static Location getValidSpot(boolean get2loc) {
         boolean IsValidSpot = false;
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
@@ -1695,11 +1753,16 @@ class HazardsManager {
                 IsValidSpot = false;
             }
         }
-        if (knockoff.getInstance().GameManager == null) {
-            return;
+        if (get2loc) {
+            return blockloc2;
+        } else {
+            return blockloc;
         }
+    }
 
-        Location loc = new Location(Bukkit.getWorld("world"), blockloc.getX(), knockoff.getInstance().mapdata.getCurrentYLength() + 13, blockloc.getZ());
+    public static void spawnFlyingCar() {
+        Location validLoc = getValidSpot(false);
+        Location loc = new Location(Bukkit.getWorld("world"), validLoc.getX(), knockoff.getInstance().mapdata.getCurrentYLength() + 13, validLoc.getZ());
         ItemStack item = new ItemStack(Material.CHARCOAL);
         ItemMeta meta = item.getItemMeta();
         meta.setItemModel(CarsList.get(knockoff.getInstance().getRandomNumber(0, CarsList.size())));
@@ -1736,26 +1799,7 @@ class HazardsManager {
 
     //This can override blocks but who cares, maps get copy pasted for gameplay anyways
     private static void spawnBush() {
-        boolean IsValidSpot = false;
-        Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-        Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-        while (!IsValidSpot && knockoff.getInstance().GameManager != null) {
-            blockloc = new Location(Bukkit.getWorld("world"),
-                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
-                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
-                    knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5
-            );
-            blockloc2 = new Location(Bukkit.getWorld("world"),
-                    blockloc.getX(),
-                    blockloc.getY() + 1,
-                    blockloc.getZ()
-            );
-            if ((!blockloc.getBlock().isEmpty()) && blockloc2.getBlock().isEmpty()) {
-                IsValidSpot = true;
-            } else {
-                IsValidSpot = false;
-            }
-        }
+        Location blockloc2 = getValidSpot(true);
         if (knockoff.getInstance().GameManager == null) {return;}
 
         blockloc2.getBlock().setType(Material.MANGROVE_LEAVES);
@@ -1785,5 +1829,39 @@ class HazardsManager {
                 //Do nothing
             }
         }
+    }
+
+    private static void spawnWaterSprout() {
+        List<Location> locs = new ArrayList<>();
+        Location center = getValidSpot(false);
+        if (knockoff.getInstance().GameManager == null) {return;}
+        locs.add(center);
+        locs.add(center.clone().add(1, 0, 0)); //right
+        locs.add(center.clone().add(-1, 0, 0)); //left
+        locs.add(center.clone().add(0, 0, 1)); //south
+        locs.add(center.clone().add(0, 0, -1)); //north
+
+        for (Location l : locs) {
+            l.getBlock().setType(Material.SOUL_SAND);
+        }
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(center, "minecraft:item.trident.riptide_3", 3, 1);
+        }
+
+        new BukkitRunnable() {
+            int timer = 7;
+            public void run() {
+                for (Location l : locs) {
+                    l.add(0, 1, 0);
+                    if (MapManager.isInsideCurrentSection(l) && l.getBlock().isEmpty()) {
+                        l.getBlock().setType(Material.WATER);
+                    }
+                }
+                timer--;
+                if (timer == 0) {
+                    cancel();
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 5);
     }
 }

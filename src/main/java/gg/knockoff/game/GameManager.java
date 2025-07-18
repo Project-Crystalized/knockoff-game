@@ -1842,7 +1842,9 @@ class HazardsManager {
         locs.add(center.clone().add(0, 0, -1)); //north
 
         for (Location l : locs) {
-            l.getBlock().setType(Material.SOUL_SAND);
+            if (MapManager.isInsideCurrentSection(l)) {
+                l.getBlock().setType(Material.SOUL_SAND);
+            }
         }
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.playSound(center, "minecraft:item.trident.riptide_3", 3, 1);

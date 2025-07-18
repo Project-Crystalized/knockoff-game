@@ -204,9 +204,6 @@ public class Teams {
 					if (playerlist.size() > 0) {
 						if (blue.isEmpty()) {
 							blue.add(playerlist.get(0));
-							if (playerlist.size() > 12) {
-								blue.add(playerlist.get(12));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + blue + " in Team Blue");
 						}
 					} else {
@@ -217,9 +214,6 @@ public class Teams {
 					if (playerlist.size() > 1) { // If the player list is 2 or greater
 						if (cyan.isEmpty()) {
 							cyan.add(playerlist.get(1));
-							if (playerlist.size() > 13) {
-								cyan.add(playerlist.get(13));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + cyan + " in Team Cyan");
 						}
 					} else {
@@ -230,9 +224,6 @@ public class Teams {
 					if (playerlist.size() > 2) { // If the player list is 3 or greater
 						if (green.isEmpty()) {
 							green.add(playerlist.get(2));
-							if (playerlist.size() > 14) {
-								green.add(playerlist.get(14));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + green + " in Team Green");
 						}
 					} else {
@@ -242,9 +233,6 @@ public class Teams {
 					if (playerlist.size() > 3) { // If the player list is 4 or greater
 						if (lemon.isEmpty()) {
 							lemon.add(playerlist.get(3));
-							if (playerlist.size() > 15) {
-								lemon.add(playerlist.get(15));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + lemon + " in Team Lemon");
 						}
 					} else {
@@ -254,9 +242,6 @@ public class Teams {
 					if (playerlist.size() > 4) { // If the player list is 5 or greater
 						if (lime.isEmpty()) {
 							lime.add(playerlist.get(4));
-							if (playerlist.size() > 16) {
-								lime.add(playerlist.get(16));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + lime + " in Team Lime");
 						}
 					} else {
@@ -266,9 +251,6 @@ public class Teams {
 					if (playerlist.size() > 5) { // If the player list is 6 or greater
 						if (magenta.isEmpty()) {
 							magenta.add(playerlist.get(5));
-							if (playerlist.size() > 17) {
-								magenta.add(playerlist.get(17));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + magenta + " in Team Magenta");
 						}
 					} else {
@@ -278,9 +260,6 @@ public class Teams {
 					if (playerlist.size() > 6) { // If the player list is 7 or greater
 						if (orange.isEmpty()) {
 							orange.add(playerlist.get(6));
-							if (playerlist.size() > 18) {
-								orange.add(playerlist.get(18));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + orange + " in Team Orange");
 						}
 					} else {
@@ -290,9 +269,6 @@ public class Teams {
 					if (playerlist.size() > 7) { // If the player list is 8 or greater
 						if (peach.isEmpty()) {
 							peach.add(playerlist.get(7));
-							if (playerlist.size() > 19) {
-								peach.add(playerlist.get(19));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + peach + " in Team Peach");
 						}
 					} else {
@@ -302,9 +278,6 @@ public class Teams {
 					if (playerlist.size() > 8) { // If the player list is 9 or greater
 						if (purple.isEmpty()) {
 							purple.add(playerlist.get(8));
-							if (playerlist.size() > 20) {
-								purple.add(playerlist.get(20));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + purple + " in Team Purple");
 						}
 					} else {
@@ -314,9 +287,6 @@ public class Teams {
 					if (playerlist.size() > 9) { // If the player list is 10 or greater
 						if (red.isEmpty()) {
 							red.add(playerlist.get(9));
-							if (playerlist.size() > 21) {
-								red.add(playerlist.get(21));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + red + " in Team Red");
 						}
 					} else {
@@ -326,9 +296,6 @@ public class Teams {
 					if (playerlist.size() > 10) { // If the player list is 11 or greater
 						if (white.isEmpty()) {
 							white.add(playerlist.get(10));
-							if (playerlist.size() > 22) {
-								white.add(playerlist.get(22));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + white + " in Team White");
 						}
 					} else {
@@ -338,9 +305,6 @@ public class Teams {
 					if (playerlist.size() > 11) { // If the player list is 12
 						if (yellow.isEmpty()) {
 							yellow.add(playerlist.get(11));
-							if (playerlist.size() > 23) {
-								yellow.add(playerlist.get(23));
-							}
 							Bukkit.getLogger().log(Level.INFO, "Player(s) " + yellow + " in Team Yellow");
 						}
 					} else {

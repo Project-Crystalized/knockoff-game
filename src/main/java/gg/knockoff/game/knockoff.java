@@ -85,7 +85,7 @@ public final class knockoff extends JavaPlugin {
                             if (getConfig().getBoolean("teams.enable")) {
                                 GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.Custom);
                             } else {
-                                if (Bukkit.getOnlinePlayers().size() > 13) {
+                                if (Bukkit.getOnlinePlayers().size() > 12) {
                                     GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedDuos);
                                 } else {
                                     GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);
@@ -96,7 +96,7 @@ public final class knockoff extends JavaPlugin {
                         }
                         return Command.SINGLE_SUCCESS;
                     })
-                    .then(Commands.literal("force_solo").executes(ctx -> {
+                    /*.then(Commands.literal("force_solo").executes(ctx -> {
                         if (knockoff.getInstance().GameManager == null) {
                             knockoff.getInstance().DevMode = false;
                             //knockoff.getInstance().is_force_starting = true;
@@ -104,7 +104,7 @@ public final class knockoff extends JavaPlugin {
                             if (getConfig().getBoolean("teams.enable")) {
                                 GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.Custom);
                             } else {
-                                if (Bukkit.getOnlinePlayers().size() > 13) {
+                                if (Bukkit.getOnlinePlayers().size() > 12) {
                                     ctx.getSource().getSender().sendMessage(text("[!] You cant start a solos game with over 13 players online."));
                                 } else {
                                     GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);
@@ -114,7 +114,7 @@ public final class knockoff extends JavaPlugin {
                             ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
                         }
                         return Command.SINGLE_SUCCESS;
-                    }))
+                    }))*/
                     .then(Commands.literal("force_duos").executes(ctx -> {
                         if (knockoff.getInstance().GameManager == null) {
                             knockoff.getInstance().DevMode = false;
@@ -234,7 +234,7 @@ public final class knockoff extends JavaPlugin {
                                 } else {
                                     Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
                                     p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
-                                    if (Bukkit.getOnlinePlayers().size() < 13) {
+                                    if (Bukkit.getOnlinePlayers().size() > 12) {
                                         GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedDuos);
                                     } else {
                                         GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);

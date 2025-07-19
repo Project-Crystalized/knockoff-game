@@ -374,6 +374,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         pd.percent++;
                     }
                 }
+
+                if (knockoff.getInstance().GameManager == null) {
+                    cancel();
+                }
             }
 
             boolean isInSoulSandWater(Player p) {
@@ -585,7 +589,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
         Bukkit.getServer().sendMessage(text("error occured, a player didnt have associated data"));
         Bukkit.getLogger().warning("player name: " + p.getName());
-        //Thread.dumpStack();
+        Thread.dumpStack();
 
         for (PlayerData pd : playerDatas) {
             Bukkit.getLogger().warning(pd.player);
@@ -1679,10 +1683,10 @@ class HazardsManager {
             }
             default -> {
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    p.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard." + h.toString()).color(color)));
+                    p.sendMessage(HazardMessage.append(translatable("crystalized.game.knockoff.hazard." + h).color(color)));
                     p.showTitle(
                             Title.title(
-                                    HazardMessage, translatable("crystalized.game.knockoff.hazard." + h.toString()).color(color),
+                                    HazardMessage, translatable("crystalized.game.knockoff.hazard." + h).color(color),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000)))
                     );
                 }

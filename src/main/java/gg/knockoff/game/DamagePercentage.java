@@ -56,7 +56,7 @@ public class DamagePercentage implements Listener {
         //p.getCooledAttackStrength((float) e.getDamage());
 
         if (e.isCritical()) {
-            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(6, 8);
+            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(4, 6);
         } else {
             ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(1, 3);
         }

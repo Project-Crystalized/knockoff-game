@@ -52,7 +52,11 @@ public class DamagePercentage implements Listener {
             return;
         }
 
-        p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
+        //p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
+        float addedVelocity = (float) ppd.percent / 16;
+        p.setVelocity(d.getLocation().getDirection().multiply(new Vector(addedVelocity, 0.2, addedVelocity)));
+
+
         //p.getCooledAttackStrength((float) e.getDamage());
 
         if (e.isCritical()) {

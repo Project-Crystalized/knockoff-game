@@ -989,7 +989,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     private static void showdownCrystallizeMap() {
         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-        try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+        try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
                     BlockVector3.at(
@@ -1088,7 +1088,7 @@ class MapManager {
     public static void turnMapIntoCrystals() {
         List<Block> blockList = new ArrayList<>();
         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-        try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
+        try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             Region region = new CuboidRegion(
                     BlockVector3.at(
                             GameManager.LastSectionPlaceLocationX,

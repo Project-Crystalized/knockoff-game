@@ -146,7 +146,7 @@ public class PlayerListener implements Listener {
 				Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
 						knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10,
 						knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-				player.teleport(loc);
+				player.teleportAsync(loc);
 				cancel();
 			}
 		}.runTaskTimer(knockoff.getInstance(), 2, 20);
@@ -244,6 +244,7 @@ public class PlayerListener implements Listener {
 		tempBlockList.add(middleLoc.clone().add(0, 0, -1).getBlock());
 		tempBlockList.add(middleLoc.clone().add(1, 0, -1).getBlock());
 		tempBlockList.add(middleLoc.clone().add(-1, 0, -1).getBlock());
+		//TODO how do we make this better
 		switch (Teams.GetPlayerTeam(p)) {
 			case "blue" -> {
 				for (Block b : tempBlockList) {
@@ -349,6 +350,12 @@ public class PlayerListener implements Listener {
 		}
 		for (Block b : tempBlockList) {
 			GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30), true);
+		}
+
+		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+		if (pd.lives == 1) {
+			p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED));
+			p.playSound(p, "minecraft:block.note_block.pling", 1, 0.5f);
 		}
 
 		middleLoc.getBlock().getState().update();

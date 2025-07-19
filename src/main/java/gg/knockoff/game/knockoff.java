@@ -43,6 +43,8 @@ public final class knockoff extends JavaPlugin {
 
     private int PlayerStartLimit = 4;
     private int configVersion = 0;
+    //TODO plan for a bugfix, change this variable and call new gamemanager with this in the main bukkitrunnable
+    //private GameManager.GameTypes type = gg.knockoff.game.GameManager.GameTypes.StanderedSolos;
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
@@ -97,25 +99,6 @@ public final class knockoff extends JavaPlugin {
                         }
                         return Command.SINGLE_SUCCESS;
                     })
-                    /*.then(Commands.literal("force_solo").executes(ctx -> {
-                        if (knockoff.getInstance().GameManager == null) {
-                            knockoff.getInstance().DevMode = false;
-                            //knockoff.getInstance().is_force_starting = true;
-                            reloadConfig();
-                            if (getConfig().getBoolean("teams.enable")) {
-                                GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.Custom);
-                            } else {
-                                if (Bukkit.getOnlinePlayers().size() > 12) {
-                                    ctx.getSource().getSender().sendMessage(text("[!] You cant start a solos game with over 13 players online."));
-                                } else {
-                                    GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);
-                                }
-                            }
-                        } else {
-                            ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
-                        }
-                        return Command.SINGLE_SUCCESS;
-                    }))*/
                     .then(Commands.literal("force_duos").executes(ctx -> {
                         if (knockoff.getInstance().GameManager == null) {
                             knockoff.getInstance().DevMode = false;
@@ -132,24 +115,25 @@ public final class knockoff extends JavaPlugin {
                     }))
             );
             command.then(Commands.literal("spawn_powerup").requires(sender -> sender.getSender().hasPermission("minecraft.command.op"))
-                    .then(Commands.literal("Random").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),null); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Boost_Orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"BoostOrb"); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Bridge_Orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"BridgeOrb"); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Explosive_Orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"ExplosiveOrb"); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Grappling_Orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"GrapplingOrb"); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Knockout_Orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"KnockoutOrb"); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Cloud_Totem").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"CloudTotem"); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Wind_Charge").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"WindCharge"); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Boxing_Glove").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"BoxingGlove"); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Winged_Orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"WingedOrb"); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Poison_Orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"PoisonOrb"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("random").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),null); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("boost_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"BoostOrb"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("bridge_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"BridgeOrb"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("explosive_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"ExplosiveOrb"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("grappling_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"GrapplingOrb"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("knockout_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"KnockoutOrb"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("cloud_totem").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"CloudTotem"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("wind_charge").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"WindCharge"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("boxing_glove").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"BoxingGlove"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("winged_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"WingedOrb"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("poison_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"PoisonOrb"); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("spawn_hazard").requires(sender -> sender.getSender().hasPermission("minecraft.command.op"))
-                    .then(Commands.literal("TNT").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.tnt); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Slime_Time").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.slimetime); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Flying_Cars").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.flyingcars); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Poison_Bushes").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.poisonbushes); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("Floor_Is_Crystals").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.flooriscrystals); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("tnt").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.tnt); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("slime_time").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.slimetime); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("flying_cars").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.flyingcars); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("poison_bushes").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.poisonbushes); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("floor_is_crystals").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.flooriscrystals); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("water_sprouts").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.watersprouts); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("moveMap").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
                 Entity p = ctx.getSource().getExecutor();
@@ -162,7 +146,7 @@ public final class knockoff extends JavaPlugin {
                     if (pl.hasCooldown(Material.DIRT)) {
                         p.sendMessage(text("[!] This command is on cooldown for " + pl.getCooldown(Material.DIRT) + " ticks."));
                     } else {
-                        pl.setCooldown(Material.DIRT, 20 * 20);
+                        pl.setCooldown(Material.DIRT, 30 * 20);
                         knockoff.getInstance().GameManager.CloneNewMapSection();
                     }
                 } else {

@@ -72,12 +72,12 @@ public class PlayerListener implements Listener {
 					// Header
 					text("\n")
 							.append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE)
-									.append(text("KnockOff (Work in Progress)").color(NamedTextColor.GOLD)))
+									.append(text("KnockOff").color(NamedTextColor.GOLD)))
 							.append(text("\n")),
 
 					// Footer
 					text(
-							"\n Expect bugs since this is an early version and isn't complete. \n If you find any please report to TotallyNoCallum on the Crystalized Discord ")
+							"\nIf you find any please report to TotallyNoCallum on the Crystalized Discord ")
 							.append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY)));
 			new QueueScoreBoard(player);
 

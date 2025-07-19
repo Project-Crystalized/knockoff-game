@@ -6,6 +6,8 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.fastasyncworldedit.core.Fawe;
+import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -96,6 +98,19 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     public GameManager(GameTypes type) {//Start of the game
         knockoff.getInstance().reloadConfig();
+        // signal that the game has started to the proxy
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            out.writeUTF(p.getName());
+        }
+        if (Bukkit.getOnlinePlayers().isEmpty()) {
+            return;
+        } else {
+            Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
+            p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
+        }
+
+
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
         GameState = "game";
         for (Entity e : Bukkit.getWorld("world").getEntities()) {

@@ -221,25 +221,10 @@ public final class knockoff extends JavaPlugin {
                         is_force_starting = false;
                         new BukkitRunnable() {
                             public void run() {
-
-								// signal that the game has started to the proxy
-                                ByteArrayDataOutput out = ByteStreams.newDataOutput();
-                                out.writeUTF("start_game");
-                                for (Player p : Bukkit.getOnlinePlayers()) {
-                                    out.writeUTF(p.getName());
-                                }
-                                if (Bukkit.getOnlinePlayers().isEmpty()) {
-                                    is_force_starting = false;
-                                    cancel();
-                                    return;
+                                if (Bukkit.getOnlinePlayers().size() > 12) {
+                                    GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedDuos);
                                 } else {
-                                    Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
-                                    p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
-                                    if (Bukkit.getOnlinePlayers().size() > 12) {
-                                        GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedDuos);
-                                    } else {
-                                        GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);
-                                    }
+                                    GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);
                                 }
                                 cancel();
                             }

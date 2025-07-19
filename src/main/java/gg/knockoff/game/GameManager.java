@@ -871,9 +871,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void convertBlocktoCrystal(Block b) {
-        if (b.getType().equals(Material.MANGROVE_LEAVES) || b.isEmpty() || b.getType().equals(Material.LIGHT)) {
-            //Do nothing
-        } else {
+        if (!(b.getType().equals(Material.MANGROVE_LEAVES) || b.isEmpty() || b.getType().equals(Material.LIGHT))) {
             String blockString = b.getType().toString().toLowerCase();
             if (Tag.SLABS.isTagged(b.getType())) {
                 BlockData bd = b.getBlockData();
@@ -903,11 +901,10 @@ public class GameManager { //I honestly think this entire class could be optimis
             else {
                 b.setType(Material.AMETHYST_BLOCK);
             }
-
         }
     }
 
-    public static void startBreakingCrystal(Block b) {
+    public static void startBreakingCrystal(Block b, int addedDelay, int addedPeriod, boolean convert) {
         if (b.getType().equals(Material.AIR)) {return;} //dont crystallize nothing lol
         if (blocksCrystallizing.contains(b)) {
             return;
@@ -917,47 +914,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                 float breaking = 0.0F;
                 int entityID = knockoff.getInstance().getRandomNumber(1, 10000);
                 public void run() {
-                    FloodgateApi fApi = FloodgateApi.getInstance();
-                    if (breaking == 1F || breaking > 1F) {
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 250)) { //To prevent lagging on low end bedrock devices
-                                p.sendBlockDamage(b.getLocation(), 0, entityID);
-                            }
-                            if (!b.isEmpty() && b.getLocation().getNearbyEntities(10, 10, 10).contains(p)) {
-                                p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
-                            }
-                        }
-                        b.setType(Material.AIR);
-                        blocksCrystallizing.remove(b);
-                        cancel();
+                    if (convert) {
+                        convertBlocktoCrystal(b);
                     }
-                    if (b.getType().equals(Material.AIR)) { //For if the blocks get broken during this
-                        blocksCrystallizing.remove(b);
-                        cancel();
-                    }
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 250)) { //To prevent lagging on low end bedrock devices
-                            p.sendBlockDamage(b.getLocation(), breaking, entityID);
-                        }
-                    }
-                    breaking = breaking + 0.2F;
-                }
-            }.runTaskTimer(knockoff.getInstance(), knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(13, 20));
-        }
-    }
-
-    //For map decaying mostly
-    public static void startBreakingCrystal(Block b, int addedDelay, int addedPeriod) {
-        if (b.getType().equals(Material.AIR)) {return;} //dont crystallize nothing lol
-        if (blocksCrystallizing.contains(b)) {
-            return;
-        } else {
-            blocksCrystallizing.add(b);
-            new BukkitRunnable() {
-                float breaking = 0.0F;
-                int entityID = knockoff.getInstance().getRandomNumber(1, 10000);
-                public void run() {
-                    convertBlocktoCrystal(b);
                     FloodgateApi fApi = FloodgateApi.getInstance();
                     if (breaking == 1F || breaking > 1F) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -1056,7 +1015,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
 
         for (Block b : showdownBlockList) {
-            GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(4 * 20, 25 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20));
+            GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(4 * 20, 25 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20), true);
         }
     }
 
@@ -1156,7 +1115,7 @@ class MapManager {
         GameManager gm = knockoff.getInstance().GameManager;
 
         for (Block b : blockList) {
-            gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(2 * 20, 8 * 20), knockoff.getInstance().getRandomNumber(3 * 20, 5 * 20));
+            gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(2 * 20, 8 * 20), knockoff.getInstance().getRandomNumber(3 * 20, 5 * 20), true);
         }
     }
 
@@ -1649,8 +1608,7 @@ class HazardsManager {
 
                     void crystal(Block b) {
                         GameManager gm = knockoff.getInstance().GameManager;
-                        gm.convertBlocktoCrystal(b);
-                        gm.startBreakingCrystal(b);
+                        gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(13, 20), true);
                     }
 
                 }.runTaskTimer(knockoff.getInstance(), 3, 1);

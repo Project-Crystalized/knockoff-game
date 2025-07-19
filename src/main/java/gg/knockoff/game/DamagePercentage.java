@@ -56,12 +56,15 @@ public class DamagePercentage implements Listener {
 
         p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
 
+        p.getCooledAttackStrength((float) e.getDamage());
 
         if (e.isCritical()) {
             ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(6, 8);
         } else {
             ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(1, 3);
         }
+
+
 
     }
 }

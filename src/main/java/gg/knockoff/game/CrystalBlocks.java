@@ -33,6 +33,8 @@ public class CrystalBlocks implements Listener {
 
     @EventHandler
     public void WhenCrystalBlockPlaced(BlockPlaceEvent event) {
+        //TODO clean up this
+
         Player player = event.getPlayer();
         //if (event.getHand() != EquipmentSlot.HAND) return;
         //Block block = player.getTargetBlock(null, 5);
@@ -59,7 +61,7 @@ public class CrystalBlocks implements Listener {
         //I had to rewrite this because || statements are weird
         GameManager gm = knockoff.getInstance().GameManager;
         if (gm.showdownModeStarted) {
-            gm.startBreakingCrystal(blockloc.getBlock(), knockoff.getInstance().getRandomNumber(3 * 20, 15 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20));
+            gm.startBreakingCrystal(blockloc.getBlock(), knockoff.getInstance().getRandomNumber(3 * 20, 15 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20), true);
         }
         //MainHand
         if (player.getEquipment().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK)) {

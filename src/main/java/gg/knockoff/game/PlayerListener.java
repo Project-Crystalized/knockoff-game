@@ -348,7 +348,7 @@ public class PlayerListener implements Listener {
 			}
 		}
 		for (Block b : tempBlockList) {
-			GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30));
+			GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30), true);
 		}
 
 		middleLoc.getBlock().getState().update();
@@ -450,8 +450,7 @@ public class PlayerListener implements Listener {
 		if (knockoff.getInstance().GameManager == null) {return;}
 		e.getLocation().createExplosion(null, 1.5F, false, false);
 		for (Block b : e.blockList()) {
-			knockoff.getInstance().GameManager.convertBlocktoCrystal(b);
-			knockoff.getInstance().GameManager.startBreakingCrystal(b);
+			knockoff.getInstance().GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(13, 20), true);
 		}
 	}
 

@@ -30,7 +30,7 @@ public class DamagePercentage implements Listener {
             if (ds.getDamageType().equals(DamageType.EXPLOSION) || ds.getDamageType().equals(DamageType.PLAYER_EXPLOSION)) {
                 pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(4, 7);
             } else if (ds.getDamageType().equals(DamageType.MAGIC)) {
-                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(1, 2);
+                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(2, 3);
             }
         }
     }

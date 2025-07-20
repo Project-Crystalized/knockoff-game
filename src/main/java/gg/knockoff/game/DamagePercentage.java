@@ -28,9 +28,9 @@ public class DamagePercentage implements Listener {
                 return;
             }
             if (ds.getDamageType().equals(DamageType.EXPLOSION) || ds.getDamageType().equals(DamageType.PLAYER_EXPLOSION)) {
-                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(4, 7);
+                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(6, 8);
             } else if (ds.getDamageType().equals(DamageType.MAGIC)) {
-                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(2, 3);
+                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(5, 6);
             }
         }
     }
@@ -53,16 +53,18 @@ public class DamagePercentage implements Listener {
         }
 
         //p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
-        float addedVelocity = (float) ppd.percent / 16;
+
+        if (p.getCooledAttackStrength(5) < 0.5) {
+            return; //should hopefully prevent spam clicking
+        }
+
+        float addedVelocity = (float) ppd.percent / 24;
         p.setVelocity(d.getLocation().getDirection().multiply(new Vector(addedVelocity, 0.2, addedVelocity)));
 
-
-        //p.getCooledAttackStrength((float) e.getDamage());
-
         if (e.isCritical()) {
-            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(4, 6);
+            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(5, 7);
         } else {
-            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(1, 3);
+            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(3, 6);
         }
 
 

@@ -712,8 +712,10 @@ class CustomPlayerNametags {
 								.append(player.displayName())
 								.append(text("\nKB: "))
 								.append(text(pd.percent))
-								.append(text("% | L: "))
-								.append(text(pd.getLives())));
+								.append(text("% | "))
+								.append(text(pd.getLives()))
+								.append(text("x \uE12C"))
+						);
 					}
 				}
 			}

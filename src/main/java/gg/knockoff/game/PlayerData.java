@@ -44,7 +44,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                         if (timer == 0) {
                             percent--;
                             savedPercent = percent;
-                            timer = 2;
+                            timer = 1;
                         }
                         else if (p.getGameMode().equals(GameMode.SPECTATOR)) {
                             percent = 0;
@@ -56,10 +56,13 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                     timer = 0;
                     savedPercent = -1;
                 }
+                if (percent > 300) {
+                    percent = 300; //% limit
+                }
 
                 if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                     //p.sendActionBar(text("" + percent + "% | T:" + timer + " SP:" + savedPercent));
-                    p.sendActionBar(text(percentToFont("" + percent + "%")));
+                    p.sendActionBar(text(percentToFont(percent + "%")));
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);

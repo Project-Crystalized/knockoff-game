@@ -338,6 +338,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             int timerMoveToSafety = -1;
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    PlayerData pd = getPlayerData(p);
                     if (knockoff.getInstance().GameManager == null) {
                         cancel();
                     }
@@ -361,40 +362,14 @@ public class GameManager { //I honestly think this entire class could be optimis
                         timerMoveToSafety = -1;
                     }
 
+                    //for water sprout hazard
+                    if (p.isInWater()) {
+                        pd.percent++;
+                    }
+
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
-
-        //for water sprouts hazard
-        new BukkitRunnable() {
-            public void run() {
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    PlayerData pd = getPlayerData(p);
-                    if (p.isInWater() && isInSoulSandWater(p)) {
-                        pd.percent++;
-                    }
-                }
-
-                if (knockoff.getInstance().GameManager == null) {
-                    cancel();
-                }
-            }
-
-            boolean isInSoulSandWater(Player p) {
-                List<Location> list = new ArrayList<>();
-                list.add(p.getLocation().clone().add(0.5, 0, 0.5));
-                list.add(p.getLocation().clone().add(-0.5, 0, -0.5));
-                list.add(p.getLocation().clone().add(-0.5, 0, 0.5));
-                list.add(p.getLocation().clone().add(0.5, 0, -0.5));
-                for (Location loc : list) {
-                    Block b = loc.getBlock();
-                    if (b.getType().equals(Material.WATER)) {
-                        //TODO WIP
-                    }
-                }
-                return false;
-            }
-        }.runTaskTimer(knockoff.getInstance(), 0, 3);
 
         //TODO clean this shit up this is a mess
         new BukkitRunnable() {
@@ -1440,7 +1415,6 @@ class HazardsManager {
         flooriscrystals,
         splitmapinhalf,
         train,
-        snowballs,
         watersprouts,
     }
 
@@ -1817,8 +1791,8 @@ class HazardsManager {
             public void run() {
                 for (Location l : locs) {
                     l.add(0, 1, 0);
-                    if (MapManager.isInsideCurrentSection(l) && l.getBlock().isEmpty()) {
-                        l.getBlock().setType(Material.WATER);
+                    if (MapManager.isInsideCurrentSection(l)) {
+                        l.getBlock().setType(Material.WATER); //This can replace blocks, not my problem
                     }
                 }
                 timer--;

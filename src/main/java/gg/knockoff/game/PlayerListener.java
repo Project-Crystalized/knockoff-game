@@ -72,7 +72,7 @@ public class PlayerListener implements Listener {
 					// Header
 					text("\n")
 							.append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE)
-									.append(text("KnockOff").color(NamedTextColor.GOLD)))
+									.append(text("Knockoff").color(NamedTextColor.GOLD)))
 							.append(text("\n")),
 
 					// Footer

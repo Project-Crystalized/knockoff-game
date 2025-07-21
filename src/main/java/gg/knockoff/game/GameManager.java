@@ -1268,13 +1268,26 @@ class MapManager {
         }
     }
 
+
+    //For these 2 booleans, I dont think theres a better way of doing these
+    //We could make a worldedit region and do shit with that, but I feel like making worldedit actions everytime this is called is stupid - Callum
     public static boolean isInsideCurrentSection(Location loc) {
-        if (!(loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength()
-                || loc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength()
-                || loc.getBlockX() < GameManager.SectionPlaceLocationX
-                || loc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength()
-                || loc.getBlockZ() < GameManager.SectionPlaceLocationZ
-                || loc.getBlockY() < (GameManager.SectionPlaceLocationY - 20))) {
+        if (!(
+                loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength() || loc.getBlockY() < (GameManager.SectionPlaceLocationY - 20)
+                || loc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength() || loc.getBlockX() < GameManager.SectionPlaceLocationX
+                || loc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength() || loc.getBlockZ() < GameManager.SectionPlaceLocationZ
+        )) {
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isInsideDecayingSection(Location loc) {
+        if (!(
+                loc.getBlockY() > GameManager.LastSectionPlaceLocationY + MapManager.LastYLength || loc.getBlockY() < (GameManager.LastSectionPlaceLocationY - 20)
+                || loc.getBlockX() > GameManager.LastSectionPlaceLocationX + MapManager.LastXLength || loc.getBlockX() < GameManager.LastSectionPlaceLocationX
+                || loc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ
+        )) {
             return true;
         }
         return false;

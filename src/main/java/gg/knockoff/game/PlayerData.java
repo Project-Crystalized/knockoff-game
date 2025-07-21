@@ -25,8 +25,8 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     public int powerupscollected = 0;
     public int powerupsused = 0;
 
-
     public int percent = 0;
+    private int percentLimit = 300;
 
     public PlayerData(Player p) {
         player = p.getName();
@@ -58,7 +58,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                     timer = 0;
                     savedPercent = -1;
                 }
-                if (percent > 300) {
+                if (percent > percentLimit) {
                     percent = 300; //% limit
                 }
 
@@ -75,6 +75,17 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                     //p.sendActionBar(text("" + percent + "% | T:" + timer + " SP:" + savedPercent));
                     p.sendActionBar(text(percentToFont(percent + "%")));
+                    float exp = (float) percent / 100;
+                    if (exp > 1.0) {
+                        exp = 1.0f;
+                    }
+                    p.setExp(exp);
+                } else {
+                    p.setExp(0);
+                }
+
+                if (knockoff.getInstance().GameManager == null) {
+                    cancel();
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);

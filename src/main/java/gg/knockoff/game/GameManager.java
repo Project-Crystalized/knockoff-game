@@ -13,6 +13,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
+import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
 import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
@@ -33,6 +34,7 @@ import net.kyori.adventure.title.Title;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockType;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.*;
@@ -50,6 +52,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -1611,14 +1614,6 @@ class HazardsManager {
                 //TODO WIP
 
                 IsHazardOver = true; //temp
-                com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-                try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                    editSession.setMask(null);
-                    //editSession.drawLine()
-                } catch (Exception e) {
-                    Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                    e.printStackTrace();
-                }
             }
             case watersprouts -> {
                 //Play sound to indicate this hazard started
@@ -1801,6 +1796,6 @@ class HazardsManager {
                     cancel();
                 }
             }
-        }.runTaskTimer(knockoff.getInstance(), 0, 5);
+        }.runTaskTimer(knockoff.getInstance(), 0, 3);
     }
 }

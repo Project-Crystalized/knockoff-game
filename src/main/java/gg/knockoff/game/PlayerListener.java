@@ -59,15 +59,15 @@ public class PlayerListener implements Listener {
 			player.setFoodLevel(20);
 			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 			player.setGameMode(GameMode.ADVENTURE);
+			player.setExp(0);
+			player.setLevel(0);
 			player.removePotionEffect(PotionEffectType.REGENERATION);
 			player.removePotionEffect(PotionEffectType.HUNGER);
 			player.removePotionEffect(PotionEffectType.RESISTANCE);
 			player.removePotionEffect(PotionEffectType.JUMP_BOOST); // Should remove slime time if you somehow still have it
 			player.removePotionEffect(PotionEffectType.POISON); // Removes Poisonous Bushes' effect
-			player.addPotionEffect(
-					new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
-			player.addPotionEffect(
-					new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
+			player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
 			player.sendPlayerListHeaderAndFooter(
 					// Header
 					text("\n")
@@ -84,14 +84,12 @@ public class PlayerListener implements Listener {
 			ItemStack leavebutton = new ItemStack(Material.COAL, 1);
 			ItemMeta leavebuttonim = leavebutton.getItemMeta();
 			leavebuttonim.setItemModel(new NamespacedKey("crystalized", "ui/leave"));
-			leavebuttonim.displayName(
-					Component.text("Return to lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+			leavebuttonim.displayName(Component.text("Return to lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
 			leavebutton.setItemMeta(leavebuttonim);
 			player.getInventory().setItem(8, leavebutton);
 
 		} else {
-			player
-					.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
+			player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
 		}
 	}
 

@@ -34,6 +34,8 @@ public class PlayerData { //This class probably isn't optimised, but it works so
         new BukkitRunnable() {
             int timer = 0;
             int savedPercent = -1;
+            int timerMoveToSafety = -1;
+
             public void run() {
                 if (percent > 0) {
                     if (savedPercent != percent) {
@@ -58,6 +60,16 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 }
                 if (percent > 300) {
                     percent = 300; //% limit
+                }
+
+                if (MapManager.isInsideDecayingSection(p.getLocation())) {
+                    if (timerMoveToSafety < 0) {
+                        timerMoveToSafety = 4 * 20;
+                        p.playSound(p, "minecraft:block.conduit.ambient", 2, 1);
+                    }
+                    timerMoveToSafety--;
+                } else {
+                    timerMoveToSafety = -1;
                 }
 
                 if (!p.getGameMode().equals(GameMode.SPECTATOR)) {

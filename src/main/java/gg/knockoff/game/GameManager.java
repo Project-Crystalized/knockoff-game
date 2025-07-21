@@ -335,7 +335,6 @@ public class GameManager { //I honestly think this entire class could be optimis
         }.runTaskTimer(knockoff.getInstance(), 0 ,20);
 
         new BukkitRunnable() {
-            int timerMoveToSafety = -1;
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = getPlayerData(p);
@@ -347,19 +346,8 @@ public class GameManager { //I honestly think this entire class could be optimis
                     }
 
                     Location loc = p.getLocation();
-                    if (!(loc.getBlockY() > GameManager.LastSectionPlaceLocationY + MapManager.LastYLength
-                            || loc.getBlockX() > GameManager.LastSectionPlaceLocationX + MapManager.LastXLength
-                            || loc.getBlockX() < GameManager.LastSectionPlaceLocationX
-                            || loc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength
-                            || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ)) {
-                        p.showTitle(Title.title(text("" + getMapArrowToMid(p)), translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(1), Duration.ofSeconds(1), Duration.ofMillis(0))));
-                        if (timerMoveToSafety < 0) {
-                            timerMoveToSafety = 4 * 20;
-                            p.playSound(p, "minecraft:block.conduit.ambient", 2, 1);
-                        }
-                        timerMoveToSafety--;
-                    } else {
-                        timerMoveToSafety = -1;
+                    if (MapManager.isInsideDecayingSection(loc)) {
+                        p.showTitle(Title.title(text("" + getMapArrowToMid(p)), translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0))));
                     }
 
                     //for water sprout hazard

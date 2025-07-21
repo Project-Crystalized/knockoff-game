@@ -98,7 +98,7 @@ public class CrystalBlocks implements Listener {
         Block block = player.getTargetBlock(null ,5);
         if (knockoff.getInstance().GameManager != null) {
             if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                //could be optimised
+                //idk how to make this better
                 if (
                         block.getType().equals(Material.WHITE_GLAZED_TERRACOTTA)
                                 || block.getType().equals(Material.GRAY_GLAZED_TERRACOTTA)
@@ -125,8 +125,6 @@ public class CrystalBlocks implements Listener {
                     }
                 }
             }
-        } else {
-            return;
         }
     }
 

@@ -43,8 +43,7 @@ public final class knockoff extends JavaPlugin {
 
     private int PlayerStartLimit = 4;
     private int configVersion = 0;
-    //TODO plan for a bugfix, change this variable and call new gamemanager with this in the main bukkitrunnable
-    //private GameManager.GameTypes type = gg.knockoff.game.GameManager.GameTypes.StanderedSolos;
+    private GameManager.GameTypes type;
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
@@ -86,14 +85,15 @@ public final class knockoff extends JavaPlugin {
                             //knockoff.getInstance().is_force_starting = true;
                             reloadConfig();
                             if (getConfig().getBoolean("teams.enable")) {
-                                GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.Custom);
+                                type = gg.knockoff.game.GameManager.GameTypes.Custom;
                             } else {
                                 if (Bukkit.getOnlinePlayers().size() > 12) {
-                                    GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedDuos);
+                                    type = gg.knockoff.game.GameManager.GameTypes.StanderedDuos;
                                 } else {
-                                    GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);
+                                    type = gg.knockoff.game.GameManager.GameTypes.StanderedSolos;
                                 }
                             }
+                            is_force_starting = true;
                         } else {
                             ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
                         }
@@ -104,10 +104,11 @@ public final class knockoff extends JavaPlugin {
                             knockoff.getInstance().DevMode = false;
                             reloadConfig();
                             if (getConfig().getBoolean("teams.enable")) {
-                                GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.Custom);
+                                type = gg.knockoff.game.GameManager.GameTypes.Custom;
                             } else {
-                                GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedDuos);
+                                type = gg.knockoff.game.GameManager.GameTypes.StanderedDuos;
                             }
+                            is_force_starting = true;
                         } else {
                             ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
                         }
@@ -221,10 +222,11 @@ public final class knockoff extends JavaPlugin {
                                     Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
                                     p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
                                     if (Bukkit.getOnlinePlayers().size() > 12) {
-                                        GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedDuos);
+                                        type = gg.knockoff.game.GameManager.GameTypes.StanderedDuos;
                                     } else {
-                                        GameManager = new GameManager(gg.knockoff.game.GameManager.GameTypes.StanderedSolos);
+                                        type = gg.knockoff.game.GameManager.GameTypes.StanderedSolos;
                                     }
+                                    GameManager = new GameManager(type);
                                 }
                                 cancel();
                             }

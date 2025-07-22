@@ -1430,7 +1430,7 @@ class HazardsManager {
         HazardList.add(hazards.flyingcars);
         HazardList.add(hazards.poisonbushes);
         HazardList.add(hazards.flooriscrystals);
-        //HazardList.add(hazards.splitmapinhalf);
+        HazardList.add(hazards.splitmapinhalf);
         HazardList.add(hazards.watersprouts);
 
         CarsList.clear();
@@ -1618,24 +1618,47 @@ class HazardsManager {
                 com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
                 try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                     MapData md = knockoff.getInstance().mapdata;
-                    //TODO make rng to say if this goes along X or Z
-                    // also make size based on map size somehow.
+                    int X1;
+                    int X2;
+                    int Z1;
+                    int Z2;
+                    int corruptionSize;
+
+                    switch (knockoff.getInstance().getRandomNumber(1, 10)) {
+                        case 2, 4, 6, 8, 10-> {
+                            corruptionSize = md.CurrentXLength / 8;
+                            X1 = md.getCurrentMiddleXLength() - corruptionSize;
+                            X2 = md.getCurrentMiddleXLength() + corruptionSize;
+                            Z1 = GameManager.SectionPlaceLocationZ;
+                            Z2 = md.getCurrentZLength();
+                        }
+                        default -> {
+                            corruptionSize = md.CurrentZLength / 8;
+                            X1 = GameManager.SectionPlaceLocationX;
+                            X2 = md.getCurrentXLength();
+                            Z1 = md.getCurrentMiddleZLength() - corruptionSize;
+                            Z2 = md.getCurrentMiddleZLength() + corruptionSize;
+                        }
+                    }
                     CuboidRegion region = new CuboidRegion(
                             world,
                             BlockVector3.at(
-                                    md.getCurrentMiddleXLength() - 5,
+                                    X1,
                                     GameManager.SectionPlaceLocationY,
-                                    GameManager.SectionPlaceLocationZ),
+                                    Z1),
                             BlockVector3.at(
-                                    md.getCurrentMiddleXLength() + 5,
+                                    X2,
                                     md.getCurrentYLength(),
-                                    md.getCurrentZLength())
+                                    Z2)
                     );
                     for (BlockVector3 bV3 : region) {
                         Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
                         if (!b.isEmpty()) {
                             blockList.add(b);
                         }
+                    }
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.playSound(p, "minecraft:entity.wither.spawn", 1, 2);
                     }
                 } catch (Exception e) {
                     Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");

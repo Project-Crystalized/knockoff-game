@@ -134,6 +134,7 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("poison_bushes").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.poisonbushes); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("floor_is_crystals").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.flooriscrystals); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("water_sprouts").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.watersprouts); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("map_split_in_half").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.splitmapinhalf); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("moveMap").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
                 Entity p = ctx.getSource().getExecutor();

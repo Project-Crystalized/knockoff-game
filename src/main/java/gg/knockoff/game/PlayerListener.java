@@ -77,7 +77,7 @@ public class PlayerListener implements Listener {
 
 					// Footer
 					text(
-							"\nIf you find any please report to TotallyNoCallum on the Crystalized Discord ")
+							"\nIf you find any bugs please report to TotallyNoCallum on the Crystalized Discord")
 							.append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY)));
 			new QueueScoreBoard(player);
 

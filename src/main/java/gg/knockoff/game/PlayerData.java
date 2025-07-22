@@ -74,7 +74,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
 
                 if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                     //p.sendActionBar(text("" + percent + "% | T:" + timer + " SP:" + savedPercent));
-                    p.sendActionBar(text(percentToFont(percent + "%")));
+                    p.sendActionBar(text(percentToFont(percent + "%"))); //TODO make this coloured somehow
                     float exp = (float) percent / 100;
                     if (exp > 1.0) {
                         exp = 1.0f;

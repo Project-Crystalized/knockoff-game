@@ -1430,6 +1430,7 @@ class HazardsManager {
         HazardList.add(hazards.flyingcars);
         HazardList.add(hazards.poisonbushes);
         HazardList.add(hazards.flooriscrystals);
+        //HazardList.add(hazards.splitmapinhalf);
         HazardList.add(hazards.watersprouts);
 
         CarsList.clear();
@@ -1612,6 +1613,37 @@ class HazardsManager {
             }
             case splitmapinhalf -> {
                 //TODO WIP
+                List<Block> blockList = new ArrayList<>();
+
+                com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+                try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
+                    MapData md = knockoff.getInstance().mapdata;
+                    //TODO make rng to say if this goes along X or Z
+                    // also make size based on map size somehow.
+                    CuboidRegion region = new CuboidRegion(
+                            world,
+                            BlockVector3.at(
+                                    md.getCurrentMiddleXLength() - 5,
+                                    GameManager.SectionPlaceLocationY,
+                                    GameManager.SectionPlaceLocationZ),
+                            BlockVector3.at(
+                                    md.getCurrentMiddleXLength() + 5,
+                                    md.getCurrentYLength(),
+                                    md.getCurrentZLength())
+                    );
+                    for (BlockVector3 bV3 : region) {
+                        Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                        if (!b.isEmpty()) {
+                            blockList.add(b);
+                        }
+                    }
+                } catch (Exception e) {
+                    Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                    e.printStackTrace();
+                }
+                for (Block b : blockList) {
+                    GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(1, 20), knockoff.getInstance().getRandomNumber(13, 20), true);
+                }
 
                 IsHazardOver = true; //temp
             }

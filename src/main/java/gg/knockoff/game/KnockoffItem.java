@@ -102,7 +102,7 @@ public class KnockoffItem {
 
         ItemMeta windchargeim = WindCharge.getItemMeta();
         List<Component> windchargelore = new ArrayList<>();
-        windchargelore.add(text("TODO: Make a string for the wind charge's description").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
+        windchargelore.add(translatable("crystalized.game.knockoff.minidescs.windcharge").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
         windchargeim.lore(windchargelore);
         WindCharge.setAmount(3);
         WindCharge.setItemMeta(windchargeim);

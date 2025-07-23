@@ -38,6 +38,7 @@ import org.bukkit.block.BlockType;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.type.Slab;
 import org.bukkit.entity.*;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -45,13 +46,12 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Level;
 
@@ -968,9 +968,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                             GameManager.SectionPlaceLocationZ
                     ),
                     BlockVector3.at(
-                            GameManager.SectionPlaceLocationX + md.CurrentXLength -1,
-                            GameManager.SectionPlaceLocationY + md.CurrentYLength -1, //Subtracting 1 to prevent a bug where section borders are caught within this
-                            GameManager.SectionPlaceLocationZ + md.CurrentZLength -1
+                            GameManager.SectionPlaceLocationX + md.CurrentXLength,
+                            GameManager.SectionPlaceLocationY + md.CurrentYLength,
+                            GameManager.SectionPlaceLocationZ + md.CurrentZLength
                     )
             );
             for (BlockVector3 bV3 : region) {
@@ -1470,14 +1470,17 @@ class HazardsManager {
             case hazards.slimetime:
                 title(type, GREEN);
                 break;
-            case hazards.flyingcars, hazards.watersprouts:
-                title(type, BLUE);
-                break;
             case hazards.poisonbushes:
                 title(type, DARK_GREEN);
                 break;
             case hazards.flooriscrystals, splitmapinhalf:
                 title(type, LIGHT_PURPLE);
+                break;
+            case hazards.flyingcars, hazards.watersprouts:
+                title(type, BLUE);
+                break;
+            case hazards.train:
+                title(type, GRAY);
                 break;
             default:
                 break;
@@ -1485,7 +1488,7 @@ class HazardsManager {
 
         //If using intellij, would recommend collapsing these case statements by the arrow at the left side of the IDE
         switch (type) {
-            case hazards.tnt -> {
+            case tnt -> {
                 new BukkitRunnable() {
                     int timer = 0;
 
@@ -1501,7 +1504,7 @@ class HazardsManager {
                             }
                             player.playSound(player, "minecraft:entity.tnt.primed", 50, 1);
                         }
-                        if (timer == 3) {
+                        if (timer == 3 || knockoff.getInstance().GameManager == null) {
                             IsHazardOver = true;
                             cancel();
                         }
@@ -1509,7 +1512,7 @@ class HazardsManager {
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 40);
             }
-            case hazards.slimetime -> {
+            case slimetime -> {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 12 * 20, 2, false, false, true));
                     player.playSound(player, "minecraft:block.conduit.activate", 50, 1);
@@ -1530,7 +1533,7 @@ class HazardsManager {
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
             }
-            case hazards.flyingcars -> {
+            case flyingcars -> {
                 new BukkitRunnable() {
                     int timer = 0;
 
@@ -1551,7 +1554,7 @@ class HazardsManager {
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
             }
-            case hazards.poisonbushes -> {
+            case poisonbushes -> {
                 new BukkitRunnable() {
                     int timer = 6;
 
@@ -1565,7 +1568,7 @@ class HazardsManager {
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 2);
             }
-            case hazards.flooriscrystals -> {
+            case flooriscrystals -> {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     player.playSound(player, "minecraft:block.conduit.activate", 50, 1);
                 }
@@ -1673,6 +1676,60 @@ class HazardsManager {
 
                 IsHazardOver = true; //temp
             }
+            case train -> {
+                boolean goZinsteadofX;
+                switch (knockoff.getInstance().getRandomNumber(0, 10)) {
+                    case 0, 2, 4, 6, 8, 10 -> {
+                        goZinsteadofX = false;
+                    }
+                    default -> {
+                        goZinsteadofX = true;
+                    }
+                }
+                //If we want this hazard to be actually effective and not go some random direction nobody is at, we should try to target 1 player
+                List<Player> playerList = new ArrayList<>();
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    playerList.add(p);
+                }
+                Player randomPlayer = playerList.get(knockoff.getInstance().getRandomNumber(0, playerList.size()));
+
+                new BukkitRunnable() {
+                    int timer = 3;
+                    //int Z = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ + 5, knockoff.getInstance().mapdata.getCurrentZLength() - 5);
+                    //int Y = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY + 4, knockoff.getInstance().mapdata.getCurrentYLength() - 10);
+                    double Z = randomPlayer.getZ();
+                    double Y = randomPlayer.getY();
+                    public void run() {
+                        if (goZinsteadofX) {
+                            //Z
+                            Z = randomPlayer.getX();
+                            spawnTrain(
+                                    GameManager.SectionPlaceLocationZ,
+                                    knockoff.getInstance().mapdata.getCurrentZLength(),
+                                    Z,
+                                    Y,
+                                    "models/car/abby_truck", //TODO placeholder model
+                                    true
+                            );
+                        } else {
+                            //X
+                            spawnTrain(
+                                    GameManager.SectionPlaceLocationX,
+                                    knockoff.getInstance().mapdata.getCurrentXLength(),
+                                    Z,
+                                    Y,
+                                    "models/car/abby_truck", //TODO placeholder model
+                                    false
+                            );
+                        }
+
+                        timer--;
+                        if (timer == 0) {
+                            cancel();
+                        }
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 0, 5);
+            }
             case watersprouts -> {
                 //Play sound to indicate this hazard started
                 for (Player p : Bukkit.getOnlinePlayers()) {
@@ -1690,7 +1747,6 @@ class HazardsManager {
                         timer--;
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
-
 
             }
         }
@@ -1855,5 +1911,86 @@ class HazardsManager {
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 3);
+    }
+
+    //bool value; if true will treat startX and endX as Z values and double Z as an X value. for more randomness - Callum
+    private static void spawnTrain(int startX, int endX, double Z, double Y, String itemModel, boolean swapXandZ) {
+        Location loc = new Location(Bukkit.getWorld("world"),
+                startX,
+                Y,
+                Z,
+                -90, 0
+        );
+        if (swapXandZ) {
+            loc = new Location(loc.getWorld(), Z, Y, startX, 0, 0);
+        }
+        ArmorStand train = loc.getWorld().spawn(loc, ArmorStand.class, entity -> {
+            ItemStack item = new ItemStack(Material.CHARCOAL);
+            ItemMeta meta = item.getItemMeta();
+            meta.setItemModel(new NamespacedKey("crystalized", itemModel));
+            item.setItemMeta(meta);
+            entity.setItem(EquipmentSlot.HEAD, item);
+            entity.addDisabledSlots(EquipmentSlot.HEAD);
+            entity.addDisabledSlots(EquipmentSlot.HAND);
+            entity.addDisabledSlots(EquipmentSlot.OFF_HAND);
+            entity.setInvisible(true);
+            entity.setInvulnerable(true);
+            entity.setGlowing(true);
+        });
+        BoundingBox hitbox = train.getBoundingBox();
+        hitbox.resize(4, 4, 4, -4, -4, -4);
+        new BukkitRunnable() {
+            public void run() {
+                if (knockoff.getInstance().GameManager == null ||
+                        ( (!swapXandZ && train.getLocation().getX() > endX) || (swapXandZ && train.getLocation().getZ() > endX) )
+                ) {
+                    train.remove();
+                    cancel();
+                }
+                if (swapXandZ) {
+                    train.setVelocity(new Vector(0, 0.2, 0.8));
+                } else {
+                    train.setVelocity(new Vector(0.8, 0.2, 0));
+                }
+
+
+                //player knockback
+                for (Entity e : train.getNearbyEntities(4, 4, 4)) {
+                    if (e instanceof Player p) {
+                        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                        p.setVelocity(new Vector(0.5, 3, 0));
+                        pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(40, 60);
+                    }
+                }
+
+                for (Block b : getNearbyBlocks(train.getLocation(), 5, 5, 5)) {
+                    if (!b.isEmpty()) {
+                        b.breakNaturally(true);
+                    }
+                }
+            }
+
+            //this is dumb, dont have a better way of doing this. might be unsafe also
+            Set<Block> getNearbyBlocks(Location center, int x, int y, int z) {
+                Set<Block> list = new HashSet<>();
+                Location loc = center.subtract(x/2, y/2, z/2);
+                int X = x;
+                while (X != 0) {
+                    int Y = y;
+                    while (Y != 0) {
+                        int Z = z;
+                        while (Z != 0) {
+                            list.add(loc.clone().add(X, Y, Z).getBlock());
+                            Z--;
+                        }
+                        Y--;
+                    }
+                    X--;
+                }
+
+                return list;
+            }
+
+        }.runTaskTimer(knockoff.getInstance(), 1, 5);
     }
 }

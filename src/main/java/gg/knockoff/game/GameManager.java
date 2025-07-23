@@ -1623,21 +1623,24 @@ class HazardsManager {
                     int Z1;
                     int Z2;
                     int corruptionSize;
+                    int offset = knockoff.getInstance().getRandomNumber(-5, 5);
 
                     switch (knockoff.getInstance().getRandomNumber(1, 10)) {
                         case 2, 4, 6, 8, 10-> {
-                            corruptionSize = md.CurrentXLength / 8;
-                            X1 = md.getCurrentMiddleXLength() - corruptionSize;
-                            X2 = md.getCurrentMiddleXLength() + corruptionSize;
+                            //X axis
+                            corruptionSize = 4; //md.CurrentXLength / 8;
+                            X1 = md.getCurrentMiddleXLength() - corruptionSize + offset;
+                            X2 = md.getCurrentMiddleXLength() + corruptionSize + offset;
                             Z1 = GameManager.SectionPlaceLocationZ;
                             Z2 = md.getCurrentZLength();
                         }
                         default -> {
-                            corruptionSize = md.CurrentZLength / 8;
+                            //Z axis
+                            corruptionSize = 4; //md.CurrentZLength / 8;
                             X1 = GameManager.SectionPlaceLocationX;
                             X2 = md.getCurrentXLength();
-                            Z1 = md.getCurrentMiddleZLength() - corruptionSize;
-                            Z2 = md.getCurrentMiddleZLength() + corruptionSize;
+                            Z1 = md.getCurrentMiddleZLength() - corruptionSize + offset;
+                            Z2 = md.getCurrentMiddleZLength() + corruptionSize + offset;
                         }
                     }
                     CuboidRegion region = new CuboidRegion(
@@ -1665,7 +1668,7 @@ class HazardsManager {
                     e.printStackTrace();
                 }
                 for (Block b : blockList) {
-                    GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(1, 20), knockoff.getInstance().getRandomNumber(13, 20), true);
+                    GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(1, 18), knockoff.getInstance().getRandomNumber(13, 20), true);
                 }
 
                 IsHazardOver = true; //temp

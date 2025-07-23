@@ -330,7 +330,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                                 SpawnRandomPowerup(null);
                                 cancel();
                             }
-                        }.runTaskTimer(knockoff.getInstance(), 2, 1);
+                        }.runTaskTimer(knockoff.getInstance(), 5, 1);
 
                     }
                 }
@@ -1251,11 +1251,13 @@ class MapManager {
         }
         if (!knockoff.getInstance().DevMode) {
             //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this
-            String a = sectionJson.get("remove_block").getAsString();
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.SectionPlaceLocationX + "," + GameManager.SectionPlaceLocationY + "," + GameManager.SectionPlaceLocationZ);
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
-            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
+            Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
+                String a = sectionJson.get("remove_block").getAsString();
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.SectionPlaceLocationX + "," + GameManager.SectionPlaceLocationY + "," + GameManager.SectionPlaceLocationZ);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
+            }, 2);
         }
     }
 

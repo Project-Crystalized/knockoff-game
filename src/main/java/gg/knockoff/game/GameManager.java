@@ -1957,6 +1957,7 @@ class HazardsManager {
         BoundingBox hitbox = train.getBoundingBox();
         hitbox.resize(4, 4, 4, -4, -4, -4);
         new BukkitRunnable() {
+            int soundTimer = 0;
             public void run() {
                 if (knockoff.getInstance().GameManager == null ||
                         ( (!swapXandZ && train.getLocation().getX() > endX) || (swapXandZ && train.getLocation().getZ() > endX) )
@@ -1970,6 +1971,15 @@ class HazardsManager {
                     train.setVelocity(new Vector(0.8, 0.2, 0));
                 }
 
+                //Minecart rail sound effect
+                if (soundTimer < 0) {
+                    soundTimer = 2 * 4;
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.playSound(train, "minecraft:entity.minecart.riding", 2, 1);
+                    }
+                }
+                soundTimer--;
+
 
                 //player knockback
                 for (Entity e : train.getNearbyEntities(4, 4, 4)) {
@@ -1980,6 +1990,7 @@ class HazardsManager {
                     }
                 }
 
+                //block destrution
                 for (Block b : getNearbyBlocks(train.getLocation(), 5, 5, 5)) {
                     if (!b.isEmpty()) {
                         b.breakNaturally(true);

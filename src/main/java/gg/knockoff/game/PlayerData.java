@@ -1,13 +1,17 @@
 package gg.knockoff.game;
 
+import com.destroystokyo.paper.ParticleBuilder;
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.GameMode;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Comparator;
 
 import static net.kyori.adventure.text.Component.text;
+import static org.bukkit.Particle.DUST;
 
 public class PlayerData { //This class probably isn't optimised, but it works so who cares
 
@@ -35,8 +39,10 @@ public class PlayerData { //This class probably isn't optimised, but it works so
             int timer = 0;
             int savedPercent = -1;
             int timerMoveToSafety = -1;
+            int timerOver100Particles = -1;
 
             public void run() {
+                //percent shit
                 if (percent > 0) {
                     if (savedPercent != percent) {
                         savedPercent = percent;
@@ -62,6 +68,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                     percent = 300; //% limit
                 }
 
+                //move to safety conduit sound loop
                 if (MapManager.isInsideDecayingSection(p.getLocation())) {
                     if (timerMoveToSafety < 0) {
                         timerMoveToSafety = 4 * 20;
@@ -72,6 +79,26 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                     timerMoveToSafety = -1;
                 }
 
+                //Particles when over 100%
+                if (percent > 99) {
+                    if (timerOver100Particles < 0) {
+                        timerOver100Particles = 4;
+                    }
+                    if (timerOver100Particles == 0) {
+                        //Performance might be ass on bedrock because of this, cant do shit about it
+                        ParticleBuilder builder = new ParticleBuilder(DUST);
+                        builder.color(Color.GRAY);
+                        builder.location(p.getLocation());
+                        builder.count(percent / 3);
+                        builder.offset(0.25, 0.25, 0.25);
+                        builder.spawn();
+                    }
+                    timerOver100Particles--;
+                } else {
+                    timerOver100Particles = -1;
+                }
+
+                //percent on actionbar
                 if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                     //p.sendActionBar(text("" + percent + "% | T:" + timer + " SP:" + savedPercent));
                     p.sendActionBar(text(percentToFont(percent + "%"))); //TODO make this coloured somehow

@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import org.bukkit.Bukkit;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Entity;
@@ -60,12 +61,19 @@ public class DamagePercentage implements Listener {
 
         float addedVelocity = (float) ppd.percent / 24;
         p.setVelocity(d.getLocation().getDirection().multiply(new Vector(addedVelocity, 0.2, addedVelocity)));
+        if (ppd.percent > 200) {
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.playSound(p.getLocation(), "minecraft:entity.generic.explode", 1, 1);
+            }
+        }
 
         if (e.isCritical()) {
             ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(5, 7);
         } else {
             ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(3, 6);
         }
+
+
 
 
 

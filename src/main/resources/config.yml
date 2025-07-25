@@ -26,14 +26,18 @@ tourneys:
     # When true, enables the below options to work.
     enable: false
 
-    # When true, allows for Spectators (with op) to use "/Knockoff spawn" to spawn powerups anytime during the game.
+    # When true, allows for Spectators (with op) to use "/Knockoff spawn_powerup" to spawn powerups anytime during the game.
     manual_powerup_spawning: false
     
-    # When true, allows for Spectators (with op) to use "/Knockoff hazard" to spawn hazards anytime during the game.
+    # When true, allows for Spectators (with op) to use "/Knockoff spawn_hazard" to spawn hazards anytime during the game.
     manual_hazard_control: false
     
-    # When true, allows for Spectators (with op) to use "/Knockoff MapChange" to manually start the map decaying anytime during the game.
+    # When true, allows for Spectators (with op) to use "/Knockoff moveMap" to manually start the map decaying anytime during the game.
+    # NOTE: There is a cooldown of 30 * 20 ticks to prevent bugs
     manual_map_movement: false
+
+    # When true, does what it says on the tin.
+    disable_auto_countdown: false
 
 other:
     # Was a bug during development, now turned into an optional feature!
@@ -48,4 +52,4 @@ other:
 
 
 # Don't change this
-version: 2
+version: 3

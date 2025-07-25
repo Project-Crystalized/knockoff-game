@@ -61,9 +61,9 @@ public final class knockoff extends JavaPlugin {
         Bukkit.getWorld("world").setGameRule(GameRule.LOCATOR_BAR, false);
 
         saveResource("config.yml", false);
-        if (getConfig().getInt("version") != 2) {
+        if (getConfig().getInt("version") != 3) {
             configVersion = getConfig().getInt("version");
-            getLogger().log(Level.SEVERE, "Invalid Version, Please update your config. Expecting 2 but found " + configVersion + ". You may experience fatal issues.");
+            getLogger().log(Level.SEVERE, "Invalid Version, Please update your config. Expecting 3 but found " + configVersion + ". You may experience fatal issues.");
         }
 
         //This is weird
@@ -247,7 +247,7 @@ public final class knockoff extends JavaPlugin {
                 } else {
                     if (!GameCountdownStarted) {
                         if ((Bukkit.getOnlinePlayers().size() > PlayerStartLimit || Bukkit.getOnlinePlayers().size() == PlayerStartLimit)
-                                && (!getConfig().getBoolean("teams.enable") || !getConfig().getBoolean("tourneys.enable"))) {
+                                && (!getConfig().getBoolean("tourneys.disable_auto_countdown") && !getConfig().getBoolean("tourneys.enable"))) {
                             GameCountdown();
                         }
                     } else if (Bukkit.getOnlinePlayers().size() < PlayerStartLimit) {

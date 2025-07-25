@@ -1407,6 +1407,7 @@ class KnockoffProtocolLib {
     }
 }
 
+//Dumb thought, is it a good idea to make all these hazards a seperate class of its own? - Callum 25/07/2025
 class HazardsManager {
 
     public static final List<hazards> HazardList = new ArrayList<>();
@@ -1433,6 +1434,7 @@ class HazardsManager {
         HazardList.add(hazards.poisonbushes);
         HazardList.add(hazards.flooriscrystals);
         HazardList.add(hazards.splitmapinhalf);
+        HazardList.add(hazards.train);
         HazardList.add(hazards.watersprouts);
 
         CarsList.clear();
@@ -1691,36 +1693,49 @@ class HazardsManager {
                 //If we want this hazard to be actually effective and not go some random direction nobody is at, we should try to target 1 player
                 List<Player> playerList = new ArrayList<>();
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    playerList.add(p);
+                    if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                        playerList.add(p);
+                    }
+                    p.playSound(p, "minecraft:entity.elder_guardian.curse", 1, 1); //TODO temporary sound effect, replace with train horn or smth
                 }
                 Player randomPlayer = playerList.get(knockoff.getInstance().getRandomNumber(0, playerList.size()));
+                if (randomPlayer == null) {
+                    return; //90% of times this shouldn't happen, but this might be the case if everyone is dead and respawning.
+                }
 
                 new BukkitRunnable() {
                     int timer = 3;
-                    //int Z = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ + 5, knockoff.getInstance().mapdata.getCurrentZLength() - 5);
-                    //int Y = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY + 4, knockoff.getInstance().mapdata.getCurrentYLength() - 10);
-                    double Z = randomPlayer.getZ();
-                    double Y = randomPlayer.getY();
+                    double Z = randomPlayer.getLocation().clone().getZ();
+                    double Y = randomPlayer.getLocation().clone().getY();
+                    double X = randomPlayer.getLocation().clone().getX();
+                    String model = "";
+
                     public void run() {
+                        if (timer == 3) {
+                            model = "models/train/train_main";
+                        } else {
+                            model = "models/train/train_carrage_passenger";
+                        }
+
                         if (goZinsteadofX) {
                             //Z
-                            Z = randomPlayer.getX();
+                            Z = X;
                             spawnTrain(
-                                    GameManager.SectionPlaceLocationZ,
-                                    knockoff.getInstance().mapdata.getCurrentZLength(),
+                                    GameManager.SectionPlaceLocationZ - 5,
+                                    knockoff.getInstance().mapdata.getCurrentZLength() + 5,
                                     Z,
                                     Y,
-                                    "models/car/abby_truck", //TODO placeholder model
+                                    model,
                                     true
                             );
                         } else {
                             //X
                             spawnTrain(
-                                    GameManager.SectionPlaceLocationX,
-                                    knockoff.getInstance().mapdata.getCurrentXLength(),
+                                    GameManager.SectionPlaceLocationX - 5,
+                                    knockoff.getInstance().mapdata.getCurrentXLength() + 5,
                                     Z,
                                     Y,
-                                    "models/car/abby_truck", //TODO placeholder model
+                                    model,
                                     false
                             );
                         }
@@ -1730,7 +1745,7 @@ class HazardsManager {
                             cancel();
                         }
                     }
-                }.runTaskTimer(knockoff.getInstance(), 0, 5);
+                }.runTaskTimer(knockoff.getInstance(), 0, 9);
             }
             case watersprouts -> {
                 //Play sound to indicate this hazard started
@@ -1960,7 +1975,7 @@ class HazardsManager {
                 for (Entity e : train.getNearbyEntities(4, 4, 4)) {
                     if (e instanceof Player p) {
                         PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-                        p.setVelocity(new Vector(0.5, 3, 0));
+                        p.setVelocity(new Vector(0.5, 2, 0));
                         pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(40, 60);
                     }
                 }
@@ -1968,6 +1983,9 @@ class HazardsManager {
                 for (Block b : getNearbyBlocks(train.getLocation(), 5, 5, 5)) {
                     if (!b.isEmpty()) {
                         b.breakNaturally(true);
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(b.getLocation(), "minecraft:entity.generic.explode", 1, 1);
+                        }
                     }
                 }
             }

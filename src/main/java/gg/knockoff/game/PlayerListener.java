@@ -130,7 +130,7 @@ public class PlayerListener implements Listener {
 					Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
 			attacker.playSound(attacker, "crystalized:effect.ally_kill", 50, 1);
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				p.playSound(p, "minecraft:block.anvil.place", 0.5F, 0.5f);
+				//p.playSound(p, "minecraft:block.anvil.place", 0.5F, 0.5f); //commented out since this is kinda annoying - Callum
 				p.playSound(player.getLocation(), "minecraft:entity.firework_rocket.blast_far", 4, 1); //TODO make actual firework
 			}
 		}
@@ -202,6 +202,7 @@ public class PlayerListener implements Listener {
 						"You're eliminated from the game but you have somehow died again. and/or your lives is measured in negative numbers! Please report this bug to the Crystalized devs.")
 						.color(NamedTextColor.RED));
 			}
+			player.playSound(player, "crystalized:effect.kill_streak_5", 1, 1);
 			Bukkit.getServer().sendMessage(text("[")
 					.append(Component.text("\uE103").color(NamedTextColor.RED))
 					.append(Component.text("] "))

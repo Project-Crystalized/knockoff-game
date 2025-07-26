@@ -49,9 +49,9 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+		event.joinMessage(Component.text(""));
 
 		if (knockoff.getInstance().GameManager == null) {
-			event.joinMessage(Component.text(""));
 			player.teleport(knockoff.getInstance().mapdata.get_que_spawn(player.getWorld()));
 			player.getInventory().clear();
 			player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
@@ -90,13 +90,6 @@ public class PlayerListener implements Listener {
 
 		} else {
 			player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
-		}
-	}
-
-	@EventHandler
-	public void onPlayerLogin(PlayerLoginEvent event) {
-		if (knockoff.getInstance().GameManager != null) {
-			event.disallow(PlayerLoginEvent.Result.KICK_OTHER, text("A game is already in Progress.\n"));
 		}
 	}
 

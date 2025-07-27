@@ -138,6 +138,17 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("map_split_in_half").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.splitmapinhalf); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("train").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.train); return Command.SINGLE_SUCCESS;}))
             );
+            command.then(Commands.literal("force_showdown").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
+                if (knockoff.getInstance().GameManager == null) {
+                    ctx.getSource().getSender().sendMessage(text("[!] This cant be used in the waiting lobby."));
+                    return Command.SINGLE_SUCCESS;
+                }
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.sendMessage(text("[!] An Admin has forced Showdown to begin!"));
+                }
+                knockoff.getInstance().GameManager.startShowdown();
+                return Command.SINGLE_SUCCESS;
+            }));
             command.then(Commands.literal("moveMap").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
                 Entity p = ctx.getSource().getExecutor();
                 if (knockoff.getInstance().GameManager == null) {

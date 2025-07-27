@@ -306,6 +306,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                     startShowdown();
                     cancel();
                 }
+                if (showdownModeStarted) {
+                    cancel();
+                }
 
                 if (RoundCounter == 7 && GameManager.GameState.equals("game") && !showdownModeStarted) {
                     decideMapDirection(); //TODO spawn particles

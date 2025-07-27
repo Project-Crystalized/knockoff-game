@@ -303,16 +303,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     }
                 }
                 if (TeamStatus.getAliveTeams().size() == 2 && showdownModeEnabled) {
-                    showdownModeStarted = true;
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        p.showTitle(Title.title(
-                                text("SHOWDOWN").color(WHITE).decoration(TextDecoration.BOLD, true), //TODO make this translatable
-                                translatable("HAS BEGUN!").color(WHITE).decoration(TextDecoration.BOLD, true),
-                                Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(4), Duration.ofSeconds(1)))
-                        );
-                        p.playSound(p, "minecraft:entity.lightning_bolt.thunder", 1, 1);
-                    }
-                    showdownCrystallizeMap();
+                    startShowdown();
                     cancel();
                 }
 
@@ -956,6 +947,27 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static List<Block> showdownBlockList = new ArrayList<>();
+
+    public static void startShowdown() {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+            if (pd.lives > 1) {
+                pd.lives = 1;
+                p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED)); //TODO translatable
+                p.playSound(p, "minecraft:block.note_block.pling", 1, 0.5f);
+            }
+        }
+        showdownModeStarted = true;
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.showTitle(Title.title(
+                    text("SHOWDOWN").color(WHITE).decoration(TextDecoration.BOLD, true), //TODO make this translatable
+                    translatable("HAS BEGUN!").color(WHITE).decoration(TextDecoration.BOLD, true),
+                    Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(4), Duration.ofSeconds(1)))
+            );
+            p.playSound(p, "minecraft:entity.lightning_bolt.thunder", 1, 1);
+        }
+        showdownCrystallizeMap();
+    }
 
     private static void showdownCrystallizeMap() {
         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));

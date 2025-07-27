@@ -366,7 +366,7 @@ public class PlayerListener implements Listener {
 
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
 		if (pd.lives == 1) {
-			p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED));
+			p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED)); //TODO translatable
 			p.playSound(p, "minecraft:block.note_block.pling", 1, 0.5f);
 		}
 

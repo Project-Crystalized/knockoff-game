@@ -31,6 +31,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.time.Duration;
 import java.util.ArrayList;
@@ -38,6 +39,7 @@ import java.util.List;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.translatable;
 
 public class PlayerListener implements Listener {
 
@@ -49,6 +51,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+		FloodgateApi floodgateapi = FloodgateApi.getInstance();
 		event.joinMessage(Component.text(""));
 
 		if (knockoff.getInstance().GameManager == null) {
@@ -88,6 +91,23 @@ public class PlayerListener implements Listener {
 			leavebutton.setItemMeta(leavebuttonim);
 			player.getInventory().setItem(8, leavebutton);
 
+			if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
+				player.sendMessage(text("-".repeat(40)));
+			} else {
+				player.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+			}
+			player.sendMessage(
+					text("\n")
+							.append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD).append(text(" \uE12E").color(NamedTextColor.WHITE)))
+							.append(text("\nKnock enemies into the void until they run out of lives, but be careful, you must avoid hazards along the way.").color(NamedTextColor.GRAY)) //TODO make this translatable
+							.append(text("\n"))
+			);
+			if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
+				player.sendMessage(text("-".repeat(40)));
+			} else {
+				player.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+			}
+
 		} else {
 			player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
 		}
@@ -103,18 +123,18 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
 		event.setCancelled(true);
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) { //If the player was already in spectator, we do nothing to prevent dying while already dead
+		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
 		player.setGameMode(GameMode.SPECTATOR);
 		if (player.getKiller() == null) {
 			Bukkit.getServer().sendMessage(text("[\uE103] ")
 					.append(player.displayName())
-					.append(Component.translatable("crystalized.game.knockoff.chat.deathgeneric")));
+					.append(translatable("crystalized.game.knockoff.chat.deathgeneric")));
 		} else {
 			Bukkit.getServer().sendMessage(text("[\uE103] ")
 					.append(player.displayName())
-					.append(Component.translatable("crystalized.game.knockoff.chat.deathknockoff"))
+					.append(translatable("crystalized.game.knockoff.chat.deathknockoff"))
 					.append(player.getKiller().displayName()));
 			Player attacker = player.getKiller();
 			PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
@@ -156,9 +176,9 @@ public class PlayerListener implements Listener {
 
 			new BukkitRunnable() {
 				public void run() {
-					player.sendActionBar(Component.translatable("crystalized.game.knockoff.respawn1")
+					player.sendActionBar(translatable("crystalized.game.knockoff.respawn1")
 							.append(Component.text(pd.getDeathtimer()))
-							.append(Component.translatable("crystalized.game.knockoff.respawn2")));
+							.append(translatable("crystalized.game.knockoff.respawn2")));
 					switch (pd.getDeathtimer()) {
 						case 3 -> {
 							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 1);
@@ -200,7 +220,7 @@ public class PlayerListener implements Listener {
 					.append(Component.text("\uE103").color(NamedTextColor.RED))
 					.append(Component.text("] "))
 					.append(player.displayName())
-					.append(Component.translatable("crystalized.game.knockoff.chat.eliminated")));
+					.append(translatable("crystalized.game.knockoff.chat.eliminated")));
 			pd.isPlayerDead = true;
 			pd.isEliminated = true;
 		}
@@ -381,7 +401,7 @@ public class PlayerListener implements Listener {
 		List<Component> component = new ArrayList<>();
 		component.add(player.displayName());
 		Bukkit.getServer().sendMessage(Component.text("[!] ")
-				.append(Component.translatable("crystalized.game.knockoff.chat.pickedup", component))
+				.append(translatable("crystalized.game.knockoff.chat.pickedup", component))
 				.append(event.getItem().getItemStack().effectiveName()));
 	}
 

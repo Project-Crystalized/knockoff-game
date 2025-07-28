@@ -6,6 +6,7 @@ group = "gg.knockoff.game"
 version = "1.0.0"
 
 repositories {
+    mavenLocal()
     mavenCentral()
     maven {
         name = "papermc"
@@ -30,6 +31,7 @@ dependencies {
     compileOnly("org.geysermc.floodgate:api:2.2.3-SNAPSHOT")
     compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
     implementation("org.xerial:sqlite-jdbc:3.47.0.0");
+    implementation("gg.crystalized.lobby:Lobby_plugin:1.0-SNAPSHOT")
 }
 
 java {

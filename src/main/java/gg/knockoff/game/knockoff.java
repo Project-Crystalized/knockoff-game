@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolManager;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
+import gg.crystalized.lobby.Lobby_plugin;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -59,6 +60,11 @@ public final class knockoff extends JavaPlugin {
         Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
         Bukkit.getWorld("world").setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
         Bukkit.getWorld("world").setGameRule(GameRule.LOCATOR_BAR, false);
+
+        if (!Lobby_plugin.getInstance().passive_mode) {
+            getLogger().log(Level.SEVERE, "Please enable passive mode in the Lobby Plugin's Config. Knockoff will disable to prevent exceptions and bugs.");
+            Bukkit.getPluginManager().disablePlugin(this);
+        }
 
         saveResource("config.yml", false);
         if (getConfig().getInt("version") != 3) {

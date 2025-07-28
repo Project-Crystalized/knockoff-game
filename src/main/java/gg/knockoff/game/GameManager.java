@@ -1324,46 +1324,46 @@ class TabMenu {
                     if (pd.isEliminated) {
                         StatsPlayerList = text("")
                                 .append(StatsPlayerList)
-                                .append(text("\n \uE139 "))
-                                .append(player.displayName().color(DARK_GRAY).decoration(TextDecoration.STRIKETHROUGH, true))
-                                .append(text(" \uE101 ")
-                                .append(text(pd.getKills()))
-                                .append(text(" \uE103 "))
-                                .append(text(pd.getDeaths()))
-                            );
+                                .append(text("\n \uE139 ")
+                        );
                     } else {
                         StatsPlayerList = text("")
                                 .append(StatsPlayerList)
-                                .append(text("\n " + getDeathTimerIcon(player) + " "))
-                                .append(player.displayName())
-                                .append(text(" \uE101 ")
-                                .append(text(pd.getKills()))
-                                .append(text(" \uE103 "))
-                                .append(text(pd.getDeaths()))
-                            );
+                                .append(text("\n " + getDeathTimerIcon(player) + " ")
+                        );
                     }
                 } else {
                     StatsPlayerList = text("")
                             .append(StatsPlayerList)
-                            .append(text("\n \uE138 "))
-                            .append(player.displayName())
-                            .append(text(" \uE101 ")
-                            .append(text(pd.getKills()))
-                            .append(text(" \uE103 "))
-                            .append(text(pd.getDeaths()))
+                            .append(text("\n \uE138 ")
                     );
                 }
             } else {
                 StatsPlayerList = text("")
                         .append(StatsPlayerList)
-                        .append(text("\n [Disconnected] "))
-                        .append(player.displayName())
-                        .append(text(" \uE101 ")
-                        .append(text(pd.getKills()))
-                        .append(text(" \uE103 "))
-                        .append(text(pd.getDeaths()))
-                    );
+                        .append(text("\n [Disconnected] ")
+                );
             }
+
+            if (!pd.cachedRankIcon_full.equals(text(""))) {
+                StatsPlayerList = StatsPlayerList
+                        .append(pd.cachedRankIcon_full).append(text(" "));
+            }
+
+            if (pd.isEliminated) {
+                StatsPlayerList = StatsPlayerList
+                        .append(player.displayName().color(DARK_GRAY).decoration(TextDecoration.STRIKETHROUGH, true));
+            } else {
+                StatsPlayerList = StatsPlayerList
+                        .append(player.displayName());
+            }
+
+            StatsPlayerList = StatsPlayerList
+                    .append(text(" \uE101 "))
+                    .append(text(pd.getKills()))
+                    .append(text(" \uE103 "))
+                    .append(text(pd.getDeaths()));
+
         }
 
 

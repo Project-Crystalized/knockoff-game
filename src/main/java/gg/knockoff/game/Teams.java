@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
@@ -708,7 +709,14 @@ class CustomPlayerNametags {
 					if (pd.isPlayerDead) {
 						displayfront.text(text(""));
 					} else {
-						displayfront.text(text("")
+						Component rankDisplay;
+						if (pd.cachedRankIcon_full.equals(text(""))) {
+							rankDisplay = text("");
+						} else {
+							rankDisplay = pd.cachedRankIcon_full.append(text("\n"));
+						}
+
+						displayfront.text(rankDisplay
 								.append(player.displayName())
 								.append(text("\nKB: "))
 								.append(text(pd.percent))

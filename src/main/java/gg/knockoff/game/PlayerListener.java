@@ -2,6 +2,7 @@ package gg.knockoff.game;
 
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import gg.crystalized.lobby.Lobby_plugin;
+import gg.crystalized.lobby.Ranks;
 import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -130,10 +131,14 @@ public class PlayerListener implements Listener {
 		player.setGameMode(GameMode.SPECTATOR);
 		if (player.getKiller() == null) {
 			Bukkit.getServer().sendMessage(text("[\uE103] ")
+					.append(pd.cachedRankIcon_small)
+					.append(text(" "))
 					.append(player.displayName())
 					.append(translatable("crystalized.game.knockoff.chat.deathgeneric")));
 		} else {
 			Bukkit.getServer().sendMessage(text("[\uE103] ")
+					.append(pd.cachedRankIcon_small)
+					.append(text(" "))
 					.append(player.displayName())
 					.append(translatable("crystalized.game.knockoff.chat.deathknockoff"))
 					.append(player.getKiller().displayName()));
@@ -220,6 +225,8 @@ public class PlayerListener implements Listener {
 			Bukkit.getServer().sendMessage(text("[")
 					.append(Component.text("\uE103").color(NamedTextColor.RED))
 					.append(Component.text("] "))
+					.append(pd.cachedRankIcon_small)
+					.append(text(" "))
 					.append(player.displayName())
 					.append(translatable("crystalized.game.knockoff.chat.eliminated")));
 			pd.isPlayerDead = true;
@@ -229,12 +236,21 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onChat(AsyncChatEvent event) {
-		Player player = event.getPlayer();
+		Player p = event.getPlayer();
 		event.setCancelled(true);
-		Bukkit.getServer().sendMessage(Component.text("")
-				.append(player.displayName())
-				.append(Component.text(": "))
-				.append(event.message()));
+		//this is dumb
+		if (knockoff.getInstance().GameManager == null) {
+			Bukkit.getServer().sendMessage(Ranks.getName(Bukkit.getOfflinePlayer(p.getName()))
+					.append(Component.text(": "))
+					.append(event.message()));
+		} else {
+			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+			Bukkit.getServer().sendMessage(pd.cachedRankIcon_small
+					.append(text(" "))
+					.append(p.displayName())
+					.append(Component.text(": "))
+					.append(event.message()));
+		}
 	}
 
 	private static void tpPlayersBack(Player p) {
@@ -400,7 +416,11 @@ public class PlayerListener implements Listener {
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
 		pd.powerupscollected++;
 		List<Component> component = new ArrayList<>();
-		component.add(player.displayName());
+		if (pd.cachedRankIcon_full.equals(text(""))) {
+			component.add(player.displayName());
+		} else {
+			component.add(pd.cachedRankIcon_small.append(text(" ")).append(player.displayName()));
+		}
 		Bukkit.getServer().sendMessage(Component.text("[!] ")
 				.append(translatable("crystalized.game.knockoff.chat.pickedup", component))
 				.append(event.getItem().getItemStack().effectiveName()));

@@ -1,6 +1,9 @@
 package gg.knockoff.game;
 
 import com.destroystokyo.paper.ParticleBuilder;
+import gg.crystalized.lobby.Lobby_plugin;
+import gg.crystalized.lobby.Ranks;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -16,6 +19,8 @@ import static org.bukkit.Particle.DUST;
 public class PlayerData { //This class probably isn't optimised, but it works so who cares
 
     public String player;
+    public Component cachedRankIcon_small = text("?");
+    public Component cachedRankIcon_full = text("rank");
     public boolean isPlayerDead = false;
     public boolean isEliminated = false;
     public int lives = 5;
@@ -34,6 +39,8 @@ public class PlayerData { //This class probably isn't optimised, but it works so
 
     public PlayerData(Player p) {
         player = p.getName();
+        cachedRankIcon_small = Ranks.getIcon(Bukkit.getOfflinePlayer(player));
+        cachedRankIcon_full = Ranks.getRankWithName(p);
 
         new BukkitRunnable() {
             int timer = 0;

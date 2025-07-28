@@ -71,13 +71,13 @@ public class CrystalBlocks implements Listener {
                 case "block/nexus/blue", "block/nexus/lime", "block/nexus/purple", "block/nexus/weak" -> {
                     dir.setFacing(BlockFace.EAST);
                 }
-                case "block/nexus/cyan", "block/nexus/magenta", "block/nexus/white", "block/nexus/strong" -> {
+                case "block/nexus/cyan", "block/nexus/magenta", "block/nexus/red", "block/nexus/strong" -> {
                     dir.setFacing(BlockFace.NORTH);
                 }
-                case "block/nexus/green", "block/nexus/orange", "block/nexus/yellow" -> {
+                case "block/nexus/green", "block/nexus/orange", "block/nexus/white" -> {
                     dir.setFacing(BlockFace.SOUTH);
                 }
-                case "block/nexus/lemon", "block/nexus/peach", "block/nexus/red" -> {
+                case "block/nexus/lemon", "block/nexus/peach", "block/nexus/yellow" -> {
                     dir.setFacing(BlockFace.WEST);
                 }
             }

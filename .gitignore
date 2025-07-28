@@ -4,7 +4,7 @@ todo
 ## Gradle
 ##############################
 bin/
-build/
+../../crystalized/knockoff-game/build/
 .gradle
 .gradletasknamecache
 gradle-app.setting

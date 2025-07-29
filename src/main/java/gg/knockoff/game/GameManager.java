@@ -345,7 +345,12 @@ public class GameManager { //I honestly think this entire class could be optimis
 
                     Location loc = p.getLocation();
                     if (MapManager.isInsideDecayingSection(loc)) {
-                        p.showTitle(Title.title(text("" + getMapArrowToMid(p)), translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0))));
+                        p.showTitle(Title.title(
+                                text(" "),
+                                //translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED),
+                                text(getMapArrowToMid(p) + " ").append(translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED)).append(text(" " + getMapArrowToMid(p))),
+                                Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofMillis(0)))
+                        );
                     }
 
                     //for water sprout hazard

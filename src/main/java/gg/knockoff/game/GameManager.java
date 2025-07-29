@@ -31,6 +31,7 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.util.TriState;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -1711,7 +1712,7 @@ class HazardsManager {
                     if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                         playerList.add(p);
                     }
-                    p.playSound(p, "minecraft:entity.elder_guardian.curse", 1, 1); //TODO temporary sound effect, replace with train horn or smth
+                    p.playSound(p, "crystalized:effect.ambient.train_horn", 1, 1);
                 }
                 Player randomPlayer = playerList.get(knockoff.getInstance().getRandomNumber(0, playerList.size()));
                 if (randomPlayer == null) {
@@ -1854,16 +1855,21 @@ class HazardsManager {
         Fireball ball = tempentity.launchProjectile(Fireball.class, tempentity.getEyeLocation().getDirection());
         ball.getLocation().add(ball.getVelocity().normalize().multiply(1.05));
         ball.setYield(6);
-        ball.setVisualFire(false);
+        ball.setVisualFire(TriState.FALSE);
         //ball.setVisibleByDefault(false); //Does weird ass visual bugs, dont uncomment this
 
         ArmorStand car = Bukkit.getWorld("world").spawn(loc, ArmorStand.class, entity -> {
             entity.getEquipment().setHelmet(item);
-            entity.setVisible(false);
+            entity.setInvisible(true);
             ball.addPassenger(entity);
             entity.setGlowing(true);
         });
         tempentity.remove();
+
+        //Doesn't work well, wont be directional for some reason on the client
+        //for (Player p : Bukkit.getOnlinePlayers()) {
+        //    p.playSound(car.getLocation(), "crystalized:effect.ambient.car_horn", 0.75f, 1);
+        //}
 
         new BukkitRunnable() {
             public void run() {

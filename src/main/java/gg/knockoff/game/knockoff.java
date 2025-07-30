@@ -149,6 +149,10 @@ public final class knockoff extends JavaPlugin {
                     ctx.getSource().getSender().sendMessage(text("[!] This cant be used in the waiting lobby."));
                     return Command.SINGLE_SUCCESS;
                 }
+                if (knockoff.getInstance().GameManager.showdownModeStarted) {
+                    ctx.getSource().getSender().sendMessage(text("[!] Showdown has already started"));
+                    return Command.SINGLE_SUCCESS;
+                }
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     p.sendMessage(text("[!] An Admin has forced Showdown to begin!"));
                 }

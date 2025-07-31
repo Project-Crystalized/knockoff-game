@@ -14,6 +14,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.*;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import static net.kyori.adventure.text.Component.text;
 
@@ -218,6 +219,28 @@ public class Teams {
 					addPlayerToTeamIfPossible(white, playerlist.get(22));
 					addPlayerToTeamIfPossible(white, playerlist.get(23));
 				}
+				case GameManager.GameTypes.StanderedTrios -> {
+					int i = 0;
+					for (TeamData td : team_datas) {
+						int j = 3;
+						while (j != 0) {
+							addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(i));
+							j--;
+							i++;
+						}
+					}
+				}
+				case GameManager.GameTypes.StanderedSquads -> {
+					int i = 0;
+					for (TeamData td : team_datas) {
+						int j = 4;
+						while (j != 0) {
+							addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(i));
+							j--;
+							i++;
+						}
+					}
+				}
 			}
 		} catch (Exception e) {
 
@@ -230,6 +253,21 @@ public class Teams {
 				p.sendMessage(text("[!] You weren't assigned a team, we've put you in Spectator Team."));
 			}
 		}
+
+		Logger logger = knockoff.getInstance().getLogger();
+		logger.log(Level.INFO, "Player(s) " + spectator + " in Team Spectator");
+		logger.log(Level.INFO, "Player(s) " + blue + " in Team Blue");
+		logger.log(Level.INFO, "Player(s) " + cyan + " in Team Cyan");
+		logger.log(Level.INFO, "Player(s) " + green + " in Team Green");
+		logger.log(Level.INFO, "Player(s) " + lemon + " in Team Lemon");
+		logger.log(Level.INFO, "Player(s) " + lime + " in Team Lime");
+		logger.log(Level.INFO, "Player(s) " + magenta + " in Team Magenta");
+		logger.log(Level.INFO, "Player(s) " + orange + " in Team Orange");
+		logger.log(Level.INFO, "Player(s) " + peach + " in Team Peach");
+		logger.log(Level.INFO, "Player(s) " + purple + " in Team Purple");
+		logger.log(Level.INFO, "Player(s) " + red + " in Team Red");
+		logger.log(Level.INFO, "Player(s) " + yellow + " in Team Yellow");
+		logger.log(Level.INFO, "Player(s) " + white + " in Team White");
 
 	}
 

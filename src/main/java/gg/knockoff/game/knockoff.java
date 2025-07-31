@@ -105,7 +105,7 @@ public final class knockoff extends JavaPlugin {
                         }
                         return Command.SINGLE_SUCCESS;
                     })
-                    .then(Commands.literal("force_duos").executes(ctx -> {
+                    .then(Commands.literal("force_StanderedDuos").executes(ctx -> {
                         if (knockoff.getInstance().GameManager == null) {
                             knockoff.getInstance().DevMode = false;
                             reloadConfig();
@@ -113,6 +113,36 @@ public final class knockoff extends JavaPlugin {
                                 type = gg.knockoff.game.GameManager.GameTypes.Custom;
                             } else {
                                 type = gg.knockoff.game.GameManager.GameTypes.StanderedDuos;
+                            }
+                            is_force_starting = true;
+                        } else {
+                            ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
+                        }
+                        return Command.SINGLE_SUCCESS;
+                    }))
+                    .then(Commands.literal("force_StanderedTrios").executes(ctx -> {
+                        if (knockoff.getInstance().GameManager == null) {
+                            knockoff.getInstance().DevMode = false;
+                            reloadConfig();
+                            if (getConfig().getBoolean("teams.enable")) {
+                                type = gg.knockoff.game.GameManager.GameTypes.Custom;
+                            } else {
+                                type = gg.knockoff.game.GameManager.GameTypes.StanderedTrios;
+                            }
+                            is_force_starting = true;
+                        } else {
+                            ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
+                        }
+                        return Command.SINGLE_SUCCESS;
+                    }))
+                    .then(Commands.literal("force_StanderedSquads").executes(ctx -> {
+                        if (knockoff.getInstance().GameManager == null) {
+                            knockoff.getInstance().DevMode = false;
+                            reloadConfig();
+                            if (getConfig().getBoolean("teams.enable")) {
+                                type = gg.knockoff.game.GameManager.GameTypes.Custom;
+                            } else {
+                                type = gg.knockoff.game.GameManager.GameTypes.StanderedSquads;
                             }
                             is_force_starting = true;
                         } else {

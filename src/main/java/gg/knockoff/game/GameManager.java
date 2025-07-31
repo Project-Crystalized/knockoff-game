@@ -81,6 +81,8 @@ public class GameManager { //I honestly think this entire class could be optimis
     public enum GameTypes {
         StanderedSolos,
         StanderedDuos,
+        StanderedTrios,
+        StanderedSquads,
         Custom,
     }
 

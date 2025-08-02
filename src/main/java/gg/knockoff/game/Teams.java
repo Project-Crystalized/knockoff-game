@@ -180,21 +180,11 @@ public class Teams {
 					}
 				}
 				case GameManager.GameTypes.StanderedSolos -> {
-					addPlayerToTeamIfPossible(blue, playerlist.get(0));
-					addPlayerToTeamIfPossible(cyan, playerlist.get(1));
-					addPlayerToTeamIfPossible(green, playerlist.get(2));
-					addPlayerToTeamIfPossible(lemon, playerlist.get(3));
-					addPlayerToTeamIfPossible(lime, playerlist.get(4));
-					addPlayerToTeamIfPossible(magenta, playerlist.get(5));
-					addPlayerToTeamIfPossible(orange, playerlist.get(6));
-					addPlayerToTeamIfPossible(peach, playerlist.get(7));
-					addPlayerToTeamIfPossible(purple, playerlist.get(8));
-					addPlayerToTeamIfPossible(red, playerlist.get(9));
-					addPlayerToTeamIfPossible(yellow, playerlist.get(10));
-					addPlayerToTeamIfPossible(white, playerlist.get(11));
+					randomizeTeams(1, playerlist);
 				}
 				case GameManager.GameTypes.StanderedDuos -> {
-					addPlayerToTeamIfPossible(blue, playerlist.get(0));
+					randomizeTeams(2, playerlist);
+					/*addPlayerToTeamIfPossible(blue, playerlist.get(0));
 					addPlayerToTeamIfPossible(blue, playerlist.get(1));
 					addPlayerToTeamIfPossible(cyan, playerlist.get(2));
 					addPlayerToTeamIfPossible(cyan, playerlist.get(3));
@@ -217,7 +207,7 @@ public class Teams {
 					addPlayerToTeamIfPossible(yellow, playerlist.get(20));
 					addPlayerToTeamIfPossible(yellow, playerlist.get(21));
 					addPlayerToTeamIfPossible(white, playerlist.get(22));
-					addPlayerToTeamIfPossible(white, playerlist.get(23));
+					addPlayerToTeamIfPossible(white, playerlist.get(23));*/
 				}
 				case GameManager.GameTypes.StanderedTrios -> {
 					int i = 0;
@@ -269,6 +259,19 @@ public class Teams {
 		logger.log(Level.INFO, "Player(s) " + yellow + " in Team Yellow");
 		logger.log(Level.INFO, "Player(s) " + white + " in Team White");
 
+	}
+
+	private void randomizeTeams(int TeamSize, List<String> playerlist) {
+		Collections.shuffle(team_datas);
+		int i = 0;
+		for (TeamData td : team_datas) {
+			int j = TeamSize;
+			while (j != 0) {
+				addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(i));
+				j--;
+				i++;
+			}
+		}
 	}
 
 	private void addPlayerToTeamIfPossible(List<String> team, String p) {

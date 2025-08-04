@@ -35,8 +35,12 @@ public class Teams {
 	public static List<String> yellow = new ArrayList<>();
 
 	public static final List<TeamData> team_datas = TeamData.create_teams();
+    private static List<TeamData> team_datas_without_spectator = null; //for team sorting so that players cant get into spectator normally
 
 	public Teams(GameManager.GameTypes type) {
+        team_datas_without_spectator = team_datas;
+        team_datas_without_spectator.remove(team_datas_without_spectator.getFirst());
+
 		List<String> playerlist = new ArrayList<>();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			playerlist.add(p.getName());
@@ -184,52 +188,12 @@ public class Teams {
 				}
 				case GameManager.GameTypes.StanderedDuos -> {
 					randomizeTeams(2, playerlist);
-					/*addPlayerToTeamIfPossible(blue, playerlist.get(0));
-					addPlayerToTeamIfPossible(blue, playerlist.get(1));
-					addPlayerToTeamIfPossible(cyan, playerlist.get(2));
-					addPlayerToTeamIfPossible(cyan, playerlist.get(3));
-					addPlayerToTeamIfPossible(green, playerlist.get(4));
-					addPlayerToTeamIfPossible(green, playerlist.get(5));
-					addPlayerToTeamIfPossible(lemon, playerlist.get(6));
-					addPlayerToTeamIfPossible(lemon, playerlist.get(7));
-					addPlayerToTeamIfPossible(lime, playerlist.get(8));
-					addPlayerToTeamIfPossible(lime, playerlist.get(9));
-					addPlayerToTeamIfPossible(magenta, playerlist.get(10));
-					addPlayerToTeamIfPossible(magenta, playerlist.get(11));
-					addPlayerToTeamIfPossible(orange, playerlist.get(12));
-					addPlayerToTeamIfPossible(orange, playerlist.get(13));
-					addPlayerToTeamIfPossible(peach, playerlist.get(14));
-					addPlayerToTeamIfPossible(peach, playerlist.get(15));
-					addPlayerToTeamIfPossible(purple, playerlist.get(16));
-					addPlayerToTeamIfPossible(purple, playerlist.get(17));
-					addPlayerToTeamIfPossible(red, playerlist.get(18));
-					addPlayerToTeamIfPossible(red, playerlist.get(19));
-					addPlayerToTeamIfPossible(yellow, playerlist.get(20));
-					addPlayerToTeamIfPossible(yellow, playerlist.get(21));
-					addPlayerToTeamIfPossible(white, playerlist.get(22));
-					addPlayerToTeamIfPossible(white, playerlist.get(23));*/
 				}
 				case GameManager.GameTypes.StanderedTrios -> {
-					int i = 0;
-					for (TeamData td : team_datas) {
-						int j = 3;
-						while (j != 0) {
-							addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(i));
-							j--;
-							i++;
-						}
-					}
+                    randomizeTeams(3, playerlist);
 				}
 				case GameManager.GameTypes.StanderedSquads -> {
-					int i = 0;
-					for (TeamData td : team_datas) {
-						int j = 4;
-						while (j != 0) {
-							addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(i));
-							j--;
-							i++;
-						}
-					}
+                    randomizeTeams(4, playerlist);
 				}
 			}
 		} catch (Exception e) {
@@ -262,9 +226,9 @@ public class Teams {
 	}
 
 	private void randomizeTeams(int TeamSize, List<String> playerlist) {
-		Collections.shuffle(team_datas);
+		Collections.shuffle(team_datas_without_spectator);
 		int i = 0;
-		for (TeamData td : team_datas) {
+		for (TeamData td : team_datas_without_spectator) {
 			int j = TeamSize;
 			while (j != 0) {
 				addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(i));

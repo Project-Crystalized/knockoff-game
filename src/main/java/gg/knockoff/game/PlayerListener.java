@@ -128,6 +128,11 @@ public class PlayerListener implements Listener {
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
+		for (Player p : Bukkit.getOnlinePlayers()) {
+			if (Teams.GetPlayerTeam(p).equals(Teams.GetPlayerTeam(player)) && !player.equals(p)) {
+				p.playSound(p, "crystalized:effect.ally_kill", 50, 1);
+			}
+		}
 		player.setGameMode(GameMode.SPECTATOR);
 		if (player.getKiller() == null) {
 			Bukkit.getServer().sendMessage(text("[\uE103] ")
@@ -147,7 +152,7 @@ public class PlayerListener implements Listener {
 			pda.addKill(1);
 			attacker.showTitle(Title.title(text(" "), text("[\uE103] ").append(player.displayName()),
 					Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
-			attacker.playSound(attacker, "crystalized:effect.ally_kill", 50, 1);
+			attacker.playSound(attacker, "crystalized:effect.enemy_kill", 50, 1);
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				//p.playSound(p, "minecraft:block.anvil.place", 0.5F, 0.5f); //commented out since this is kinda annoying - Callum
 				p.playSound(player.getLocation(), "minecraft:entity.firework_rocket.blast_far", 4, 1); //TODO make actual firework

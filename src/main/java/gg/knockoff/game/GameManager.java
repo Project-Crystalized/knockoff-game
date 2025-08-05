@@ -399,17 +399,28 @@ public class GameManager { //I honestly think this entire class could be optimis
         }.runTaskTimer(knockoff.getInstance(), 0 ,1);
     }
 
-    public static void StartEndGame(String WinningTeam) {
+    public static void StartEndGame(String WinningTeam, TeamData td) {
         GameState = "end";
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (GameManager.GameType.equals(GameTypes.StanderedSolos)) {
-								Player lastPlayer = Bukkit.getPlayer(Teams.get_team_from_string(WinningTeam).getFirst());
-                player.showTitle(Title.title(lastPlayer.displayName(), translatable("crystalized.game.knockoff.win").color(YELLOW),
-										Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                Player lastPlayer = Bukkit.getPlayer(Teams.get_team_from_string(WinningTeam).getFirst());
+                player.showTitle(Title.title(
+                        lastPlayer.displayName(),
+                        translatable("crystalized.game.knockoff.win").color(YELLOW),
+                        Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000)))
+                );
             } else {
-                player.showTitle(Title.title(text("teamed win"), text("placeholder text"), Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000))));
+                player.showTitle(Title.title(
+                        text(td.symbol).append(translatable("crystalized.game.generic.team." + td.name).color(TextColor.color(td.color.asRGB()))).append(text(td.symbol)),
+                        translatable("crystalized.game.knockoff.win").color(YELLOW),
+                        Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000)))
+                );
             }
-            player.playSound(player, "crystalized:effect.ls_game_won", 50, 1);
+            if (Teams.GetPlayerTeam(player).equals(td.name)) {
+                player.playSound(player, "crystalized:effect.ls_game_won", 50, 1);
+            } else {
+                player.playSound(player, "crystalized:effect.ls_game_lost", 50, 1);
+            }
         }
         KnockoffDatabase.save_game(WinningTeam);
         new BukkitRunnable() {

@@ -117,6 +117,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 } else {
                     p.setExp(0);
                 }
+                p.setLevel(0);
 
                 if (knockoff.getInstance().GameManager == null) {
                     cancel();

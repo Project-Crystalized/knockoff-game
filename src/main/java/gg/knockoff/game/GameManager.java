@@ -1503,6 +1503,7 @@ class HazardsManager {
     private static boolean IsHazardOver = false;
 
     public enum hazards{
+        //from tubnet knockout
         tnt,
         slimetime,
         flyingcars,
@@ -1511,6 +1512,16 @@ class HazardsManager {
         splitmapinhalf,
         train,
         watersprouts,
+
+        //from tubnet battle royale
+        curseofslowness,
+        pufferfish,
+        beeattack,
+        slimesofstacking,
+        lightning,
+
+        //crystalized originals
+        //todo lol
     }
 
     public HazardsManager() {
@@ -1524,6 +1535,11 @@ class HazardsManager {
         HazardList.add(hazards.splitmapinhalf);
         HazardList.add(hazards.train);
         HazardList.add(hazards.watersprouts);
+
+        HazardList.add(hazards.pufferfish);
+        HazardList.add(hazards.beeattack);
+        HazardList.add(hazards.slimesofstacking);
+        HazardList.add(hazards.lightning);
 
         CarsList.clear();
         CarsList.add(new NamespacedKey("crystalized", "models/car/abby_car"));
@@ -1559,20 +1575,29 @@ class HazardsManager {
             case hazards.tnt:
                 title(type, null); //Due to TNT's different translation string, we set the color to null since its already set in its special switch case.
                 break;
-            case hazards.slimetime:
+            case hazards.pufferfish, hazards.beeattack:
+                title(type, YELLOW);
+                break;
+            case hazards.slimetime, hazards.slimesofstacking:
                 title(type, GREEN);
                 break;
             case hazards.poisonbushes:
                 title(type, DARK_GREEN);
                 break;
-            case hazards.flooriscrystals, splitmapinhalf:
-                title(type, LIGHT_PURPLE);
+            case hazards.lightning:
+                title(type, AQUA);
                 break;
             case hazards.flyingcars, hazards.watersprouts:
                 title(type, BLUE);
                 break;
+            case hazards.flooriscrystals, splitmapinhalf:
+                title(type, LIGHT_PURPLE);
+                break;
             case hazards.train:
                 title(type, GRAY);
+                break;
+            case hazards.curseofslowness:
+                title(type, DARK_GRAY);
                 break;
             default:
                 break;
@@ -1583,8 +1608,6 @@ class HazardsManager {
             case tnt -> {
                 new BukkitRunnable() {
                     int timer = 0;
-
-                    @Override
                     public void run() {
                         for (Player player : Bukkit.getOnlinePlayers()) {
                             PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
@@ -1611,8 +1634,6 @@ class HazardsManager {
                 }
                 new BukkitRunnable() {
                     int timer = 0;
-
-                    @Override
                     public void run() {
                         if (timer == 12) { //This should last the jump boost's duration
                             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -1628,8 +1649,6 @@ class HazardsManager {
             case flyingcars -> {
                 new BukkitRunnable() {
                     int timer = 0;
-
-                    @Override
                     public void run() {
                         if (timer == 12) { //This should last the jump boost's duration
                             for (Player player : Bukkit.getOnlinePlayers()) {
@@ -1649,7 +1668,6 @@ class HazardsManager {
             case poisonbushes -> {
                 new BukkitRunnable() {
                     int timer = 6;
-
                     public void run() {
                         spawnBush();
                         if (timer == 0) {
@@ -1683,13 +1701,12 @@ class HazardsManager {
                             cancel();
                         }
                     }
-
                     void crystal(Block b) {
                         GameManager gm = knockoff.getInstance().GameManager;
                         gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(13, 20), true);
                     }
-
                 }.runTaskTimer(knockoff.getInstance(), 3, 1);
+
                 new BukkitRunnable() {
                     int timer = 10;
 
@@ -1707,9 +1724,7 @@ class HazardsManager {
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
             }
             case splitmapinhalf -> {
-                //TODO WIP
                 List<Block> blockList = new ArrayList<>();
-
                 com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
                 try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
                     MapData md = knockoff.getInstance().mapdata;
@@ -1765,8 +1780,7 @@ class HazardsManager {
                 for (Block b : blockList) {
                     GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(1, 18), knockoff.getInstance().getRandomNumber(13, 20), true);
                 }
-
-                IsHazardOver = true; //temp
+                IsHazardOver = true;
             }
             case train -> {
                 boolean goZinsteadofX;
@@ -1852,7 +1866,51 @@ class HazardsManager {
                         timer--;
                     }
                 }.runTaskTimer(knockoff.getInstance(), 0, 20);
+            }
 
+            case curseofslowness -> {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.playSound(p, "minecraft:entity.squid.squirt", 1, 1);
+                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 10 * 20, 1));
+                }
+            }
+            case pufferfish -> {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                        spawnPufferfish(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 0, knockoff.getInstance().getRandomNumber(3, -3)));
+                        spawnPufferfish(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 0, knockoff.getInstance().getRandomNumber(3, -3)));
+                        spawnPufferfish(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 0, knockoff.getInstance().getRandomNumber(3, -3)));
+                    }
+                }
+            }
+            case beeattack -> {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                        spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
+                        spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
+                        spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
+                    }
+                }
+            }
+            case slimesofstacking -> {
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                        spawnSlime(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)));
+                    }
+                }
+            }
+            case lightning -> {
+                new BukkitRunnable() {
+                    int timer = 12;
+                    public void run() {
+                        Location loc = getValidSpot(true);
+                        loc.getWorld().spawn(loc, LightningStrike.class);
+                        timer --;
+                        if (timer == 0) {
+                            cancel();
+                        }
+                    }
+                }.runTaskTimer(knockoff.getInstance(), 1, 10);
             }
         }
     }
@@ -2021,6 +2079,64 @@ class HazardsManager {
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 3);
+    }
+
+    private static void spawnPufferfish(Location loc) {
+        PufferFish fish = loc.getWorld().spawn(loc, PufferFish.class, entity -> {
+            entity.setCustomNameVisible(true);
+            entity.setPuffState(2);
+        });
+        new BukkitRunnable() {
+            int health;
+            int maxhealth = (int) fish.getAttribute(Attribute.MAX_HEALTH).getBaseValue();
+            public void run() {
+                health = (int) fish.getHealth();
+                if (knockoff.getInstance() == null || health == 0) {
+                    fish.remove();
+                    cancel();
+                }
+                fish.customName(text("\uE11A" + "\uE11B".repeat(health) + "\uE11C".repeat(maxhealth - health) + "\uE11D"));
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 1);
+    }
+
+    private static void spawnBee(Location loc, Entity player) {
+        Bee bee = loc.getWorld().spawn(loc, Bee.class, entity-> {
+            entity.setTarget((LivingEntity) player);
+            entity.setCustomNameVisible(true);
+            entity.setBeeStingersInBody(10);
+            entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(4);
+        });
+        new BukkitRunnable() {
+            int health;
+            int maxhealth = (int) bee.getAttribute(Attribute.MAX_HEALTH).getBaseValue();
+            int timer = 15 * 20;
+            public void run() {
+                health = (int) bee.getHealth();
+                if (knockoff.getInstance() == null || timer == 0 || health == 0) {
+                    bee.damage(20); //should kill
+                    cancel();
+                }
+                timer --;
+                bee.setBeeStingerCooldown(5);
+                bee.setAnger(20);
+                bee.customName(text("\uE11A" + "\uE11B".repeat(health) + "\uE11C".repeat(maxhealth - health) + "\uE11D").append(text(" (" + timer/20 + "s)")));
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 1);
+    }
+
+    private static void spawnSlime(Location loc) {
+        Slime slime3 = loc.getWorld().spawn(loc, Slime.class, entity->{
+            entity.setSize(3);
+        });
+        Slime slime2 = loc.getWorld().spawn(loc, Slime.class, entity->{
+            entity.setSize(2);
+        });
+        Slime slime1 = loc.getWorld().spawn(loc, Slime.class, entity->{
+            entity.setSize(1);
+        });
+        slime3.addPassenger(slime2);
+        slime2.addPassenger(slime1);
     }
 
     //bool value; if true will treat startX and endX as Z values and double Z as an X value. for more randomness - Callum

@@ -3,6 +3,7 @@ package gg.knockoff.game;
 import org.bukkit.Bukkit;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
+import org.bukkit.entity.Bee;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -30,52 +31,59 @@ public class DamagePercentage implements Listener {
             }
             if (ds.getDamageType().equals(DamageType.EXPLOSION) || ds.getDamageType().equals(DamageType.PLAYER_EXPLOSION)) {
                 pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(6, 8);
-            } else if (ds.getDamageType().equals(DamageType.MAGIC)) {
+            } else if (ds.getDamageType().equals(DamageType.MAGIC) || ds.getDamageType().equals(DamageType.WITHER)) {
                 pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(5, 6);
+            } else if (ds.getDamageType().equals(DamageType.MOB_ATTACK) || ds.getDamageType().equals(DamageType.MOB_ATTACK_NO_AGGRO)) {
+                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(3, 6);
+            } else if (ds.getDamageType().equals(DamageType.LIGHTNING_BOLT)) {
+                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(10, 13);
             }
         }
     }
 
     @EventHandler
-    public void onPlayerDamagePlayer(EntityDamageByEntityEvent e) {
-        if (knockoff.getInstance().GameManager == null || (!(e.getEntity() instanceof Player) || !(e.getDamager() instanceof Player))) {
+    public void onEntityDamageEntity(EntityDamageByEntityEvent e) {
+        if (knockoff.getInstance().GameManager == null) {
             e.setCancelled(true);
             return;
         }
 
-        Player p = (Player) e.getEntity();
-        PlayerData ppd = knockoff.getInstance().GameManager.getPlayerData(p);
-        Player d = (Player) e.getDamager();
-        GameManager gm = knockoff.getInstance().GameManager;
+        //player to player
+        if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
+            Player p = (Player) e.getEntity();
+            PlayerData ppd = knockoff.getInstance().GameManager.getPlayerData(p);
+            Player d = (Player) e.getDamager();
+            GameManager gm = knockoff.getInstance().GameManager;
 
-        if (gm.teams.GetPlayerTeam(p).equals(gm.teams.GetPlayerTeam(d))) {
-            e.setCancelled(true);
-            return;
-        }
+            if (gm.teams.GetPlayerTeam(p).equals(gm.teams.GetPlayerTeam(d))) {
+                e.setCancelled(true);
+                return;
+            }
 
-        //p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
+            //p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
 
-        if (p.getCooledAttackStrength(5) < 0.5) {
-            return; //should hopefully prevent spam clicking
-        }
+            if (p.getCooledAttackStrength(5) < 0.5) {
+                return; //should hopefully prevent spam clicking
+            }
 
-        float addedVelocity = (float) ppd.percent / 24;
-        p.setVelocity(d.getLocation().getDirection().multiply(new Vector(addedVelocity, 0.2, addedVelocity)));
-        if (ppd.percent > 200) {
-            for (Player player : Bukkit.getOnlinePlayers()) {
-                player.playSound(p.getLocation(), "minecraft:entity.generic.explode", 1, 1);
+            float addedVelocity = (float) ppd.percent / 24;
+            p.setVelocity(d.getLocation().getDirection().multiply(new Vector(addedVelocity, 0.2, addedVelocity)));
+            if (ppd.percent > 200) {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    player.playSound(p.getLocation(), "minecraft:entity.generic.explode", 1, 1);
+                }
+            }
+
+            if (e.isCritical()) {
+                ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(5, 7);
+            } else {
+                ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(3, 6);
             }
         }
-
-        if (e.isCritical()) {
-            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(5, 7);
-        } else {
-            ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(3, 6);
+        //bee to player, to prevent the poison effect which is unbalanced
+        if (e.getEntity() instanceof Player && e.getDamager() instanceof Bee) {
+            e.setCancelled(true);
+            ((Player) e.getEntity()).damage(2, DamageSource.builder(DamageType.MOB_ATTACK).build());
         }
-
-
-
-
-
     }
 }

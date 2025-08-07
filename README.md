@@ -39,5 +39,5 @@ Building Knockoff:
 3. Jar file will be in `build/libs/`
 
 Notes:
-1. You will need to enable passive mode in the lobby plugin's config2
+1. You will need to enable passive mode in the lobby plugin's config
 2. You may need a Knockoff compatible map for the plugin to start and work properly.

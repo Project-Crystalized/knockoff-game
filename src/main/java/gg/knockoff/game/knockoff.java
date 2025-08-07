@@ -173,6 +173,12 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("water_sprouts").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.watersprouts); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("map_split_in_half").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.splitmapinhalf); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("train").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.train); return Command.SINGLE_SUCCESS;}))
+
+                    .then(Commands.literal("curse_of_slowness").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.curseofslowness); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("pufferfish").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.pufferfish); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("bee_attack").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.beeattack); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("slimes_of_stacking").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.slimesofstacking); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("lightning").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.lightning); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("force_showdown").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
                 if (knockoff.getInstance().GameManager == null) {
@@ -352,6 +358,10 @@ public final class knockoff extends JavaPlugin {
     //I hate how this isn't available normally in Java, I copy-pasted this off a website lol
     public int getRandomNumber(int min, int max) {
         return (int) ((Math.random() * (max - min)) + min);
+    }
+
+    public double getRandomNumber(double min, double max) {
+        return ((Math.random() * (max - min)) + min);
     }
 
     //This should only be called inside commands, nowhere else

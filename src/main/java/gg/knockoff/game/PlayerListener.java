@@ -102,7 +102,7 @@ public class PlayerListener implements Listener {
 			player.sendMessage(
 					text("\n")
 							.append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD).append(text(" \uE12E").color(NamedTextColor.WHITE)))
-							.append(text("\nKnock enemies into the void until they run out of lives, but be careful, you must avoid hazards along the way.").color(NamedTextColor.GRAY)) //TODO make this translatable
+							.append(text("\n").append(translatable("crystalized.game.knockoff.chat.tutorial").color(NamedTextColor.GRAY)))
 							.append(text("\n"))
 			);
 			if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {

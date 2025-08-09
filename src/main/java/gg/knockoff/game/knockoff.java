@@ -45,6 +45,7 @@ public final class knockoff extends JavaPlugin {
     private int PlayerStartLimit = 4;
     private int configVersion = 0;
     private GameManager.GameTypes type;
+    static boolean commandStarting = false;
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
@@ -99,6 +100,7 @@ public final class knockoff extends JavaPlugin {
                                     type = gg.knockoff.game.GameManager.GameTypes.StanderedSolos;
                                 }
                             }
+                            commandStarting = true;
                             is_force_starting = true;
                         } else {
                             ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
@@ -114,6 +116,7 @@ public final class knockoff extends JavaPlugin {
                             } else {
                                 type = gg.knockoff.game.GameManager.GameTypes.StanderedDuos;
                             }
+                            commandStarting = true;
                             is_force_starting = true;
                         } else {
                             ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
@@ -129,6 +132,7 @@ public final class knockoff extends JavaPlugin {
                             } else {
                                 type = gg.knockoff.game.GameManager.GameTypes.StanderedTrios;
                             }
+                            commandStarting = true;
                             is_force_starting = true;
                         } else {
                             ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
@@ -144,6 +148,7 @@ public final class knockoff extends JavaPlugin {
                             } else {
                                 type = gg.knockoff.game.GameManager.GameTypes.StanderedSquads;
                             }
+                            commandStarting = true;
                             is_force_starting = true;
                         } else {
                             ctx.getSource().getExecutor().sendMessage(text("[!] A game is already in progress. Please wait until the game is over to use this command again").color(RED));
@@ -279,10 +284,12 @@ public final class knockoff extends JavaPlugin {
                                 } else {
                                     Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
                                     p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
-                                    if (Bukkit.getOnlinePlayers().size() > 12) {
-                                        type = gg.knockoff.game.GameManager.GameTypes.StanderedDuos;
-                                    } else {
-                                        type = gg.knockoff.game.GameManager.GameTypes.StanderedSolos;
+                                    if (!commandStarting) {
+                                        if (Bukkit.getOnlinePlayers().size() > 12) {
+                                            type = gg.knockoff.game.GameManager.GameTypes.StanderedDuos;
+                                        } else {
+                                            type = gg.knockoff.game.GameManager.GameTypes.StanderedSolos;
+                                        }
                                     }
                                     GameManager = new GameManager(type);
                                 }
@@ -337,6 +344,7 @@ public final class knockoff extends JavaPlugin {
                     cancel();
                 }
                 if (timer == 0) {
+                    commandStarting = false;
                     knockoff.getInstance().is_force_starting = true;
                     GameCountdownStarted = false;
                     cancel();

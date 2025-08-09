@@ -226,16 +226,41 @@ public class Teams {
 	}
 
 	private void randomizeTeams(int TeamSize, List<String> playerlist) {
-		Collections.shuffle(team_datas_without_spectator);
-		int i = 0;
-		for (TeamData td : team_datas_without_spectator) {
+		try {
+			int j = 0;
+			//Collections.shuffle(team_datas_without_spectator);
+			for (TeamData td : team_datas_without_spectator) {
+				int i = 0;
+				boolean b = true;
+				while (b  /*i != TeamSize + 1*/) {
+					addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(j));
+					i++;
+					j++;
+					Bukkit.getLogger().log(Level.INFO, "j: " + j + " i:" + i + " ts:" + TeamSize);
+					if (i == TeamSize) {
+						b = false;
+					}
+				}
+			}
+		} catch (Exception e) {
+
+		}
+
+
+
+
+
+
+		/*for (TeamData td : team_datas_without_spectator) {
 			int j = TeamSize;
 			while (j != 0) {
 				addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(i));
 				j--;
 				i++;
+
+				Bukkit.getLogger().log(Level.INFO, "j: " + j + " i:" + i);
 			}
-		}
+		}*/
 	}
 
 	private void addPlayerToTeamIfPossible(List<String> team, String p) {

@@ -1890,7 +1890,6 @@ class HazardsManager {
                     if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                         spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
                         spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
-                        spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
                     }
                 }
             }
@@ -2087,6 +2086,7 @@ class HazardsManager {
         PufferFish fish = loc.getWorld().spawn(loc, PufferFish.class, entity -> {
             entity.setCustomNameVisible(true);
             entity.setPuffState(2);
+            entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(1);
         });
         new BukkitRunnable() {
             int health;
@@ -2107,7 +2107,7 @@ class HazardsManager {
             entity.setTarget((LivingEntity) player);
             entity.setCustomNameVisible(true);
             entity.setBeeStingersInBody(10);
-            entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(4);
+            entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(3);
         });
         new BukkitRunnable() {
             int health;

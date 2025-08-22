@@ -113,10 +113,10 @@ public class KnockoffItem {
         boxingglovelore.add(Component.translatable("crystalized.item.boxingglove.desc").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
         boxingglove_im.lore(boxingglovelore);
         boxingglove_im.setItemModel(new NamespacedKey("crystalized", "knockoff_boxing_glove"));
-        boxingglove_im.addEnchant(Enchantment.KNOCKBACK, 2, false);
+        boxingglove_im.addEnchant(Enchantment.KNOCKBACK, 1, false);
         BoxingGlove.setItemMeta(boxingglove_im);
         BoxingGlove.setData(DataComponentTypes.DAMAGE, 0); //I dont trust these but we'll go with it
-        BoxingGlove.setData(DataComponentTypes.MAX_DAMAGE, 1);
+        BoxingGlove.setData(DataComponentTypes.MAX_DAMAGE, 2);
 
         ItemMeta wingedorb_im = WingedOrb.getItemMeta();
         wingedorb_im.customName(translatable("crystalized.orb.winged.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));

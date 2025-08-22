@@ -226,8 +226,8 @@ public class Teams {
 		logger.log(Level.INFO, "Player(s) " + red + " in Team Red");
 		logger.log(Level.INFO, "Player(s) " + yellow + " in Team Yellow");
 		logger.log(Level.INFO, "Player(s) " + white + " in Team White");
-		logger.log(Level.INFO, "Player(s) " + weak + " in Team Weak");
-		logger.log(Level.INFO, "Player(s) " + strong + " in Team Strong");
+		logger.log(Level.INFO, "Player(s) " + weak + " in Team Gray (Weak Shard) ");
+		logger.log(Level.INFO, "Player(s) " + strong + " in Team Pink (Strong Shard)");
 
 	}
 

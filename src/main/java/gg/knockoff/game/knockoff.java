@@ -168,6 +168,7 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("boxing_glove").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"BoxingGlove"); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("winged_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"WingedOrb"); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("poison_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"PoisonOrb"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("launch_totem").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"LaunchTotem"); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("spawn_hazard").requires(sender -> sender.getSender().hasPermission("minecraft.command.op"))
                     .then(Commands.literal("tnt").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.tnt); return Command.SINGLE_SUCCESS;}))

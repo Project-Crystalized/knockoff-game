@@ -36,6 +36,7 @@ public class KnockoffItem {
     public static ItemStack BoxingGlove = new ItemStack(Material.GOLDEN_SWORD);
     public static ItemStack WingedOrb = new ItemStack(Material.COAL);
     public static ItemStack PoisonOrb = new ItemStack(Material.COAL);
+    public static ItemStack LaunchTotem = new ItemStack(Material.COAL);
 
     public static void SetupKnockoffItems() {
         //Commented out powerups aren't functional yet and give a debug message. Commented out for a chance for players to always get usable powerups
@@ -136,6 +137,15 @@ public class KnockoffItem {
         poison_im.lore(poisonlore);
         poison_im.setItemModel(new NamespacedKey("crystalized", "poison_orb"));
         PoisonOrb.setItemMeta(poison_im);
+
+        ItemMeta launch_im = LaunchTotem.getItemMeta();
+        launch_im.customName(translatable("crystalized.totem.launch.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
+        List<Component> launchlore = new ArrayList<>();
+        launchlore.add(Component.translatable("crystalized.totme.launch.desc1").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
+        launchlore.add(Component.translatable("crystalized.totme.launch.desc2").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
+        launch_im.lore(launchlore);
+        launch_im.setItemModel(new NamespacedKey("crystalized", "launch_totem"));
+        LaunchTotem.setItemMeta(launch_im);
     }
 }
 
@@ -174,6 +184,9 @@ class DropPowerup {
             } else if (powerup.equals("PoisonOrb")) {
                 entity.setItemStack(KnockoffItem.PoisonOrb);
                 entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.poison.name").color(TextColor.color(0x084C00))));
+            } else if (powerup.equals("LaunchTotem")) {
+                entity.setItemStack(KnockoffItem.LaunchTotem);
+                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.totem.launch.name").color(TextColor.color(0x4177ED))));
             }
 
             else {
@@ -220,7 +233,7 @@ class DropPowerup {
                 case "BoxingGlove" -> {
                     entity.text(translatable("crystalized.game.knockoff.minidescs.boxingglove").color(yellow));
                 }
-                case "WingedOrb" -> {
+                case "WingedOrb", "LaunchTotem" -> {
                     entity.text(translatable("crystalized.game.knockoff.minidescs.wingedorb").color(yellow));
                 }
                 case "PoisonOrb" -> {

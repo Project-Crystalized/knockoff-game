@@ -33,6 +33,8 @@ public class Teams {
 	public static List<String> red = new ArrayList<>();
 	public static List<String> white = new ArrayList<>();
 	public static List<String> yellow = new ArrayList<>();
+	public static List<String> weak = new ArrayList<>();
+	public static List<String> strong = new ArrayList<>();
 
 	public static final List<TeamData> team_datas = TeamData.create_teams();
     private static List<TeamData> team_datas_without_spectator = null; //for team sorting so that players cant get into spectator normally
@@ -59,6 +61,8 @@ public class Teams {
 		red.clear();
 		yellow.clear();
 		white.clear();
+		weak.clear();
+		strong.clear();
 
 		//idk if this is good, but better than what I had before this ig - Callum
 		try {
@@ -222,13 +226,15 @@ public class Teams {
 		logger.log(Level.INFO, "Player(s) " + red + " in Team Red");
 		logger.log(Level.INFO, "Player(s) " + yellow + " in Team Yellow");
 		logger.log(Level.INFO, "Player(s) " + white + " in Team White");
+		logger.log(Level.INFO, "Player(s) " + weak + " in Team Weak");
+		logger.log(Level.INFO, "Player(s) " + strong + " in Team Strong");
 
 	}
 
 	private void randomizeTeams(int TeamSize, List<String> playerlist) {
 		try {
 			int j = 0;
-			//Collections.shuffle(team_datas_without_spectator);
+			Collections.shuffle(team_datas_without_spectator);
 			for (TeamData td : team_datas_without_spectator) {
 				int i = 0;
 				boolean b = true;
@@ -236,7 +242,7 @@ public class Teams {
 					addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(j));
 					i++;
 					j++;
-					Bukkit.getLogger().log(Level.INFO, "j: " + j + " i:" + i + " ts:" + TeamSize);
+					//Bukkit.getLogger().log(Level.INFO, "j: " + j + " i:" + i + " ts:" + TeamSize);
 					if (i == TeamSize) {
 						b = false;
 					}
@@ -245,22 +251,6 @@ public class Teams {
 		} catch (Exception e) {
 
 		}
-
-
-
-
-
-
-		/*for (TeamData td : team_datas_without_spectator) {
-			int j = TeamSize;
-			while (j != 0) {
-				addPlayerToTeamIfPossible(get_team_from_string(td.name), playerlist.get(i));
-				j--;
-				i++;
-
-				Bukkit.getLogger().log(Level.INFO, "j: " + j + " i:" + i);
-			}
-		}*/
 	}
 
 	private void addPlayerToTeamIfPossible(List<String> team, String p) {
@@ -300,7 +290,13 @@ public class Teams {
 			return white;
 		} else if (s.equals("yellow")) {
 			return yellow;
-		} else {
+		} else if (s.equals("weak")) {
+			return weak;
+		} else if (s.equals("strong")) {
+			return strong;
+		}
+
+		else {
 			return null;
 		}
 	}
@@ -334,7 +330,14 @@ public class Teams {
 			return "white";
 		} else if (yellow.contains(player.getName())) {
 			return "yellow";
-		} else {
+		} else if (weak.contains(player.getName())) {
+			return "weak";
+		} else if (strong.contains(player.getName())) {
+			return "strong";
+		}
+
+
+		else {
 			return null;
 		}
 	}
@@ -366,25 +369,20 @@ public class Teams {
 			white.remove(white.indexOf(Player));
 		} else if (yellow.contains(Player)) {
 			yellow.remove(yellow.indexOf(Player));
+		} else if (weak.contains(Player)) {
+			weak.remove(weak.indexOf(Player));
+		} else if (strong.contains(Player)) {
+			strong.remove(strong.indexOf(Player));
 		}
 	}
 
 	public static void SetPlayerDisplayNames(Player player) {
-		if (Teams.GetPlayerTeam(player).equals("spectator")) {
-			player.displayName(text("[Spectator] ").append(text(player.getName())));
-		} else {
-			TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
-			player.displayName(text(td.symbol).append(text(player.getName()).color(TextColor.color(td.color.asRGB()))));
-		}
+		TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
+		player.displayName(text(td.symbol).append(text(player.getName()).color(TextColor.color(td.color.asRGB()))));
 	}
 }
 
 class TeamStatus {
-	enum Status {
-		Alive,
-		Dead,
-	}
-
 	public static HashMap<String, Integer> team_statuses = new HashMap<>();
 
 	private static void update_team_status(String team) {
@@ -453,15 +451,12 @@ class TeamStatus {
 		}
 
 		if (Bukkit.getOnlinePlayers().size() == 1) {
-			Bukkit.getServer().sendMessage(text(
-					"1 player detected, To end the game, run \"/knockoff end\" as a player with op. The game will not end automatically due to player size"));
+			Bukkit.getServer().sendMessage(text("1 player detected, To end the game, run \"/knockoff end\" as a player with op. The game will not end automatically due to player size"));
 			return;
 		}
 
 		new BukkitRunnable() {
-			@Override
 			public void run() {
-
 				for (TeamData td : Teams.team_datas) {
 					if (knockoff.getInstance().GameManager == null) {
 						cancel();
@@ -469,7 +464,6 @@ class TeamStatus {
 					// Check if all players in the team are alive. If not set them to dead
 					update_team_status(td.name);
 				}
-
 
 				for (TeamData td : Teams.team_datas) {
 					if (is_only_team_alive(td.name)) {
@@ -549,6 +543,8 @@ class TeamData {
 		list.add(new TeamData("red", Color.fromRGB(0xF74036), "\uE125 "));
 		list.add(new TeamData("white", Color.fromRGB(0xFFFFFF), "\uE126 "));
 		list.add(new TeamData("yellow", Color.fromRGB(0xFBE059), "\uE127 "));
+		//list.add(new TeamData("weak", Color.fromRGB(0xFFFFFF), "? "));
+		//list.add(new TeamData("strong", Color.fromRGB(0xFFFFFF), "? "));
 		return list;
 	}
 

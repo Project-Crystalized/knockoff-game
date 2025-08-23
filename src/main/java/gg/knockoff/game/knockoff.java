@@ -286,10 +286,19 @@ public final class knockoff extends JavaPlugin {
                                     Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
                                     p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
                                     if (!commandStarting) {
-                                        if (Bukkit.getOnlinePlayers().size() > 12) {
-                                            type = gg.knockoff.game.GameManager.GameTypes.StanderedDuos;
-                                        } else {
-                                            type = gg.knockoff.game.GameManager.GameTypes.StanderedSolos;
+                                        switch (Bukkit.getMaxPlayers()) {
+                                            case 48 -> {
+                                                type = gg.knockoff.game.GameManager.GameTypes.StanderedSquads;
+                                            }
+                                            case 36 -> {
+                                                type = gg.knockoff.game.GameManager.GameTypes.StanderedTrios;
+                                            }
+                                            case 24 -> {
+                                                type = gg.knockoff.game.GameManager.GameTypes.StanderedDuos;
+                                            }
+                                            default -> {
+                                                type = gg.knockoff.game.GameManager.GameTypes.StanderedSolos;
+                                            }
                                         }
                                     }
                                     GameManager = new GameManager(type);

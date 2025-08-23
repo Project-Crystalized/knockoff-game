@@ -4,6 +4,8 @@ import com.destroystokyo.paper.ParticleBuilder;
 import gg.crystalized.lobby.Lobby_plugin;
 import gg.crystalized.lobby.Ranks;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.GameMode;
@@ -108,7 +110,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 //percent on actionbar
                 if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                     //p.sendActionBar(text("" + percent + "% | T:" + timer + " SP:" + savedPercent));
-                    p.sendActionBar(text(percentToFont(percent + "%"))); //TODO make this coloured somehow
+                    p.sendActionBar(text(percentToFont(percent + "%")).color(percentColour()));
                     float exp = (float) percent / 100;
                     if (exp > 1.0) {
                         exp = 1.0f;
@@ -145,6 +147,36 @@ public class PlayerData { //This class probably isn't optimised, but it works so
             }
         }
         return output;
+    }
+
+    private TextColor percentColour() {
+        //I hope theres a better way of doing this - Callum
+        if (percent > 200) {
+            return TextColor.color(0xBF6242);
+        } else if (percent > 100) {
+            return TextColor.color(0xFF8259);
+        } else if (percent > 90) {
+            return TextColor.color(0xFF9572);
+        } else if (percent > 80) {
+            return TextColor.color(0xFFB28C);
+        } else if (percent > 70) {
+            return TextColor.color(0xFFC399);
+        } else if (percent > 60) {
+            return TextColor.color(0xFFCC99);
+        } else if (percent > 50) {
+            return TextColor.color(0xFFDD99);
+        } else if (percent > 40) {
+            return TextColor.color(0xFFE599);
+        } else if (percent > 30) {
+            return TextColor.color(0xFFEBB2);
+        } else if (percent > 20) {
+            return TextColor.color(0xFFF6CC);
+        } else if (percent > 10) {
+            return TextColor.color(0xFFFAE5);
+        }
+
+
+        return NamedTextColor.WHITE; //fallback
     }
 
     public int getLives() {

@@ -263,8 +263,8 @@ public final class knockoff extends JavaPlugin {
                     return;
                 }
                 if (is_force_starting) {
-                    if (knockoff.getInstance().getServer().getOnlinePlayers().size() > 24) {//24 is the max player limit for now
-                        Bukkit.getServer().sendMessage(text("Too many players to start a game (hardcoded limit is 24). Please kick players off or limit your player count in server.properties."));
+                    if (knockoff.getInstance().getServer().getOnlinePlayers().size() > 48) {//48 is the max player limit for now
+                        Bukkit.getServer().sendMessage(text("Too many players to start a game (hardcoded limit is 48). Please kick players off or limit your player count in server.properties."));
                         is_force_starting = false;
                         return;
                     } else {

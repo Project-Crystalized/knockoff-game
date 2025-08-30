@@ -1833,12 +1833,15 @@ class HazardsManager {
                 }
             }
             case beeattack -> {
-                for (Player p : Bukkit.getOnlinePlayers()) {
+                //commented out is the old version of this hazard
+                /*for (Player p : Bukkit.getOnlinePlayers()) {
                     if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                         spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
                         spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
                     }
-                }
+                }*/
+                spawnBeeHive(getValidSpot(true));
+                spawnBeeHive(getValidSpot(true));
             }
             case slimesofstacking -> {
                 for (Player p : Bukkit.getOnlinePlayers()) {
@@ -1916,6 +1919,11 @@ class HazardsManager {
             return blockloc;
         }
     }
+
+
+    /*
+    Is having a seperate method for all of these a good idea? - Callum 30/08/2025
+     */
 
     public static void spawnFlyingCar() {
         Location validLoc = getValidSpot(false);
@@ -2049,12 +2057,51 @@ class HazardsManager {
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
     }
 
+    private static void spawnBeeHive(Location loc) {
+        Location loc2 = loc.clone().add(0, 1, 0);
+
+        loc.getBlock().setType(Material.OAK_FENCE);
+        loc.clone().add(0, 1, 0).getBlock().setType(Material.BEEHIVE);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(loc, "minecraft:block.wood.place", 1, 1);
+        }
+        new BukkitRunnable() {
+            int BeesAmount = knockoff.getInstance().getRandomNumber(3, 6);
+            public void run() {
+                if (knockoff.getInstance().GameManager == null) {
+                    loc.getBlock().setType(Material.AIR);
+                    loc2.getBlock().setType(Material.AIR);
+                    cancel();
+                }
+
+                //get random player
+                List<Player> playerList = new ArrayList<>();
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                        playerList.add(p);
+                    }
+                }
+                Player randomPlayer = playerList.get(knockoff.getInstance().getRandomNumber(0, playerList.size()));
+
+                spawnBee(loc.clone().add(0, 2, 0), randomPlayer);
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    p.playSound(loc.clone().add(0, 2, 0), "minecraft:block.beehive.exit", 1, 1);
+                }
+                BeesAmount--;
+                if (BeesAmount == 0) {
+                    cancel();
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 1, 20);
+    }
+
+    //called in spawnBeeHive
     private static void spawnBee(Location loc, Entity player) {
         Bee bee = loc.getWorld().spawn(loc, Bee.class, entity-> {
             entity.setTarget((LivingEntity) player);
             entity.setCustomNameVisible(true);
             entity.setBeeStingersInBody(10);
-            entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(3);
+            entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(2);
         });
         new BukkitRunnable() {
             int health;

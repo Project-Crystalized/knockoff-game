@@ -1389,59 +1389,6 @@ class TabMenu {
             }
         }
 
-        //Footer
-        // Could be optimised too
-        /*
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
-            if (pd.isOnline) {
-                if (pd.isPlayerDead) {
-                    if (pd.isEliminated) {
-                        StatsPlayerList = text("")
-                                .append(StatsPlayerList)
-                                .append(text("\n \uE139 ")
-                        );
-                    } else {
-                        StatsPlayerList = text("")
-                                .append(StatsPlayerList)
-                                .append(text("\n " + getDeathTimerIcon(player) + " ")
-                        );
-                    }
-                } else {
-                    StatsPlayerList = text("")
-                            .append(StatsPlayerList)
-                            .append(text("\n \uE138 ")
-                    );
-                }
-            } else {
-                StatsPlayerList = text("")
-                        .append(StatsPlayerList)
-                        .append(text("\n [Disconnected] ")
-                );
-            }
-
-            if (!pd.cachedRankIcon_full.equals(text(""))) {
-                StatsPlayerList = StatsPlayerList
-                        .append(pd.cachedRankIcon_full).append(text(" "));
-            }
-
-            if (pd.isEliminated) {
-                StatsPlayerList = StatsPlayerList
-                        .append(player.displayName().color(DARK_GRAY).decoration(TextDecoration.STRIKETHROUGH, true));
-            } else {
-                StatsPlayerList = StatsPlayerList
-                        .append(player.displayName());
-            }
-
-            StatsPlayerList = StatsPlayerList
-                    .append(text(" \uE101 "))
-                    .append(text(pd.getKills()))
-                    .append(text(" \uE103 "))
-                    .append(text(pd.getDeaths()));
-
-        }*/
-
-
         p.sendPlayerListFooter(text("")
                 .append(text("---------------------------------------------------").color(GRAY))
                 .append(StatsPlayerList).color(WHITE)
@@ -1905,13 +1852,13 @@ class HazardsManager {
                     int timer = 12;
                     public void run() {
                         Location loc = getValidSpot(true);
-                        loc.getWorld().spawn(loc, LightningStrike.class);
+                        spawnLightningRod(loc);
                         timer --;
                         if (timer == 0) {
                             cancel();
                         }
                     }
-                }.runTaskTimer(knockoff.getInstance(), 1, 10);
+                }.runTaskTimer(knockoff.getInstance(), 1, 3);
             }
         }
     }
@@ -2139,6 +2086,33 @@ class HazardsManager {
         });
         slime3.addPassenger(slime2);
         slime2.addPassenger(slime1);
+    }
+
+    private static void spawnLightningRod(Location loc) {
+        TextDisplay name = loc.getWorld().spawn(loc.clone().add(0, 1.5, 0), TextDisplay.class, entity -> {
+            entity.setBillboard(Display.Billboard.CENTER);
+        });
+        loc.getBlock().setType(Material.LIGHTNING_ROD);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(loc, "minecraft:block.copper.place", 1, 1);
+        }
+        new BukkitRunnable() {
+            int timer = knockoff.getInstance().getRandomNumber(4, 6);
+            public void run() {
+                if (knockoff.getInstance().GameManager == null) {
+                    name.remove();
+                    cancel();
+                }
+                if (timer == 0) {
+                    loc.getBlock().setType(Material.AIR);
+                    loc.getWorld().spawn(loc, LightningStrike.class);
+                    name.remove();
+                    cancel();
+                }
+                name.text(text("LIGHTNING STRIKE IN ").color(RED).append(text(timer).color(WHITE)));
+                timer--;
+            }
+        }.runTaskTimer(knockoff.getInstance(), 0, 20);
     }
 
     //bool value; if true will treat startX and endX as Z values and double Z as an X value. for more randomness - Callum

@@ -1824,22 +1824,18 @@ class HazardsManager {
                 }
             }
             case pufferfish -> {
-                for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
-                        spawnPufferfish(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 0, knockoff.getInstance().getRandomNumber(3, -3)));
-                        spawnPufferfish(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 0, knockoff.getInstance().getRandomNumber(3, -3)));
-                        spawnPufferfish(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 0, knockoff.getInstance().getRandomNumber(3, -3)));
+                new BukkitRunnable() {
+                    int timer = knockoff.getInstance().getRandomNumber(8, 12);
+                    public void run() {
+                        spawnPufferfish(getValidSpot(true));
+                        timer--;
+                        if (timer == 0) {
+                            cancel();
+                        }
                     }
-                }
+                }.runTaskTimer(knockoff.getInstance(), 1, 1);
             }
             case beeattack -> {
-                //commented out is the old version of this hazard
-                /*for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
-                        spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
-                        spawnBee(p.getLocation().add(knockoff.getInstance().getRandomNumber(3, -3), 2, knockoff.getInstance().getRandomNumber(3, -3)), p);
-                    }
-                }*/
                 spawnBeeHive(getValidSpot(true));
                 spawnBeeHive(getValidSpot(true));
             }
@@ -2048,8 +2044,11 @@ class HazardsManager {
             int maxhealth = (int) fish.getAttribute(Attribute.MAX_HEALTH).getBaseValue();
             public void run() {
                 health = (int) fish.getHealth();
-                if (knockoff.getInstance() == null || health == 0) {
+                if (knockoff.getInstance() == null) {
                     fish.remove();
+                    cancel();
+                }
+                if (fish.getHealth() == 0) {
                     cancel();
                 }
                 fish.customName(text("\uE11A" + "\uE11B".repeat(health) + "\uE11C".repeat(maxhealth - health) + "\uE11D"));

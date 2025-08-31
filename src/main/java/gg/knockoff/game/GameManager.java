@@ -186,7 +186,6 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         new BukkitRunnable() {
             int timer = 0;
-            @Override
             public void run() {
                 switch (timer) {
                     case 7:
@@ -235,8 +234,21 @@ public class GameManager { //I honestly think this entire class could be optimis
             }
         }.runTaskTimer(knockoff.getInstance(), 1 ,20);
 
+        //This is to prevent players from walking through the starting border (eg, from Bedrock clients or hacked clients walking through the border)
+        for (TeamData td : Teams.team_datas_without_spectator) {
+
+        }
         new BukkitRunnable() {
-            @Override
+            int timer = 7 * 20;
+            public void run() {
+                timer--;
+                if (timer == 0) {
+                    cancel();
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 1, 1);
+
+        new BukkitRunnable() {
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (knockoff.getInstance().GameManager == null) {cancel();}
@@ -579,7 +591,10 @@ public class GameManager { //I honestly think this entire class could be optimis
         return null;
     }
 
-    //TODO this is ugly
+    /*
+    This is a mess rn
+    Theres a new method (spawnSpawnPlatformAndTP()) for this but the TPing is just fucked up on Paper
+     */
     @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     private static void SetupFirstSpawns() {
         MapData md = knockoff.getInstance().mapdata;

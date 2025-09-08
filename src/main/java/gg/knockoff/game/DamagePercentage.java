@@ -43,13 +43,15 @@ public class DamagePercentage implements Listener {
 
     @EventHandler
     public void onEntityDamageEntity(EntityDamageByEntityEvent e) {
+        Entity entity = e.getEntity();
+        Entity damager = e.getDamager();
         if (knockoff.getInstance().GameManager == null) {
             e.setCancelled(true);
             return;
         }
 
         //player to player
-        if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
+        if (entity instanceof Player && damager instanceof Player) {
             Player p = (Player) e.getEntity();
             PlayerData ppd = knockoff.getInstance().GameManager.getPlayerData(p);
             Player d = (Player) e.getDamager();
@@ -58,6 +60,13 @@ public class DamagePercentage implements Listener {
             if (gm.teams.GetPlayerTeam(p).equals(gm.teams.GetPlayerTeam(d))) {
                 e.setCancelled(true);
                 return;
+            }
+            try {
+                if (p.getWorldBorder().getSize() == 3.0) { //weird workaround but this is to stop players hitting through the border
+                    e.setCancelled(true);
+                    return;
+                }
+            } catch (Exception exception) {
             }
 
             //p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
@@ -81,7 +90,7 @@ public class DamagePercentage implements Listener {
             }
         }
         //bee to player, to prevent the poison effect which is unbalanced
-        if (e.getEntity() instanceof Player && e.getDamager() instanceof Bee) {
+        if (entity instanceof Player && damager instanceof Bee) {
             e.setCancelled(true);
             ((Player) e.getEntity()).damage(2, DamageSource.builder(DamageType.MOB_ATTACK).build());
         }

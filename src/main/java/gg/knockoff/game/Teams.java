@@ -40,7 +40,7 @@ public class Teams {
     public static List<TeamData> team_datas_without_spectator = null; //for team sorting so that players cant get into spectator normally
 
 	public Teams(GameManager.GameTypes type) {
-        team_datas_without_spectator = team_datas;
+        team_datas_without_spectator = TeamData.create_teams();
         team_datas_without_spectator.remove(team_datas_without_spectator.getFirst());
 
 		List<String> playerlist = new ArrayList<>();

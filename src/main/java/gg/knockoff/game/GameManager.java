@@ -423,11 +423,16 @@ public class GameManager { //I honestly think this entire class could be optimis
                         translatable("crystalized.game.knockoff.win").color(YELLOW),
                         Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000)))
                 );
+                player.sendMessage(lastPlayer.displayName().append(text("")).append(translatable("crystalized.game.knockoff.win").color(YELLOW)));
             } else {
                 player.showTitle(Title.title(
                         text(td.symbol).append(translatable("crystalized.game.generic.team." + td.name).color(TextColor.color(td.color.asRGB()))).append(text(td.symbol)),
                         translatable("crystalized.game.knockoff.win").color(YELLOW),
                         Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(5), Duration.ofMillis(1000)))
+                );
+                player.sendMessage(
+                        text(td.symbol).append(translatable("crystalized.game.generic.team." + td.name).color(TextColor.color(td.color.asRGB()))).append(text(td.symbol))
+                                .append(text(" ")).append(translatable("crystalized.game.knockoff.win").color(YELLOW))
                 );
             }
             if (Teams.GetPlayerTeam(player).equals(td.name)) {

@@ -1,6 +1,7 @@
 package gg.knockoff.game;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,16 +19,20 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import static net.kyori.adventure.text.Component.text;
+
 public class CrystalBlocks implements Listener {
 
     @EventHandler
     public void WhenCrystalBlockPlaced(BlockPlaceEvent event) {
         Player p = event.getPlayer();
         Block b = event.getBlock();
+        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
         ItemStack itemUsed;
 
         if (!(MapManager.isInsideCurrentSection(b.getLocation()) || MapManager.isInsideDecayingSection(b.getLocation()))) {
             event.setCancelled(true);
+            p.sendMessage(text("[!] You cannot place blocks outside the map's borders!").color(NamedTextColor.RED));
             return;
         }
         if (p.getInventory().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK)) {
@@ -84,6 +89,7 @@ public class CrystalBlocks implements Listener {
 
             b.setBlockData(dir);
             b.getState().update();
+            pd.blocksplaced++;
         }
 
         GameManager gm = knockoff.getInstance().GameManager;
@@ -112,15 +118,16 @@ public class CrystalBlocks implements Listener {
                                 || block.getType().equals(Material.CUT_COPPER_STAIRS)
                                 || block.getType().equals(Material.PINK_STAINED_GLASS)
                                 || block.getType().equals(Material.PINK_STAINED_GLASS_PANE)
+                                || block.getType().equals(Material.PINK_CARPET)
                 ){
                     Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
                     blockloc.getBlock().breakNaturally(true);
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     pd.blocksbroken++;
                     if (knockoff.getInstance().DevMode) {
-                        Bukkit.getServer().sendMessage(Component.text("[DEBUG] ")
+                        Bukkit.getServer().sendMessage(text("[DEBUG] ")
                                 .append(player.displayName())
-                                .append(Component.text(" has broken a block"))
+                                .append(text(" has broken a block"))
                         );
                     }
                 }

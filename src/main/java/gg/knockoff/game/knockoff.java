@@ -42,7 +42,7 @@ public final class knockoff extends JavaPlugin {
     public ProtocolManager protocolmanager;
     private static boolean GameCountdownStarted = false;
 
-    private int PlayerStartLimit = 4;
+    private int PlayerStartLimit = 3;
     private int configVersion = 0;
     private GameManager.GameTypes type;
     static boolean commandStarting = false;

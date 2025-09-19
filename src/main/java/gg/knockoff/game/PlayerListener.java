@@ -13,8 +13,8 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.Vault;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.type.Vault;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -538,17 +538,22 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onVaultUnlock(VaultChangeStateEvent e) {
         Player p = e.getPlayer();
-        Block b = e.getBlock();
+        Block b = e.getBlock().getLocation().getBlock();
+		Vault data = (Vault) b.getBlockData();
         if (e.getNewState().equals(org.bukkit.block.data.type.Vault.State.EJECTING)) {
-            e.setCancelled(true);
-            //b.setType(Material.AMETHYST_BLOCK);
-            b.getLocation().getBlock().setType(Material.AMETHYST_BLOCK);
+			List<String> powerups;
+			e.setCancelled(true);
+			b.setType(Material.AMETHYST_BLOCK);
+			if (data.isOminous()) {
+				powerups = Arrays.asList("KnockoutOrb", "ExplosiveOrb", "PoisonOrb", "TrialChamberMace");
+			} else {
+				powerups = Arrays.asList("WindCharge", "BoostOrb", "WingedOrb");
+			}
             for (Player player : Bukkit.getOnlinePlayers()) {
                 player.playSound(b.getLocation(), "crystalized:effect.nexus_crystal_destroyed", 1, 1.5F);
             }
-            List<String> string = Arrays.asList("WindCharge", "BoostOrb", "WingedOrb");
-            Collections.shuffle(string);
-            DropPowerup.DropPowerup(b.getLocation().clone().add(0.5, 1, 0.5), string.get(knockoff.getInstance().getRandomNumber(0, string.size())));
+            Collections.shuffle(powerups);
+            DropPowerup.DropPowerup(b.getLocation().clone().add(0.5, 1, 0.5), powerups.get(knockoff.getInstance().getRandomNumber(0, powerups.size())));
         }
     }
 }

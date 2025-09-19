@@ -34,15 +34,12 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.TrialSpawner;
-import org.bukkit.block.data.type.Vault;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-import org.bukkit.loot.LootTable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -399,10 +396,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                                 e.remove();
                             }
                             //do nothing, material.coal and wind charges is powerups so we dont clear them
+                            //TODO this might become a mess
                         } else if (
                                 ((Item) e).getItemStack().getType().equals(Material.WIND_CHARGE)
                                         || ((Item) e).getItemStack().equals(KnockoffItem.BoxingGlove)
-                                        || ((Item) e).getItemStack().equals(KnockoffItem.TrailChamberHazardKey)
+                                        || ((Item) e).getItemStack().equals(KnockoffItem.TrialChamberHazardKey)
+                                        || ((Item) e).getItemStack().equals(KnockoffItem.TrialChamberMace)
                         ) {
 
                         } else {

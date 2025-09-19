@@ -1,6 +1,5 @@
 package gg.knockoff.game;
 
-import io.papermc.paper.datacomponent.DataComponentType;
 import io.papermc.paper.datacomponent.DataComponentTypes;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -13,7 +12,6 @@ import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -38,7 +36,9 @@ public class KnockoffItem {
     public static ItemStack PoisonOrb = new ItemStack(Material.COAL);
     public static ItemStack LaunchTotem = new ItemStack(Material.COAL);
 
-    public static ItemStack TrailChamberHazardKey = new ItemStack(Material.TRIAL_KEY);
+    //For Free Trial map
+    public static ItemStack TrialChamberHazardKey = new ItemStack(Material.TRIAL_KEY);
+    public static ItemStack TrialChamberMace = new ItemStack(Material.MACE);
 
     public static void SetupKnockoffItems() {
         //Commented out powerups aren't functional yet and give a debug message. Commented out for a chance for players to always get usable powerups
@@ -148,6 +148,10 @@ public class KnockoffItem {
         launch_im.lore(launchlore);
         launch_im.setItemModel(new NamespacedKey("crystalized", "launch_totem"));
         LaunchTotem.setItemMeta(launch_im);
+
+
+        TrialChamberMace.setData(DataComponentTypes.DAMAGE, 0);
+        TrialChamberMace.setData(DataComponentTypes.MAX_DAMAGE, 1);
     }
 }
 
@@ -204,9 +208,14 @@ class DropPowerup {
 
 
                 case "TrialChamberHazardKey" -> {
-                    entity.setItemStack(KnockoffItem.TrailChamberHazardKey);
+                    entity.setItemStack(KnockoffItem.TrialChamberHazardKey);
                     entity.customName(text("Reward! ").color(NamedTextColor.GOLD).append(translatable("item.minecraft.trial_key")));
                 }
+                case "TrialChamberMace" -> {
+                    entity.setItemStack(KnockoffItem.TrialChamberMace);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(translatable("item.minecraft.mace")));
+                }
+
                 default -> {
                     Bukkit.getLogger().log(Level.WARNING, "[KNOCKOFFITEM] Unknown Item \"" + powerup + "\".");
                 }
@@ -260,7 +269,7 @@ class DropPowerup {
                 }
 
 
-                case "TrialChamberHazardKey" -> {
+                case "TrialChamberHazardKey", "TrialChamberMace" -> {
                     entity.text(text("")); //intentionally empty
                 }
                 default -> {

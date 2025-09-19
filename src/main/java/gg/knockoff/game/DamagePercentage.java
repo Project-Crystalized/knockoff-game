@@ -1,6 +1,7 @@
 package gg.knockoff.game;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Bee;
@@ -83,11 +84,16 @@ public class DamagePercentage implements Listener {
                 }
             }
 
-            if (e.isCritical()) {
-                ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(5, 7);
+            if (d.getInventory().getItemInMainHand().getType().equals(Material.MACE)) {
+                ppd.percent = ppd.percent + (int) e.getDamage();
             } else {
-                ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(3, 6);
+                if (e.isCritical()) {
+                    ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(5, 7);
+                } else {
+                    ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(3, 6);
+                }
             }
+
         }
         //bee to player, to prevent the poison effect which is unbalanced
         if (entity instanceof Player && damager instanceof Bee) {

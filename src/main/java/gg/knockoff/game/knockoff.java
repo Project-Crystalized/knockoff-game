@@ -13,6 +13,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
+import org.bukkit.Difficulty;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -61,6 +62,8 @@ public final class knockoff extends JavaPlugin {
         Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
         Bukkit.getWorld("world").setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
         Bukkit.getWorld("world").setGameRule(GameRule.LOCATOR_BAR, false);
+        Bukkit.getWorld("world").setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        Bukkit.getWorld("world").setDifficulty(Difficulty.NORMAL);
 
         if (!Lobby_plugin.getInstance().passive_mode) {
             getLogger().log(Level.SEVERE, "Please enable passive mode in the Lobby Plugin's Config. Knockoff will disable to prevent exceptions and bugs.");
@@ -168,6 +171,8 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("winged_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"WingedOrb"); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("poison_orb").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"PoisonOrb"); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("launch_totem").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"LaunchTotem"); return Command.SINGLE_SUCCESS;}))
+
+                    .then(Commands.literal("trialchamberhazardkey").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"TrialChamberHazardKey"); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("spawn_hazard").requires(sender -> sender.getSender().hasPermission("minecraft.command.op"))
                     .then(Commands.literal("tnt").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.tnt); return Command.SINGLE_SUCCESS;}))
@@ -184,6 +189,8 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("bee_attack").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.beeattack); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("slimes_of_stacking").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.slimesofstacking); return Command.SINGLE_SUCCESS;}))
                     .then(Commands.literal("lightning").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.lightning); return Command.SINGLE_SUCCESS;}))
+
+                    .then(Commands.literal("trialchamber").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.TrialChamber); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("force_showdown").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
                 if (knockoff.getInstance().GameManager == null) {
@@ -320,7 +327,7 @@ public final class knockoff extends JavaPlugin {
                 } else {
                     if (!GameCountdownStarted) {
                         if ((Bukkit.getOnlinePlayers().size() > PlayerStartLimit || Bukkit.getOnlinePlayers().size() == PlayerStartLimit)
-                                && (!getConfig().getBoolean("tourneys.disable_auto_countdown") && !getConfig().getBoolean("tourneys.enable"))) {
+                                && (!getConfig().getBoolean("tourneys.disable_auto_countdown"))) {
                             GameCountdown();
                         }
                     } else if (Bukkit.getOnlinePlayers().size() < PlayerStartLimit) {

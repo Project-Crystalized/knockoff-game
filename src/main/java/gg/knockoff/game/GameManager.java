@@ -13,9 +13,7 @@ import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
-import com.sk89q.worldedit.function.mask.BlockMask;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
-import com.sk89q.worldedit.function.mask.Mask;
 import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
 import com.sk89q.worldedit.function.operation.Operation;
 import com.sk89q.worldedit.function.operation.Operations;
@@ -35,15 +33,16 @@ import net.kyori.adventure.util.TriState;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockType;
 import org.bukkit.block.data.BlockData;
-import org.bukkit.block.data.type.Slab;
+import org.bukkit.block.data.type.TrialSpawner;
+import org.bukkit.block.data.type.Vault;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.loot.LootTable;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -53,7 +52,6 @@ import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.time.Duration;
 import java.util.*;
-import java.util.function.Predicate;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -401,11 +399,24 @@ public class GameManager { //I honestly think this entire class could be optimis
                                 e.remove();
                             }
                             //do nothing, material.coal and wind charges is powerups so we dont clear them
-                        } else if (((Item) e).getItemStack().getType().equals(Material.WIND_CHARGE)
-                                || ((Item) e).getItemStack().equals(KnockoffItem.BoxingGlove)) {
-                            //do nothing
+                        } else if (
+                                ((Item) e).getItemStack().getType().equals(Material.WIND_CHARGE)
+                                        || ((Item) e).getItemStack().equals(KnockoffItem.BoxingGlove)
+                                        || ((Item) e).getItemStack().equals(KnockoffItem.TrailChamberHazardKey)
+                        ) {
+
                         } else {
                             e.remove();
+                        }
+                    } else if (e.getLocation().getY() < -20) {
+                        if (e instanceof Breeze) {
+                            MapData md = knockoff.getInstance().mapdata;
+                            e.teleport(new Location(Bukkit.getWorld("world"),
+                                    md.getCurrentMiddleXLength() + knockoff.getInstance().getRandomNumber(-5, 5),
+                                    md.CurrentYLength,
+                                    md.getCurrentMiddleZLength() + knockoff.getInstance().getRandomNumber(-5, 5)
+                                    )
+                            );
                         }
                     }
                 }
@@ -1490,7 +1501,7 @@ class HazardsManager {
         lightning,
 
         //crystalized originals
-        //todo lol
+        TrialChamber, //for Free Trail map
     }
 
     public HazardsManager() {
@@ -1509,6 +1520,14 @@ class HazardsManager {
         HazardList.add(hazards.beeattack);
         HazardList.add(hazards.slimesofstacking);
         HazardList.add(hazards.lightning);
+
+        MapData md = knockoff.getInstance().mapdata;
+        switch (md.map_nameString) {
+            case "Free Trial" -> {
+                HazardList.add(hazards.TrialChamber);
+            }
+        }
+
 
         CarsList.clear();
         CarsList.add(new NamespacedKey("crystalized", "models/car/abby_car"));
@@ -1553,7 +1572,7 @@ class HazardsManager {
             case hazards.poisonbushes:
                 title(type, DARK_GREEN);
                 break;
-            case hazards.lightning:
+            case hazards.lightning, TrialChamber:
                 title(type, AQUA);
                 break;
             case hazards.flyingcars, hazards.watersprouts:
@@ -1879,6 +1898,45 @@ class HazardsManager {
                     }
                 }.runTaskTimer(knockoff.getInstance(), 1, 3);
             }
+
+            case TrialChamber -> {
+                Location loc;
+                List<Block> blockList = new ArrayList<>();
+
+                //Edit Trial Vault loots if any exist
+                com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+                try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
+                    MapData md = knockoff.getInstance().mapdata;
+                    Region region = new CuboidRegion(
+                            BlockVector3.at(
+                                    GameManager.SectionPlaceLocationX,
+                                    GameManager.SectionPlaceLocationY,
+                                    GameManager.SectionPlaceLocationZ
+                            ),
+                            BlockVector3.at(
+                                    GameManager.SectionPlaceLocationX + md.CurrentXLength,
+                                    GameManager.SectionPlaceLocationY + md.CurrentYLength,
+                                    GameManager.SectionPlaceLocationZ + md.CurrentZLength
+                            )
+                    );
+                    for (BlockVector3 bV3 : region) {
+                        Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                        if (b.getType().equals(Material.TRIAL_SPAWNER)) {
+                            blockList.add(b);
+                        }
+                    }
+                } catch (Exception e) {
+                    Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+                    e.printStackTrace();
+                }
+                if (blockList.isEmpty()) {
+                    loc = getValidSpot(true);
+                } else {
+                    loc = blockList.get(knockoff.getInstance().getRandomNumber(0, blockList.size())).getLocation();
+                }
+
+                spawnTrialChamber(loc);
+            }
         }
     }
 
@@ -1958,7 +2016,6 @@ class HazardsManager {
         ball.getLocation().add(ball.getVelocity().normalize().multiply(1.05));
         ball.setYield(6);
         ball.setVisualFire(TriState.FALSE);
-        //ball.setVisibleByDefault(false); //Does weird ass visual bugs, dont uncomment this
 
         ArmorStand car = Bukkit.getWorld("world").spawn(loc, ArmorStand.class, entity -> {
             entity.getEquipment().setHelmet(item);
@@ -1967,11 +2024,6 @@ class HazardsManager {
             entity.setGlowing(true);
         });
         tempentity.remove();
-
-        //Doesn't work well, wont be directional for some reason on the client
-        //for (Player p : Bukkit.getOnlinePlayers()) {
-        //    p.playSound(car.getLocation(), "crystalized:effect.ambient.car_horn", 0.75f, 1);
-        //}
 
         new BukkitRunnable() {
             public void run() {
@@ -2010,9 +2062,6 @@ class HazardsManager {
                 blockloc2.clone().add(new Vector(0,1,1)).getBlock().setType(Material.MANGROVE_LEAVES);
                 blockloc2.clone().add(new Vector(1,1,1)).getBlock().setType(Material.MANGROVE_LEAVES);
                 blockloc2.clone().add(new Vector(0,1,0)).getBlock().setType(Material.MANGROVE_LEAVES);
-            }
-            default -> {
-                //Do nothing
             }
         }
     }
@@ -2078,7 +2127,6 @@ class HazardsManager {
 
     private static void spawnBeeHive(Location loc) {
         Location loc2 = loc.clone().add(0, 1, 0);
-
         loc.getBlock().setType(Material.OAK_FENCE);
         loc.clone().add(0, 1, 0).getBlock().setType(Material.BEEHIVE);
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -2183,12 +2231,7 @@ class HazardsManager {
 
     //bool value; if true will treat startX and endX as Z values and double Z as an X value. for more randomness - Callum
     private static void spawnTrain(int startX, int endX, double Z, double Y, String itemModel, boolean swapXandZ) {
-        Location loc = new Location(Bukkit.getWorld("world"),
-                startX,
-                Y,
-                Z,
-                -90, 0
-        );
+        Location loc = new Location(Bukkit.getWorld("world"), startX, Y, Z, -90, 0);
         if (swapXandZ) {
             loc = new Location(loc.getWorld(), Z, Y, startX, 0, 0);
         }
@@ -2231,7 +2274,6 @@ class HazardsManager {
                 }
                 soundTimer--;
 
-
                 //player knockback
                 for (Entity e : train.getNearbyEntities(4, 4, 4)) {
                     if (e instanceof Player p) {
@@ -2269,10 +2311,78 @@ class HazardsManager {
                     }
                     X--;
                 }
-
                 return list;
             }
 
         }.runTaskTimer(knockoff.getInstance(), 1, 5);
+    }
+
+    private static void spawnTrialChamber(Location loc) {
+        loc.getBlock().setType(Material.TRIAL_SPAWNER);
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            p.playSound(loc, "minecraft:block.trial_spawner.ominous_activate", 1, 1);
+            p.playSound(loc, "minecraft:block.trial_spawner.spawn_mob", 50, 1);
+        }
+        List<Breeze> entitiesSpawned = new ArrayList<>();
+
+        new BukkitRunnable() {
+            int timer = knockoff.getInstance().getRandomNumber(2, 5);
+            Location spawnLoc = loc.clone().add(0, 1, 0);
+
+            public void run() {
+                if (knockoff.getInstance().GameManager == null) {
+                    cancel();
+                }
+                if (timer == 0) {
+                    Breeze oneWithKey = entitiesSpawned.get(knockoff.getInstance().getRandomNumber(0, entitiesSpawned.size()));
+                    oneWithKey.getAttribute(Attribute.MAX_HEALTH).setBaseValue(4);
+                    oneWithKey.getAttribute(Attribute.SCALE).setBaseValue(1.5);
+                    oneWithKey.setHealth(4);
+                    cancel();
+                }
+                spawnLoc.getWorld().spawn(spawnLoc, Breeze.class, entity-> {
+                    entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(2);
+                    entity.setCustomNameVisible(true);
+                    entitiesSpawned.add(entity);
+
+                });
+                timer--;
+            }
+        }.runTaskTimer(knockoff.getInstance(), 1, 1);
+
+        //For entitiesSpawned
+        new BukkitRunnable() {
+            public void run() {
+                if (knockoff.getInstance().GameManager == null || entitiesSpawned.isEmpty()) {
+                    cancel();
+                }
+                try {
+                    for (Breeze b : entitiesSpawned) {
+                        if (knockoff.getInstance().GameManager == null) {
+                            b.remove();
+                        }
+                        int maxhealth = (int) b.getAttribute(Attribute.MAX_HEALTH).getBaseValue();
+                        int health = (int) b.getHealth();
+                        b.customName(text("\uE11A" + "\uE11B".repeat(health) + "\uE11C".repeat(maxhealth - health) + "\uE11D"));
+                        if (health == 0) {
+                            b.damage(20); //should kill
+                        }
+                        if (b.isDead()) {
+                            if (maxhealth == 4.0) {
+                                Location keyLoc = loc.clone().add(0, 1, 0);
+                                if (MapManager.isInsideCurrentSection(keyLoc)) {
+                                    DropPowerup.DropPowerup(keyLoc, "TrialChamberHazardKey");
+                                } else {
+                                    DropPowerup.DropPowerup(b.getLocation(), "TrialChamberHazardKey");
+                                }
+                            }
+                            entitiesSpawned.remove(b);
+                        }
+                    }
+                } catch (Exception ex) {
+                    //above causes a ConcurrentModificationException, no idea how to sort it and there isn't a better way of doing this
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 1, 1);
     }
 }

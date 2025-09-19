@@ -38,6 +38,8 @@ public class KnockoffItem {
     public static ItemStack PoisonOrb = new ItemStack(Material.COAL);
     public static ItemStack LaunchTotem = new ItemStack(Material.COAL);
 
+    public static ItemStack TrailChamberHazardKey = new ItemStack(Material.TRIAL_KEY);
+
     public static void SetupKnockoffItems() {
         //Commented out powerups aren't functional yet and give a debug message. Commented out for a chance for players to always get usable powerups
 
@@ -154,50 +156,67 @@ class DropPowerup {
 
         //Messy
         Item DroppedItem = loc.getWorld().spawn(loc, Item.class, entity -> {
-            if (powerup.equals("BoostOrb")) {
-                entity.setItemStack(KnockoffItem.BoostOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.boost.name").color(TextColor.color(0x9215DE))));
-            } else if (powerup.equals("BridgeOrb")) {
-                entity.setItemStack(KnockoffItem.BridgeOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.bridge.name").color(NamedTextColor.GRAY)));
-            } else if (powerup.equals("ExplosiveOrb")) {
-                entity.setItemStack(KnockoffItem.ExplosiveOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.explosive.name").color(TextColor.color(0xFFB44D))));
-            } else if (powerup.equals("GrapplingOrb")) {
-                entity.setItemStack(KnockoffItem.GrapplingOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.grappling.name").color(TextColor.color(0xDA662C))));
-            } else if (powerup.equals("KnockoutOrb")) {
-                entity.setItemStack(KnockoffItem.KnockoutOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.knockout.name").color(TextColor.color(0xFFDB00))));
-            } else if (powerup.equals("CloudTotem")) {
-                entity.setItemStack(KnockoffItem.CloudTotem);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.totem.cloud.name").color(NamedTextColor.WHITE)));
-            } else if (powerup.equals("WindCharge")) {
-                entity.setItemStack(KnockoffItem.WindCharge);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("item.minecraft.wind_charge").color(NamedTextColor.WHITE)));
-            } else if (powerup.equals("BoxingGlove")) {
-                entity.setItemStack(KnockoffItem.BoxingGlove);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.item.boxingglove.name").color(NamedTextColor.GOLD)));
-            } else if (powerup.equals("WingedOrb")) {
-                entity.setItemStack(KnockoffItem.WingedOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.winged.name").color(TextColor.color(0x4177ED))));
-            } else if (powerup.equals("PoisonOrb")) {
-                entity.setItemStack(KnockoffItem.PoisonOrb);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.poison.name").color(TextColor.color(0x084C00))));
-            } else if (powerup.equals("LaunchTotem")) {
-                entity.setItemStack(KnockoffItem.LaunchTotem);
-                entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.totem.launch.name").color(TextColor.color(0x4177ED))));
-            }
+            switch (powerup) {
+                case "BoostOrb" -> {
+                    entity.setItemStack(KnockoffItem.BoostOrb);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.boost.name").color(TextColor.color(0x9215DE))));
+                }
+                case "BridgeOrb" -> {
+                    entity.setItemStack(KnockoffItem.BridgeOrb);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.bridge.name").color(NamedTextColor.GRAY)));
+                }
+                case "ExplosiveOrb" -> {
+                    entity.setItemStack(KnockoffItem.ExplosiveOrb);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.explosive.name").color(TextColor.color(0xFFB44D))));
+                }
+                case "GrapplingOrb" -> {
+                    entity.setItemStack(KnockoffItem.GrapplingOrb);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.grappling.name").color(TextColor.color(0xDA662C))));
+                }
+                case "KnockoutOrb" -> {
+                    entity.setItemStack(KnockoffItem.KnockoutOrb);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.knockout.name").color(TextColor.color(0xFFDB00))));
+                }
+                case "CloudTotem" -> {
+                    entity.setItemStack(KnockoffItem.CloudTotem);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.totem.cloud.name").color(NamedTextColor.WHITE)));
+                }
+                case "WindCharge" -> {
+                    entity.setItemStack(KnockoffItem.WindCharge);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("item.minecraft.wind_charge").color(NamedTextColor.WHITE)));
+                }
+                case "BoxingGlove" -> {
+                    entity.setItemStack(KnockoffItem.BoxingGlove);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.item.boxingglove.name").color(NamedTextColor.GOLD)));
+                }
+                case "WingedOrb" -> {
+                    entity.setItemStack(KnockoffItem.WingedOrb);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.winged.name").color(TextColor.color(0x4177ED))));
+                }
+                case "PoisonOrb" -> {
+                    entity.setItemStack(KnockoffItem.PoisonOrb);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.orb.poison.name").color(TextColor.color(0x084C00))));
+                }
+                case "LaunchTotem" -> {
+                    entity.setItemStack(KnockoffItem.LaunchTotem);
+                    entity.customName(text("Powerup! ").color(NamedTextColor.GOLD).append(Component.translatable("crystalized.totem.launch.name").color(TextColor.color(0x4177ED))));
+                }
 
-            else {
-                Bukkit.getServer().sendMessage(text("[!] An internal error occurred, check console."));
-                Bukkit.getLogger().log(Level.WARNING, "[KNOCKOFFITEM] Unknown Item \"" + powerup + "\".");
+
+                case "TrialChamberHazardKey" -> {
+                    entity.setItemStack(KnockoffItem.TrailChamberHazardKey);
+                    entity.customName(text("Reward! ").color(NamedTextColor.GOLD).append(translatable("item.minecraft.trial_key")));
+                }
+                default -> {
+                    Bukkit.getLogger().log(Level.WARNING, "[KNOCKOFFITEM] Unknown Item \"" + powerup + "\".");
+                }
             }
             entity.setGravity(true);
             entity.setGlowing(true);
             entity.setCanPlayerPickup(true);
             entity.setCustomNameVisible(false);
             entity.setInvisible(true);
+            entity.setInvulnerable(true);
         });
         TextDisplay DroppedItemName = loc.getWorld().spawn(DroppedItem.getLocation(), TextDisplay.class, entity -> {
             entity.setBillboard(Display.Billboard.CENTER);
@@ -238,6 +257,11 @@ class DropPowerup {
                 }
                 case "PoisonOrb" -> {
                     entity.text(translatable("crystalized.game.knockoff.minidescs.poisonorb").color(yellow));
+                }
+
+
+                case "TrialChamberHazardKey" -> {
+                    entity.text(text("")); //intentionally empty
                 }
                 default -> {
                     entity.text(text("This item has no mini description! Report this pls"));

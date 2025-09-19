@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import gg.crystalized.lobby.Lobby_plugin;
 import gg.crystalized.lobby.Ranks;
 import io.papermc.paper.entity.LookAnchor;
+import io.papermc.paper.event.block.VaultChangeStateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
@@ -12,23 +13,20 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
+import org.bukkit.block.Vault;
 import org.bukkit.block.data.Directional;
-import org.bukkit.entity.BreezeWindCharge;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.WindCharge;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.FluidLevelChangeEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.entity.FoodLevelChangeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.*;
 import net.kyori.adventure.text.Component;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -37,6 +35,8 @@ import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -418,6 +418,29 @@ public class PlayerListener implements Listener {
 		}
 	}
 
+    @EventHandler
+    public void onEntityDeath(EntityDeathEvent e) {
+        LivingEntity en = e.getEntity();
+        if (en instanceof Player) {return;}
+        if (en instanceof Breeze b) {
+            e.getDrops().clear();
+            if (b.getAttribute(Attribute.MAX_HEALTH).getBaseValue() == 4.0) { //dumb workaround, but this is for the trial key drop for the trial chamber hazard
+                if (!(b.getLocation().getY() < -20.0)) {
+                    //DropPowerup.DropPowerup(b.getLocation(), "TrialChamberHazardKey");
+                    Entity entity = e.getDamageSource().getCausingEntity();
+                    if (entity != null) {
+                        entity.sendMessage(text("[!] You killed the Big Breeze, A trial key has been dropped"));
+                    }
+                }
+            } else {
+                ItemStack item = KnockoffItem.WindCharge.clone();
+                item.setAmount(1);
+                e.getDrops().add(item);
+            }
+        }
+
+    }
+
 	@EventHandler
 	public void OnPlayerPickupItem(EntityPickupItemEvent event) {
 		Player player = (Player) event.getEntity();
@@ -510,5 +533,22 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onBlockUpdate(BlockFromToEvent e) {
         e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onVaultUnlock(VaultChangeStateEvent e) {
+        Player p = e.getPlayer();
+        Block b = e.getBlock();
+        if (e.getNewState().equals(org.bukkit.block.data.type.Vault.State.EJECTING)) {
+            e.setCancelled(true);
+            //b.setType(Material.AMETHYST_BLOCK);
+            b.getLocation().getBlock().setType(Material.AMETHYST_BLOCK);
+            for (Player player : Bukkit.getOnlinePlayers()) {
+                player.playSound(b.getLocation(), "crystalized:effect.nexus_crystal_destroyed", 1, 1.5F);
+            }
+            List<String> string = Arrays.asList("WindCharge", "BoostOrb", "WingedOrb");
+            Collections.shuffle(string);
+            DropPowerup.DropPowerup(b.getLocation().clone().add(0.5, 1, 0.5), string.get(knockoff.getInstance().getRandomNumber(0, string.size())));
+        }
     }
 }

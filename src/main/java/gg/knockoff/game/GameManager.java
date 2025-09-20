@@ -2369,11 +2369,7 @@ class HazardsManager {
                         if (b.isDead()) {
                             if (maxhealth == 4.0) {
                                 Location keyLoc = loc.clone().add(0, 1, 0);
-                                if (MapManager.isInsideCurrentSection(keyLoc)) {
-                                    DropPowerup.DropPowerup(keyLoc, "TrialChamberHazardKey");
-                                } else {
-                                    DropPowerup.DropPowerup(b.getLocation(), "TrialChamberHazardKey");
-                                }
+                                DropPowerup.DropPowerup(b.getLocation(), "TrialChamberHazardKey");
                             }
                             entitiesSpawned.remove(b);
                         }

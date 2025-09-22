@@ -279,113 +279,44 @@ public class PlayerListener implements Listener {
 		tempBlockList.add(middleLoc.clone().add(0, 0, -1).getBlock());
 		tempBlockList.add(middleLoc.clone().add(1, 0, -1).getBlock());
 		tempBlockList.add(middleLoc.clone().add(-1, 0, -1).getBlock());
-		//TODO how do we make this better
-		switch (Teams.GetPlayerTeam(p)) {
-			case "blue" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.WHITE_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.EAST);
-					b.setBlockData(dir);
-				}
-			}
-			case "cyan" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.WHITE_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.NORTH);
-					b.setBlockData(dir);
-				}
-			}
-			case "green" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.WHITE_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.SOUTH);
-					b.setBlockData(dir);
-				}
-			}
-			case "lemon" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.WHITE_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.WEST);
-					b.setBlockData(dir);
-				}
-			}
-			case "lime" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.EAST);
-					b.setBlockData(dir);
-				}
-			}
-			case "magenta" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.NORTH);
-					b.setBlockData(dir);
-				}
-			}
-			case "orange" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.SOUTH);
-					b.setBlockData(dir);
-				}
-			}
-			case "peach" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.WEST);
-					b.setBlockData(dir);
-				}
-			}
-			case "purple" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.GRAY_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.EAST);
-					b.setBlockData(dir);
-				}
-			}
-			case "red" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.GRAY_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.NORTH);
-					b.setBlockData(dir);
-				}
-			}
-			case "white" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.GRAY_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.SOUTH);
-					b.setBlockData(dir);
-				}
-			}
-			case "yellow" -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.GRAY_GLAZED_TERRACOTTA);
-					Directional dir = (Directional) b.getBlockData();
-					dir.setFacing(BlockFace.WEST);
-					b.setBlockData(dir);
-				}
-			}
-			default -> {
-				for (Block b : tempBlockList) {
-					b.setType(Material.AMETHYST_BLOCK);
-				}
-			}
-		}
-		for (Block b : tempBlockList) {
-			GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30), false);
-		}
+
+        for (Block b : tempBlockList) {
+            switch (Teams.GetPlayerTeam(p)) {
+                case "blue", "cyan", "green", "lemon" -> {
+                    b.setType(Material.WHITE_GLAZED_TERRACOTTA);
+                }
+                case "lime", "magenta", "orange", "peach" -> {
+                    b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                }
+                case "purple", "white", "yellow", "red" -> {
+                    b.setType(Material.GRAY_GLAZED_TERRACOTTA);
+                }
+                case "weak", "strong" -> {
+                    b.setType(Material.BLACK_GLAZED_TERRACOTTA);
+                }
+            }
+            Directional dir = (Directional) b.getBlockData();
+
+            //set direction to match the item model's model
+            switch (Teams.GetPlayerTeam(p)) {
+                case "blue", "lime", "purple", "weak" -> {
+                    dir.setFacing(BlockFace.EAST);
+                }
+                case "cyan", "magenta", "red", "strong" -> {
+                    dir.setFacing(BlockFace.NORTH);
+                }
+                case "green", "orange", "white" -> {
+                    dir.setFacing(BlockFace.SOUTH);
+                }
+                case "lemon", "peach", "yellow" -> {
+                    dir.setFacing(BlockFace.WEST);
+                }
+            }
+
+            b.setBlockData(dir);
+            b.getState().update();
+            GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30), false);
+        }
 
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
 		if (pd.lives == 1) {
@@ -397,7 +328,8 @@ public class PlayerListener implements Listener {
 		p.teleport(ploc);
 		p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
 				knockoff.getInstance().mapdata.getCurrentMiddleYLength(),
-				knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
+				knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES
+        );
 	}
 
 	@EventHandler

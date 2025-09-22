@@ -33,7 +33,9 @@ import net.kyori.adventure.util.TriState;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.block.data.Directional;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -606,14 +608,25 @@ public class GameManager { //I honestly think this entire class could be optimis
         return null;
     }
 
-    /*
-    This is a mess rn
-    Theres a new method (spawnSpawnPlatformAndTP()) for this but the TPing is just fucked up on Paper
-     */
     @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     private static void SetupFirstSpawns() {
         MapData md = knockoff.getInstance().mapdata;
         int offset = md.currentSection.getAsJsonObject().get("spawn_offset").getAsInt();
+
+        //TODO Misherop uncomment this for new spawn thingy
+        /*
+        new BukkitRunnable() {
+            public void run() {
+                for (TeamData td : Teams.team_datas_without_spectator) {
+                    spawnSpawnPlatformAndTP(Teams.get_team_from_string(td.name), td.name);
+                }
+                cancel();
+            }
+        }.runTaskTimer(knockoff.getInstance(), 10, 1);
+        */
+
+        //EVERYTHING BELOW WILL BE REMOVED, Misherop comment everything below so it doesn't run
+
         if (!Teams.blue.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
             CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset , SectionPlaceLocationZ + 5),
@@ -782,8 +795,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                 e.printStackTrace();
             }
         }
-
-
         for (Player p : Bukkit.getOnlinePlayers()) {
 						World w = Bukkit.getWorld("world");
             if (Teams.GetPlayerTeam(p).equals("blue")) {
@@ -828,9 +839,17 @@ public class GameManager { //I honestly think this entire class could be optimis
             }
             p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
         }
+
     }
     
-    private static void spawnSpawnPlatformAndTP(Location middleLoc, String team, Material glassType) {
+    private static void spawnSpawnPlatformAndTP(List<String> players, String team) {
+        Location middleLoc = new Location(Bukkit.getWorld("world"),
+                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
+                knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8), // TODO temp
+                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
+        if (knockoff.getInstance().GameManager == null || players.isEmpty()) {
+            return;
+        }
         List<Block> tempBlockList = new ArrayList<>();
         tempBlockList.add(middleLoc.getBlock());
         tempBlockList.add(middleLoc.clone().add(1, 0, 0).getBlock());
@@ -841,13 +860,54 @@ public class GameManager { //I honestly think this entire class could be optimis
         tempBlockList.add(middleLoc.clone().add(0, 0, -1).getBlock());
         tempBlockList.add(middleLoc.clone().add(1, 0, -1).getBlock());
         tempBlockList.add(middleLoc.clone().add(-1, 0, -1).getBlock());
+
         for (Block b : tempBlockList) {
-            b.setType(glassType);
+            switch (team) {
+                case "blue", "cyan", "green", "lemon" -> {
+                    b.setType(Material.WHITE_GLAZED_TERRACOTTA);
+                }
+                case "lime", "magenta", "orange", "peach" -> {
+                    b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+                }
+                case "purple", "white", "yellow", "red" -> {
+                    b.setType(Material.GRAY_GLAZED_TERRACOTTA);
+                }
+                case "weak", "strong" -> {
+                    b.setType(Material.BLACK_GLAZED_TERRACOTTA);
+                }
+            }
+            Directional dir = (Directional) b.getBlockData();
+
+            //set direction to match the item model's model
+            switch (team) {
+                case "blue", "lime", "purple", "weak" -> {
+                    dir.setFacing(BlockFace.EAST);
+                }
+                case "cyan", "magenta", "red", "strong" -> {
+                    dir.setFacing(BlockFace.NORTH);
+                }
+                case "green", "orange", "white" -> {
+                    dir.setFacing(BlockFace.SOUTH);
+                }
+                case "lemon", "peach", "yellow" -> {
+                    dir.setFacing(BlockFace.WEST);
+                }
+            }
+
+            b.setBlockData(dir);
+            b.getState().update();
+            GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30), false);
         }
 
-        for (String s : Teams.get_team_from_string(team)) {
+        Location ploc = new Location(Bukkit.getWorld("world"), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
+        for (String s : players) {
             Player p = Bukkit.getPlayer(s);
-            p.teleportAsync(middleLoc.clone().add(0, 2, 0));
+            p.sendMessage(text("ploc: X:" + ploc.x() + " Y:" + ploc.y() + " Z:" + ploc.z()));
+            p.teleport(ploc);
+            p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
+                    knockoff.getInstance().mapdata.getCurrentMiddleYLength(),
+                    knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES
+            );
         }
     }
 
@@ -1902,7 +1962,7 @@ class HazardsManager {
                 Location loc;
                 List<Block> blockList = new ArrayList<>();
 
-                //Edit Trial Vault loots if any exist
+                //Check for Trial Spawners beore picking random spot
                 com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
                 try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
                     MapData md = knockoff.getInstance().mapdata;

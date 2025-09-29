@@ -6,23 +6,15 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.fastasyncworldedit.core.Fawe;
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
-import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
-import com.sk89q.worldedit.function.mask.ExistingBlockMask;
-import com.sk89q.worldedit.function.operation.ForwardExtentCopy;
-import com.sk89q.worldedit.function.operation.Operation;
-import com.sk89q.worldedit.function.operation.Operations;
 import com.sk89q.worldedit.function.pattern.RandomPattern;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
-import com.sk89q.worldedit.session.ClipboardHolder;
 import com.sk89q.worldedit.world.block.BlockState;
+import gg.knockoff.game.CustomEntities.MapParticles;
 import gg.knockoff.game.hazards.*;
 import io.papermc.paper.entity.LookAnchor;
 import net.kyori.adventure.text.Component;
@@ -30,7 +22,6 @@ import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
-import net.kyori.adventure.util.TriState;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -38,7 +29,6 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,7 +36,6 @@ import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.util.BoundingBox;
 import org.bukkit.util.Vector;
 import org.geysermc.floodgate.api.FloodgateApi;
 
@@ -63,6 +52,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public Teams teams;
     public HazardsManager hazards = new HazardsManager();
     public static List<Block> blocksCrystallizing = new ArrayList<>();
+    public static List<MapParticles> particles = new ArrayList<>();
 
     public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;
@@ -88,12 +78,12 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     //public static String GameType = "Solo";
     public static GameTypes GameType;
-    public static mapDirections plannedDirection;
+    public static mapDirections plannedDirection = mapDirections.undecided;
 
     public static int Round = 0;
     public static int RoundCounter =0;
 
-    enum mapDirections{
+    public enum mapDirections{
         undecided,
         EAST,
         SOUTH,
@@ -325,8 +315,19 @@ public class GameManager { //I honestly think this entire class could be optimis
                     cancel();
                 }
 
-                if (RoundCounter == 7 && GameManager.GameState.equals("game") && !showdownModeStarted) {
-                    decideMapDirection(); //TODO spawn particles
+                if (RoundCounter == 9 && GameManager.GameState.equals("game") && !showdownModeStarted) {
+                    particles.clear();
+                    MapData md = knockoff.getInstance().mapdata;
+                    for (int i = 0; i < 5; i++) {
+                        particles.add(new MapParticles(new Location(Bukkit.getWorld("world"),
+                                knockoff.getInstance().getRandomNumber(SectionPlaceLocationX, md.getCurrentXLength()),
+                                knockoff.getInstance().getRandomNumber(md.getCurrentYLength() - 2, md.getCurrentYLength() + 2),
+                                knockoff.getInstance().getRandomNumber(SectionPlaceLocationZ, md.getCurrentZLength()))
+                        ));
+                    }
+                }
+                if (RoundCounter == 5 && GameManager.GameState.equals("game") && !showdownModeStarted) {
+                    decideMapDirection();
                 }
 
                 if (RoundCounter == 0 && GameManager.GameState.equals("game") && !showdownModeStarted) {
@@ -334,6 +335,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                         GameManager.CloneNewMapSection();
                         RoundCounter = 60;
                         Round++;
+                        for (MapParticles mp : particles) {
+                            mp.isMoving = true;
+                        }
                         new BukkitRunnable() {
                             public void run() {
                                 SpawnRandomPowerup(null);
@@ -1117,14 +1121,14 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void decideMapDirection() {
-        switch (knockoff.getInstance().getRandomNumber(1, 3)) {
-            case 1 -> {
+        switch (knockoff.getInstance().getRandomNumber(1, 9)) {
+            case 1, 4, 7 -> {
                 GameManager.plannedDirection = mapDirections.EAST;
             }
-            case 2 -> {
+            case 2, 5, 8 -> {
                 GameManager.plannedDirection = mapDirections.SOUTH;
             }
-            case 3 -> {
+            case 3, 6, 9 -> {
                 GameManager.plannedDirection = mapDirections.WEST;
             }
         }

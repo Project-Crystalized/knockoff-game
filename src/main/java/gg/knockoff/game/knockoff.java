@@ -6,6 +6,7 @@ import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import gg.crystalized.lobby.Lobby_plugin;
+import gg.knockoff.game.hazards.hazard;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -176,22 +177,22 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("trialchambermace").executes(ctx -> {commandSpawnPowerup(ctx.getSource().getExecutor(),"TrialChamberMace"); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("spawn_hazard").requires(sender -> sender.getSender().hasPermission("minecraft.command.op"))
-                    .then(Commands.literal("tnt").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.tnt); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("slime_time").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.slimetime); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("flying_cars").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.flyingcars); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("poison_bushes").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.poisonbushes); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("floor_is_crystals").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.flooriscrystals); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("water_sprouts").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.watersprouts); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("map_split_in_half").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.splitmapinhalf); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("train").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.train); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("tnt").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "tnt"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("slime_time").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "slimetime"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("flying_cars").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "flyingcars"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("poison_bushes").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "poisonbushes"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("floor_is_crystals").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "flooriscrystals"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("water_sprouts").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "watersprouts"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("map_split_in_half").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "splitmapinhalf"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("train").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "train"); return Command.SINGLE_SUCCESS;}))
 
-                    .then(Commands.literal("curse_of_slowness").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.curseofslowness); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("pufferfish").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.pufferfish); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("bee_attack").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.beeattack); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("slimes_of_stacking").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.slimesofstacking); return Command.SINGLE_SUCCESS;}))
-                    .then(Commands.literal("lightning").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.lightning); return Command.SINGLE_SUCCESS;}))
+                    //.then(Commands.literal("curse_of_slowness").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.curseofslowness); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("pufferfish").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "pufferfish"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("bee_attack").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "beeattack"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("slimes_of_stacking").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "slimesofstacking"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("lightning").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "lightning"); return Command.SINGLE_SUCCESS;}))
 
-                    .then(Commands.literal("trialchamber").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), HazardsManager.hazards.TrialChamber); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("trialchamber").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "TrialChamber"); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("force_showdown").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
                 if (knockoff.getInstance().GameManager == null) {
@@ -419,14 +420,14 @@ public final class knockoff extends JavaPlugin {
     }
 
     //Again, should only be called inside commands, nowhere else
-    private void commandSpawnHazard(Entity commandSource, HazardsManager.hazards hazard) {
+    private void commandSpawnHazard(Entity commandSource, String string) {
         knockoff.getInstance().reloadConfig();
         if (knockoff.getInstance().GameManager == null) {
             commandSource.sendMessage(text("[!] This cant be used in the waiting lobby."));
         } else if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_hazard_control") && !knockoff.getInstance().getConfig().getBoolean("tourneys.enable")) {
             commandSource.sendMessage(text("[!] Manual Hazard Control is disabled in config.yml, This command cannot be used unless it is enabled"));
         } else {
-            knockoff.getInstance().GameManager.hazards.NewHazard(hazard);
+            knockoff.getInstance().GameManager.hazards.NewHazard(knockoff.getInstance().GameManager.hazards.getHazard(string));
         }
     }
 

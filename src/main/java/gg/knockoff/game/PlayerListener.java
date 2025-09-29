@@ -485,7 +485,7 @@ public class PlayerListener implements Listener {
                 player.playSound(b.getLocation(), "crystalized:effect.nexus_crystal_destroyed", 1, 1.5F);
             }
             Collections.shuffle(powerups);
-            DropPowerup.DropPowerup(b.getLocation().clone().add(0.5, 1, 0.5), powerups.get(knockoff.getInstance().getRandomNumber(0, powerups.size())));
+            KnockoffItem.DropPowerup(b.getLocation().clone().add(0.5, 1, 0.5), powerups.get(knockoff.getInstance().getRandomNumber(0, powerups.size())));
         }
     }
 }

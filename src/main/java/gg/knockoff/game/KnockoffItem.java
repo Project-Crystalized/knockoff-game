@@ -153,9 +153,7 @@ public class KnockoffItem {
         TrialChamberMace.setData(DataComponentTypes.DAMAGE, 0);
         TrialChamberMace.setData(DataComponentTypes.MAX_DAMAGE, 1);
     }
-}
 
-class DropPowerup {
     public static void DropPowerup(Location loc, String powerup) {
 
         //Messy
@@ -296,7 +294,7 @@ class DropPowerup {
                         DroppedItem.getLocation().getX(),
                         DroppedItem.getLocation().getY() + 1,
                         DroppedItem.getLocation().getZ()
-                        );
+                );
                 Location Descloc = new Location(
                         DroppedItem.getLocation().getWorld(),
                         DroppedItem.getLocation().getX(),
@@ -331,3 +329,4 @@ class DropPowerup {
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
     }
 }
+

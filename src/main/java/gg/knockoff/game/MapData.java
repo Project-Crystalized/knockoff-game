@@ -26,6 +26,9 @@ public class MapData {
     public int CurrentXLength = 0;
     public int CurrentYLength = 0;
     public int CurrentZLength = 0;
+    public int LastXLength = 0;
+    public int LastYLength = 0;
+    public int LastZLength = 0;
 
     public final Component map_name;
     public final String map_nameString;

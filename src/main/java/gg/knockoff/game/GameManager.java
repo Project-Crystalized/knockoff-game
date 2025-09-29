@@ -526,12 +526,13 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void ForceEndGame() {
+        MapData md = knockoff.getInstance().mapdata;
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + SectionPlaceLocationX + "," + SectionPlaceLocationY + "," + SectionPlaceLocationZ);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + md.getCurrentXLength() + "," + md.getCurrentYLength() + "," + md.getCurrentZLength());
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + LastSectionPlaceLocationX + "," + LastSectionPlaceLocationY + "," + LastSectionPlaceLocationZ);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + (LastSectionPlaceLocationX + MapManager.LastXLength) + "," + (LastSectionPlaceLocationY+ MapManager.LastYLength) + "," + (LastSectionPlaceLocationZ + MapManager.LastZLength));
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + (LastSectionPlaceLocationX + md.LastXLength) + "," + (LastSectionPlaceLocationY+ md.LastYLength) + "," + (LastSectionPlaceLocationZ + md.LastZLength));
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
 
         for (Player p : Bukkit.getOnlinePlayers()) {

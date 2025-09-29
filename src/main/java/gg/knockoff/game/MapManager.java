@@ -40,17 +40,16 @@ import static net.kyori.adventure.text.format.NamedTextColor.RED;
 
 //Used to be part of GameManager, separated into its own class for hazards rework needing to make this class public
 public class MapManager {
-    public static int LastXLength = 0;
-    public static int LastYLength = 0;
-    public static int LastZLength = 0;
 
     public static void CloneNewMapSection() {
+        GameManager GameManager = knockoff.getInstance().GameManager;
+        MapData md = knockoff.getInstance().mapdata;
         GameManager.LastSectionPlaceLocationX = GameManager.SectionPlaceLocationX;
         GameManager.LastSectionPlaceLocationY = GameManager.SectionPlaceLocationY;
         GameManager.LastSectionPlaceLocationZ = GameManager.SectionPlaceLocationZ;
-        LastXLength = knockoff.getInstance().mapdata.CurrentXLength;
-        LastYLength = knockoff.getInstance().mapdata.CurrentYLength;
-        LastZLength = knockoff.getInstance().mapdata.CurrentZLength;
+        md.LastXLength = md.CurrentXLength;
+        md.LastYLength = md.CurrentYLength;
+        md.LastZLength = md.CurrentZLength;
         Bukkit.getServer().sendMessage(translatable("crystalized.game.knockoff.chat.movetosafety1").color(GOLD)
                 .append(translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED).decoration(TextDecoration.BOLD, true))
         );
@@ -58,20 +57,20 @@ public class MapManager {
         knockoff.getInstance().GameManager.mapMoving = true;
 
         //In the case the command is used instead of this being called naturally
-        if (GameManager.plannedDirection.equals(GameManager.mapDirections.undecided)) {
+        if (GameManager.plannedDirection.equals(gg.knockoff.game.GameManager.mapDirections.undecided)) {
             GameManager.decideMapDirection();
         }
 
         switch (GameManager.plannedDirection) {
-            case GameManager.mapDirections.EAST:
-                GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX + LastXLength;
+            case gg.knockoff.game.GameManager.mapDirections.EAST:
+                GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX + md.LastXLength;
                 GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
                 break;
-            case GameManager.mapDirections.SOUTH:
+            case gg.knockoff.game.GameManager.mapDirections.SOUTH:
                 GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX;
-                GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ + LastZLength;
+                GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ + md.LastZLength;
                 break;
-            case GameManager.mapDirections.WEST:
+            case gg.knockoff.game.GameManager.mapDirections.WEST:
                 GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX - knockoff.getInstance().mapdata.CurrentXLength;
                 GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
                 break;
@@ -93,17 +92,18 @@ public class MapManager {
     public static void turnMapIntoCrystals() {
         List<Block> blockList = new ArrayList<>();
         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        MapData md = knockoff.getInstance().mapdata;
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             Region region = new CuboidRegion(
                     BlockVector3.at(
-                            GameManager.LastSectionPlaceLocationX,
-                            GameManager.LastSectionPlaceLocationY,
-                            GameManager.LastSectionPlaceLocationZ
+                            knockoff.getInstance().GameManager.LastSectionPlaceLocationX,
+                            knockoff.getInstance().GameManager.LastSectionPlaceLocationY,
+                            knockoff.getInstance().GameManager.LastSectionPlaceLocationZ
                     ),
                     BlockVector3.at(
-                            GameManager.LastSectionPlaceLocationX + LastXLength -1,
-                            GameManager.LastSectionPlaceLocationY + LastYLength -1, //Subtracting 1 to prevent a bug where section borders are caught within this
-                            GameManager.LastSectionPlaceLocationZ + LastZLength -1
+                            knockoff.getInstance().GameManager.LastSectionPlaceLocationX + md.LastXLength -1,
+                            knockoff.getInstance().GameManager.LastSectionPlaceLocationY + md.LastYLength -1, //Subtracting 1 to prevent a bug where section borders are caught within this
+                            knockoff.getInstance().GameManager.LastSectionPlaceLocationZ + md.LastZLength -1
                     )
             );
             for (BlockVector3 bV3 : region) {
@@ -130,6 +130,7 @@ public class MapManager {
         //TODO this code is shit but idk how to improve it well
         //Filling crystals with air, this has a delay compared to the previous BukkitRunnable
         //This is literally copy pasted code but with the material changed to AIR
+        MapData md = knockoff.getInstance().mapdata;
         new BukkitRunnable() {
             int XPos = 0;
 
@@ -139,7 +140,7 @@ public class MapManager {
                 switch (GameManager.plannedDirection) {
                     case GameManager.mapDirections.EAST -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-                        if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
+                        if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + md.LastXLength + 1)) {
                             finishDecay();
                             cancel();
                         } else {
@@ -152,8 +153,8 @@ public class MapManager {
                                         ),
                                         BlockVector3.at(
                                                 GameManager.LastSectionPlaceLocationX + XPos - 5,
-                                                GameManager.LastSectionPlaceLocationY + LastYLength,
-                                                GameManager.LastSectionPlaceLocationZ + LastZLength
+                                                GameManager.LastSectionPlaceLocationY + md.LastYLength,
+                                                GameManager.LastSectionPlaceLocationZ + md.LastZLength
                                         )
                                 );
                                 //Mask mask = new BlockMask(editSession.getExtent(), new BaseBlock(BlockTypes.AIR));
@@ -172,7 +173,7 @@ public class MapManager {
                     }
                     case GameManager.mapDirections.SOUTH -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-                        if ((GameManager.LastSectionPlaceLocationZ + XPos) == (GameManager.LastSectionPlaceLocationZ + LastZLength + 1)) {
+                        if ((GameManager.LastSectionPlaceLocationZ + XPos) == (GameManager.LastSectionPlaceLocationZ + md.LastZLength + 1)) {
                             finishDecay();
                             cancel();
                         } else {
@@ -184,8 +185,8 @@ public class MapManager {
                                                 GameManager.LastSectionPlaceLocationZ + XPos
                                         ),
                                         BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + LastXLength,
-                                                GameManager.LastSectionPlaceLocationY + LastYLength,
+                                                GameManager.LastSectionPlaceLocationX + md.LastXLength,
+                                                GameManager.LastSectionPlaceLocationY + md.LastYLength,
                                                 GameManager.LastSectionPlaceLocationZ + XPos
                                         )
                                 );
@@ -205,21 +206,21 @@ public class MapManager {
                     }
                     case GameManager.mapDirections.WEST -> {
                         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-                        if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + LastXLength + 1)) {
+                        if ((GameManager.LastSectionPlaceLocationX + XPos) == (GameManager.LastSectionPlaceLocationX + md.LastXLength + 1)) {
                             finishDecay();
                             cancel();
                         } else {
                             try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession((com.sk89q.worldedit.world.World) world)) {
                                 Region region = new CuboidRegion(
                                         BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + LastXLength - XPos,
+                                                GameManager.LastSectionPlaceLocationX + md.LastXLength - XPos,
                                                 GameManager.LastSectionPlaceLocationY - 20,
                                                 GameManager.LastSectionPlaceLocationZ
                                         ),
                                         BlockVector3.at(
-                                                GameManager.LastSectionPlaceLocationX + LastXLength - XPos + 5,
-                                                GameManager.LastSectionPlaceLocationY + LastYLength,
-                                                GameManager.LastSectionPlaceLocationZ + LastZLength
+                                                GameManager.LastSectionPlaceLocationX + md.LastXLength - XPos + 5,
+                                                GameManager.LastSectionPlaceLocationY + md.LastYLength,
+                                                GameManager.LastSectionPlaceLocationZ + md.LastZLength
                                         )
                                 );
                                 //Mask mask = new BlockMask(editSession.getExtent(), new BaseBlock(BlockTypes.AIR));
@@ -277,7 +278,7 @@ public class MapManager {
 
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(editSession)
-                    .to(BlockVector3.at(GameManager.SectionPlaceLocationX, GameManager.SectionPlaceLocationY, GameManager.SectionPlaceLocationZ))
+                    .to(BlockVector3.at(knockoff.getInstance().GameManager.SectionPlaceLocationX, knockoff.getInstance().GameManager.SectionPlaceLocationY, knockoff.getInstance().GameManager.SectionPlaceLocationZ))
                     .build();
             Operations.complete(operation);
         } catch (Exception e) {
@@ -289,7 +290,7 @@ public class MapManager {
             Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
                 String a = sectionJson.get("remove_block").getAsString();
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + GameManager.SectionPlaceLocationX + "," + GameManager.SectionPlaceLocationY + "," + GameManager.SectionPlaceLocationZ);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + knockoff.getInstance().GameManager.SectionPlaceLocationX + "," + knockoff.getInstance().GameManager.SectionPlaceLocationY + "," + knockoff.getInstance().GameManager.SectionPlaceLocationZ);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
             }, 2);
@@ -301,9 +302,9 @@ public class MapManager {
     //We could make a worldedit region and do shit with that, but I feel like making worldedit actions everytime this is called is stupid - Callum
     public static boolean isInsideCurrentSection(Location loc) {
         if (!(
-                loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength() || loc.getBlockY() < (GameManager.SectionPlaceLocationY - 20)
-                || loc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength() || loc.getBlockX() < GameManager.SectionPlaceLocationX
-                || loc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength() || loc.getBlockZ() < GameManager.SectionPlaceLocationZ
+                loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength() || loc.getBlockY() < (knockoff.getInstance().GameManager.SectionPlaceLocationY - 20)
+                || loc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength() || loc.getBlockX() < knockoff.getInstance().GameManager.SectionPlaceLocationX
+                || loc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength() || loc.getBlockZ() < knockoff.getInstance().GameManager.SectionPlaceLocationZ
         )) {
             return true;
         }
@@ -311,10 +312,11 @@ public class MapManager {
     }
 
     public static boolean isInsideDecayingSection(Location loc) {
+        MapData md = knockoff.getInstance().mapdata;
         if (!(
-                loc.getBlockY() > GameManager.LastSectionPlaceLocationY + MapManager.LastYLength || loc.getBlockY() < (GameManager.LastSectionPlaceLocationY - 20)
-                || loc.getBlockX() > GameManager.LastSectionPlaceLocationX + MapManager.LastXLength || loc.getBlockX() < GameManager.LastSectionPlaceLocationX
-                || loc.getBlockZ() > GameManager.LastSectionPlaceLocationZ + MapManager.LastZLength || loc.getBlockZ() < GameManager.LastSectionPlaceLocationZ
+                loc.getBlockY() > knockoff.getInstance().GameManager.LastSectionPlaceLocationY + md.LastYLength || loc.getBlockY() < (knockoff.getInstance().GameManager.LastSectionPlaceLocationY - 20)
+                || loc.getBlockX() > knockoff.getInstance().GameManager.LastSectionPlaceLocationX + md.LastXLength || loc.getBlockX() < knockoff.getInstance().GameManager.LastSectionPlaceLocationX
+                || loc.getBlockZ() > knockoff.getInstance().GameManager.LastSectionPlaceLocationZ + md.LastZLength || loc.getBlockZ() < knockoff.getInstance().GameManager.LastSectionPlaceLocationZ
         )) {
             return true;
         }

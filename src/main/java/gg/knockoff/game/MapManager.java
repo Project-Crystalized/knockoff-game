@@ -61,21 +61,6 @@ public class MapManager {
             GameManager.decideMapDirection();
         }
 
-        switch (GameManager.plannedDirection) {
-            case gg.knockoff.game.GameManager.mapDirections.EAST:
-                GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX + md.LastXLength;
-                GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
-                break;
-            case gg.knockoff.game.GameManager.mapDirections.SOUTH:
-                GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX;
-                GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ + md.LastZLength;
-                break;
-            case gg.knockoff.game.GameManager.mapDirections.WEST:
-                GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX - knockoff.getInstance().mapdata.CurrentXLength;
-                GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
-                break;
-        }
-
         placeNewSection();
         for (Player player : Bukkit.getOnlinePlayers()) {
             player.showTitle(Title.title(text(""), translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED), Title.Times.times(Duration.ofMillis(100), Duration.ofSeconds(4), Duration.ofMillis(500))));
@@ -250,18 +235,28 @@ public class MapManager {
         GameManager.plannedDirection = GameManager.mapDirections.undecided;
     }
 
-    //DEPRECATED
-    //public static void CopyRandomMapSection() {
-    //    knockoff.getInstance().mapdata.getrandommapsection();
-    //}
-
     public static void placeNewSection() {
-        //JsonArray data = knockoff.getInstance().mapdata.getCurrentsection();
-        JsonElement sectionData = knockoff.getInstance().mapdata.getNewRandomSection();
+        MapData md = knockoff.getInstance().mapdata;
+        JsonElement sectionData = md.getNewRandomSection();
         JsonObject sectionJson = sectionData.getAsJsonObject();
         JsonArray from = sectionJson.get("from").getAsJsonArray();
         JsonArray to = sectionJson.get("to").getAsJsonArray();
         World world = Bukkit.getWorld("world");
+
+        switch (GameManager.plannedDirection) {
+            case gg.knockoff.game.GameManager.mapDirections.EAST:
+                GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX + md.LastXLength;
+                GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
+                break;
+            case gg.knockoff.game.GameManager.mapDirections.SOUTH:
+                GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX;
+                GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ + md.LastZLength;
+                break;
+            case gg.knockoff.game.GameManager.mapDirections.WEST:
+                GameManager.SectionPlaceLocationX = GameManager.LastSectionPlaceLocationX - md.CurrentXLength;
+                GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
+                break;
+        }
 
         try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
             CuboidRegion region = new CuboidRegion(

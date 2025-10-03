@@ -193,6 +193,7 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("lightning").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "lightning"); return Command.SINGLE_SUCCESS;}))
 
                     .then(Commands.literal("trialchamber").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "TrialChamber"); return Command.SINGLE_SUCCESS;}))
+                    .then(Commands.literal("elementals").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "Elementals"); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("force_showdown").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
                 if (knockoff.getInstance().GameManager == null) {
@@ -265,7 +266,6 @@ public final class knockoff extends JavaPlugin {
         KnockoffItem.SetupKnockoffItems();
 
         new BukkitRunnable() {
-            @Override
             public void run() {
                 if (GameManager != null) {
                     return;
@@ -321,7 +321,6 @@ public final class knockoff extends JavaPlugin {
         }.runTaskTimer(knockoff.getInstance(), 1, 20);
 
         new BukkitRunnable() {
-            @Override
             public void run() {
                 if (GameManager != null) {
                     //do nothing, game has started

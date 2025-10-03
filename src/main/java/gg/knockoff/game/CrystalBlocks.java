@@ -119,17 +119,12 @@ public class CrystalBlocks implements Listener {
                                 || block.getType().equals(Material.PINK_STAINED_GLASS)
                                 || block.getType().equals(Material.PINK_STAINED_GLASS_PANE)
                                 || block.getType().equals(Material.PINK_CARPET)
+                                || (block.getType().equals(Material.ROOTED_DIRT) && knockoff.getInstance().mapdata.map_nameString.equals("Elements"))
                 ){
                     Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
                     blockloc.getBlock().breakNaturally(true);
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     pd.blocksbroken++;
-                    if (knockoff.getInstance().DevMode) {
-                        Bukkit.getServer().sendMessage(text("[DEBUG] ")
-                                .append(player.displayName())
-                                .append(text(" has broken a block"))
-                        );
-                    }
                 }
             }
         }

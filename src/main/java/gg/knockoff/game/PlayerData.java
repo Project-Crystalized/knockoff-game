@@ -11,6 +11,7 @@ import org.bukkit.Color;
 import org.bukkit.GameMode;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.Comparator;
@@ -51,6 +52,8 @@ public class PlayerData { //This class probably isn't optimised, but it works so
             int timerOver100Particles = -1;
 
             public void run() {
+                p.removePotionEffect(PotionEffectType.DARKNESS);
+
                 //percent shit
                 if (percent > 0) {
                     if (savedPercent != percent) {

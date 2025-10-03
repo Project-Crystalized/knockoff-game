@@ -7,6 +7,7 @@ import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Bee;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Warden;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -35,9 +36,17 @@ public class DamagePercentage implements Listener {
             } else if (ds.getDamageType().equals(DamageType.MAGIC) || ds.getDamageType().equals(DamageType.WITHER)) {
                 pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(5, 6);
             } else if (ds.getDamageType().equals(DamageType.MOB_ATTACK) || ds.getDamageType().equals(DamageType.MOB_ATTACK_NO_AGGRO)) {
-                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(3, 6);
+                if (ds.getCausingEntity() instanceof Warden) {
+                    pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(10, 13);
+                } else {
+                    pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(3, 6);
+                }
             } else if (ds.getDamageType().equals(DamageType.LIGHTNING_BOLT)) {
                 pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(10, 13);
+            } else if (ds.getDamageType().equals(DamageType.SONIC_BOOM)) {
+                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(25, 50);
+            } else if (ds.getDamageType().equals(DamageType.ON_FIRE) || ds.getDamageType().equals(DamageType.CACTUS)) {
+                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(2, 4);
             }
         }
     }

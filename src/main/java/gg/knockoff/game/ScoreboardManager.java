@@ -233,12 +233,12 @@ public class ScoreboardManager {
         player.setScoreboard(scoreboard);
 
         new BukkitRunnable() {
-            @Override
             public void run() {
                 if (knockoff.getInstance().GameManager == null) {
                     cancel();
                 } else {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                    if (pd == null) {return;}
                     if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
                         if (knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
                             obj.getScore("5").customName(Component.translatable("crystalized.game.knockoff.round").append(text(": ")).append(text("??")));

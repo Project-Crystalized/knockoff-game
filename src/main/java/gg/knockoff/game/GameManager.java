@@ -603,9 +603,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                 return pd;
             }
         }
-        Bukkit.getServer().sendMessage(text("error occured, a player didnt have associated data"));
+        //Bukkit.getServer().sendMessage(text("error occured, a player didnt have associated data")); //fuck you
         Bukkit.getLogger().warning("player name: " + p.getName());
-        Thread.dumpStack();
+        //Thread.dumpStack();
 
         for (PlayerData pd : playerDatas) {
             Bukkit.getLogger().warning(pd.player);
@@ -1278,10 +1278,12 @@ class HazardsManager {
         hazards.add(new BeeAttack("beeattack"));
         hazards.add(new SlimesOfStacking("slimesofstacking"));
         hazards.add(new Lightning("lightning"));
+        hazards.add(new Exclusive_Elementals("Elementals"));
 
         //Temporary
         switch (md.map_nameString) {
             case "Free Trial" -> {hazards.add(new Exclusive_TrialChamber("TrialChamber"));}
+            case "Elements" -> {hazards.add(new Exclusive_Elementals("Elementals"));}
         }
 
         new BukkitRunnable() {

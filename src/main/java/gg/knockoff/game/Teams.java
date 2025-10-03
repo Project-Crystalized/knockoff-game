@@ -489,7 +489,6 @@ class CustomPlayerNametags {
 		player.hideEntity(knockoff.getInstance(), displayfront);
 
 		new BukkitRunnable() {
-			@Override
 			public void run() {
 				if (knockoff.getInstance().GameManager == null || !player.isOnline()
 						|| knockoff.getInstance().GameManager.getPlayerData(player).isPlayerDead) {

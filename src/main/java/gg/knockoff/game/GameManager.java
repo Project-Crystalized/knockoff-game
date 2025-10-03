@@ -1278,7 +1278,7 @@ class HazardsManager {
         hazards.add(new BeeAttack("beeattack"));
         hazards.add(new SlimesOfStacking("slimesofstacking"));
         hazards.add(new Lightning("lightning"));
-        hazards.add(new Exclusive_Elementals("Elementals"));
+        //hazards.add(new Exclusive_Elementals("Elementals"));
 
         //Temporary
         switch (md.map_nameString) {

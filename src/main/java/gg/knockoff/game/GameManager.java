@@ -1281,10 +1281,14 @@ class HazardsManager {
         //hazards.add(new Exclusive_Elementals("Elementals"));
 
         //Temporary
-        switch (md.map_nameString) {
-            case "Free Trial" -> {hazards.add(new Exclusive_TrialChamber("TrialChamber"));}
-            case "Elements" -> {hazards.add(new Exclusive_Elementals("Elementals"));}
+        for (int i = 0; i < 3; i++) {
+            switch (md.map_nameString) {
+                case "Free Trial" -> {hazards.add(new Exclusive_TrialChamber("TrialChamber"));}
+                case "Elements" -> {hazards.add(new Exclusive_Elementals("Elementals"));}
+            }
         }
+
+        Collections.shuffle(hazards);
 
         new BukkitRunnable() {
             int timer = knockoff.getInstance().getRandomNumber(30, 60);

@@ -59,11 +59,12 @@ public final class knockoff extends JavaPlugin {
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "crystalized:knockoff");
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "crystalized:main");
 
-        Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20);
+        //Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20); //deprecated in 1.21.9
         Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
         Bukkit.getWorld("world").setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
         Bukkit.getWorld("world").setGameRule(GameRule.LOCATOR_BAR, false);
         Bukkit.getWorld("world").setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
+        Bukkit.getWorld("world").setGameRule(GameRule.MOB_GRIEFING, true);
         Bukkit.getWorld("world").setDifficulty(Difficulty.NORMAL);
 
         if (!Lobby_plugin.getInstance().passive_mode) {

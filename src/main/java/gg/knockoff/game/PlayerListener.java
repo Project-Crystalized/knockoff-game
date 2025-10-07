@@ -31,13 +31,11 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.geysermc.floodgate.api.FloodgateApi;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -452,10 +450,45 @@ public class PlayerListener implements Listener {
 		e.setCancelled(true);
 		if (knockoff.getInstance().GameManager == null) {return;}
 		e.getLocation().createExplosion(null, 1.5F, false, false);
-		for (Block b : e.blockList()) {
-			knockoff.getInstance().GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(11, 16), true);
-		}
+        Component text = e.getEntity().customName();
+
+        if (text == null) {
+            for (Block b : e.blockList()) {
+                knockoff.getInstance().GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(11, 16), true);
+            }
+        } else if (text.equals(text("magma"))) {
+            for (Block b : e.blockList()) {
+                if (!b.getType().equals(Material.RESIN_BLOCK)) {
+                    b.setType(Material.MAGMA_BLOCK);
+                }
+            }
+            //randomly spawn explosive orb for elementals eurption
+            switch (knockoff.getInstance().getRandomNumber(1, 8)) {
+                case 5 -> {
+                    KnockoffItem.DropPowerup(e.getLocation(), "ExplosiveOrb");
+                }
+            }
+        }
 	}
+
+    @EventHandler
+    public void onSnowballHit(ProjectileHitEvent e) {
+        if (knockoff.getInstance().GameManager == null) {return;}
+        Entity entity = e.getEntity();
+        if (entity instanceof Snowball s) {
+            Component text = s.customName();
+            if (text == null) {return;}
+            if (text.equals(text("magma"))) {
+                //create fireball for big explosion turning into magma blocks
+                Bukkit.getWorld("world").spawn(s.getLocation(), Fireball.class, fireball -> {
+                    fireball.customName(text);
+                    fireball.setYield(6);
+                    fireball.setVelocity(new Vector(0, -10, 0));
+                    fireball.setCustomNameVisible(false);
+                });
+            }
+        }
+    }
 
     @EventHandler
     public void onWaterFlow(FluidLevelChangeEvent e) {

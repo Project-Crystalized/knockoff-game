@@ -551,7 +551,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 */
 
         for (Entity e : Bukkit.getWorld("world").getEntities()) {
-            if (e instanceof TextDisplay) {
+            if (e instanceof TextDisplay || e instanceof WindCharge || e instanceof BreezeWindCharge) {
                 e.remove();
             }
         }

@@ -318,6 +318,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
                 if (RoundCounter == 9 && GameManager.GameState.equals("game") && !showdownModeStarted) {
                     particles.clear();
+                    plannedDirection = mapDirections.undecided;
                     MapData md = knockoff.getInstance().mapdata;
                     for (int i = 0; i < 8; i++) {
                         particles.add(new MapParticles(new Location(Bukkit.getWorld("world"),

@@ -6,6 +6,8 @@ import gg.crystalized.lobby.Ranks;
 import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.event.block.VaultChangeStateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
@@ -50,29 +52,29 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
+		Player p = event.getPlayer();
 		FloodgateApi floodgateapi = FloodgateApi.getInstance();
 		event.joinMessage(Component.text(""));
 
 		if (knockoff.getInstance().GameManager == null) {
-			player.teleport(knockoff.getInstance().mapdata.get_que_spawn(player.getWorld()));
-			player.getInventory().clear();
-			player.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
-			player.setHealth(20);
-			player.setFoodLevel(20);
-			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-			player.setGameMode(GameMode.ADVENTURE);
-			player.setExp(0);
-			player.setLevel(0);
-			player.removePotionEffect(PotionEffectType.REGENERATION);
-			player.removePotionEffect(PotionEffectType.HUNGER);
-			player.removePotionEffect(PotionEffectType.RESISTANCE);
-			player.removePotionEffect(PotionEffectType.JUMP_BOOST); // Should remove slime time if you somehow still have it
-			player.removePotionEffect(PotionEffectType.POISON); // Removes Poisonous Bushes' effect
-			player.removePotionEffect(PotionEffectType.SLOWNESS);
-			player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
-			player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
-			player.sendPlayerListHeaderAndFooter(
+			p.teleport(knockoff.getInstance().mapdata.get_que_spawn(p.getWorld()));
+			p.getInventory().clear();
+			p.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
+			p.setHealth(20);
+			p.setFoodLevel(20);
+			p.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+			p.setGameMode(GameMode.ADVENTURE);
+			p.setExp(0);
+			p.setLevel(0);
+			p.removePotionEffect(PotionEffectType.REGENERATION);
+			p.removePotionEffect(PotionEffectType.HUNGER);
+			p.removePotionEffect(PotionEffectType.RESISTANCE);
+			p.removePotionEffect(PotionEffectType.JUMP_BOOST); // Should remove slime time if you somehow still have it
+			p.removePotionEffect(PotionEffectType.POISON); // Removes Poisonous Bushes' effect
+			p.removePotionEffect(PotionEffectType.SLOWNESS);
+			p.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
+			p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
+			p.sendPlayerListHeaderAndFooter(
 					// Header
 					text("\n")
 							.append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE)
@@ -83,34 +85,68 @@ public class PlayerListener implements Listener {
 					text(
 							"\nIf you find any bugs please report to TotallyNoCallum on the Crystalized Discord")
 							.append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY)));
-			new QueueScoreBoard(player);
+			new QueueScoreBoard(p);
 
 			ItemStack leavebutton = new ItemStack(Material.COAL, 1);
 			ItemMeta leavebuttonim = leavebutton.getItemMeta();
 			leavebuttonim.setItemModel(new NamespacedKey("crystalized", "ui/leave"));
 			leavebuttonim.displayName(Component.text("Return to lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
 			leavebutton.setItemMeta(leavebuttonim);
-			player.getInventory().setItem(8, leavebutton);
+			p.getInventory().setItem(8, leavebutton);
 
-			if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
-				player.sendMessage(text("-".repeat(40)));
+			if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+				p.sendMessage(text("-".repeat(40)));
 			} else {
-				player.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+				p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
 			}
-			player.sendMessage(
+			p.sendMessage(
 					text("\n")
 							.append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD).append(text(" \uE12E").color(NamedTextColor.WHITE)))
 							.append(text("\n").append(translatable("crystalized.game.knockoff.chat.tutorial").color(NamedTextColor.GRAY)))
 							.append(text("\n"))
 			);
-			if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
-				player.sendMessage(text("-".repeat(40)));
+			if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+				p.sendMessage(text("-".repeat(40)));
 			} else {
-				player.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+				p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
 			}
 
+            new BukkitRunnable() {
+                int padCooldown = 0; //in ticks
+                public void run() {
+                    if (!p.isOnline()) {
+                        cancel();
+                    }
+
+                    //launch/effect pads
+                    if (padCooldown == 0) {
+                        if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                            Block block_under = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
+                            switch (block_under.getType()) {
+                                case Material.COPPER_BLOCK -> {
+                                    p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
+                                    p.setVelocity(p.getLocation().getDirection().multiply(1.5));
+                                    padCooldown = 20;
+                                }
+                                case Material.CHISELED_COPPER -> {
+                                    p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
+                                    p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, (20), 7));
+                                    padCooldown = 20;
+                                }
+                                case Material.CUT_COPPER -> {
+                                    p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
+                                    p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 40, 6));
+                                    padCooldown = 35;
+                                }
+                            }
+                        }
+                    } else {
+                        padCooldown--;
+                    }
+                }
+            }.runTaskTimer(knockoff.getInstance(), 1, 1);
 		} else {
-			player.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
+			p.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
 		}
 	}
 

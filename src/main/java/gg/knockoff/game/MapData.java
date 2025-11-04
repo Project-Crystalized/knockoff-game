@@ -35,43 +35,49 @@ public class MapData {
     public final String game;
     private final int version;
 
+    public MapExtraFeatures extras;
 
     public MapData() {
+        JsonObject json;
+
         try {
             String file_content = Files.readString(Paths.get("./world/map_config.json"));
-            JsonObject json = JsonParser.parseString(file_content).getAsJsonObject();
-
-            JsonArray q_spawn = json.get("spawn").getAsJsonArray();
-            this.queue_spawn = new double[] { q_spawn.get(0).getAsDouble(), q_spawn.get(1).getAsDouble(),
-                    q_spawn.get(2).getAsDouble() };
-
-            this.map_name = MiniMessage.miniMessage().deserialize(json.get("name").getAsString());
-            this.map_nameString = json.get("name").getAsString();
-            this.game = json.get("game").getAsString();
-            this.version = json.get("version").getAsInt();
-
-            if (!this.game.toLowerCase().equals("knockoff")) {
-                Bukkit.getLogger().log(Level.SEVERE, "You've inserted a game config for \"" + this.game + "\", Please update the world file to be compatible with knockoff");
-                throw new Exception();
-            }
-            JsonArray SectionData = json.get("section_data").getAsJsonArray();
-            for (JsonElement j : SectionData) {
-                newSectionsList.add(j);
-            }
-
-            if (this.version != 2) {
-                throw new Exception("Invalid map_config Version! Expected 2 but found " + this.version);
-            }
-
-
+            json = JsonParser.parseString(file_content).getAsJsonObject();
         } catch (Exception e) {
-            Bukkit.getLogger().log(Level.SEVERE, "Could not load the maps configuration file!\n Error: " + e);
+            Bukkit.getLogger().log(Level.SEVERE, "Cannot read the map_config.json file, is it in the correct place?");
             e.printStackTrace();
-            Bukkit.getLogger().log(Level.SEVERE, "The Plugin will be disabled!");
             // disable plugin when failure
             Bukkit.getPluginManager().disablePlugin(knockoff.getInstance());
             throw new RuntimeException(e);
         }
+
+        JsonArray q_spawn = json.get("spawn").getAsJsonArray();
+        this.queue_spawn = new double[] { q_spawn.get(0).getAsDouble(), q_spawn.get(1).getAsDouble(),
+                q_spawn.get(2).getAsDouble() };
+
+        this.map_name = MiniMessage.miniMessage().deserialize(json.get("name").getAsString());
+        this.map_nameString = json.get("name").getAsString();
+        this.game = json.get("game").getAsString();
+        this.version = json.get("version").getAsInt();
+
+        if (!this.game.toLowerCase().equals("knockoff")) {
+            crash("You've inserted a game config for \"" + this.game + "\", Please update the world file to be compatible with knockoff");
+        }
+        JsonArray SectionData = json.get("section_data").getAsJsonArray();
+        for (JsonElement j : SectionData) {
+            newSectionsList.add(j);
+        }
+        if (this.version != 2) {
+            crash("Invalid map_config Version! Expected 2 but found " + this.version);
+        }
+        extras = new MapExtraFeatures(json);
+    }
+
+    // use this as a substitute for throwing an exception on plugin startup
+    private void crash(String reason) {
+        knockoff.getInstance().getLogger().log(Level.SEVERE, "Error occurred in MapData:");
+        Bukkit.getPluginManager().disablePlugin(knockoff.getInstance());
+        throw new RuntimeException(reason);
     }
 
     public Location get_que_spawn(World w) {
@@ -125,5 +131,57 @@ public class MapData {
     public int getCurrentMiddleZLength() {
         int i = CurrentZLength/2 + GameManager.SectionPlaceLocationZ;
         return Math.round(i);
+    }
+}
+
+class MapExtraFeatures {
+
+    public boolean JumpBoostPads = false;
+    public boolean LevitationPads = false;
+    public boolean BoostPads = false;
+    public boolean PassiveCopperGolems = false; //Will also spawn items in (Copper) Chests to get the copper golems to move
+
+    public String exclusiveHazard = "";
+
+    JsonObject data;
+
+    public MapExtraFeatures(JsonObject json) {
+        try {
+            data = json.get("extras").getAsJsonObject();
+        } catch (Exception ex) {
+            return;
+        }
+
+        JumpBoostPads = getBool("JumpBoostPads");
+        LevitationPads = getBool("LevitationPads");
+        BoostPads = getBool("BoostPads");
+        PassiveCopperGolems = getBool("PassiveCopperGolems");
+        setupExclusiveHazard();
+
+        Bukkit.getLogger().log(Level.INFO, "MapExtraFeatures initialized");
+    }
+
+    private boolean getBool(String bool) {
+        try {
+            return data.get(bool).getAsBoolean();
+        } catch (Exception ex) {
+            return false;
+        }
+    }
+
+    private void setupExclusiveHazard() {
+        try {
+            String temp = data.get("exclusiveHazard").getAsString();
+            switch (temp) {
+                case "TrialChamber", "Elementals" -> {
+                    exclusiveHazard = temp;
+                }
+                default -> {
+                    Bukkit.getLogger().log(Level.WARNING, "[Knockoff/MapData] Unknown/Unimplemented Exclusive Hazard \"" + temp + "\". Refer to the crystalized github wiki documentation for more info.");
+                }
+            }
+        } catch (Exception ex) {
+            exclusiveHazard = "";
+        }
     }
 }

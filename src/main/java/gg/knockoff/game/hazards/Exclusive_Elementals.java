@@ -51,7 +51,7 @@ public class Exclusive_Elementals extends hazard {
     public void start() {
         miniHazards type = figureOutMiniHazard();
         if (type == null) {
-            knockoff.getInstance().getLogger().log(Level.SEVERE, "Elementals Hazard triggered but miniHazards type is null. Either this is not the correct map and/or the required block was not found in the current section.");
+            knockoff.getInstance().getLogger().log(Level.SEVERE, "Elements Hazard triggered but miniHazards type is null. Either this is not the correct map and/or the required block was not found in the current section.");
             return;
         }
         switch (type) {
@@ -89,7 +89,7 @@ public class Exclusive_Elementals extends hazard {
                 else if (b.getType().equals(Material.SOUL_SOIL)) {return miniHazards.blockBreaker;}
                 else if (b.getType().equals(Material.WHITE_STAINED_GLASS)) {return miniHazards.howlingWind;}
                 else if (b.getType().equals(Material.TORCHFLOWER)) {return miniHazards.corruptionZone;}
-                else if (b.getType().equals(Material.AMETHYST_BLOCK)) {return miniHazards.sixthElementHazard;}
+                else if (b.getType().equals(Material.OBSIDIAN)) {return miniHazards.sixthElementHazard;}
             }
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
@@ -106,7 +106,7 @@ public class Exclusive_Elementals extends hazard {
         List<Block> blockList = new ArrayList<>();
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elementals (Eruption)").color(NamedTextColor.DARK_RED),
+                text("Elements (Eruption)").color(NamedTextColor.DARK_RED),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
 
@@ -120,7 +120,7 @@ public class Exclusive_Elementals extends hazard {
             );
             for (BlockVector3 bV3 : region) {
                 Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
-                if (b.getType().equals(Material.RESIN_BLOCK)) {
+                if (b.getType().equals(Material.RESIN_BRICK)) {
                     blockList.add(b);
                 }
             }
@@ -130,7 +130,7 @@ public class Exclusive_Elementals extends hazard {
         }
 
         if (blockList.isEmpty()) {
-            knockoff.getInstance().getLogger().log(Level.SEVERE, "No Resin Blocks on map for Elementals (Eurption) hazard.");
+            knockoff.getInstance().getLogger().log(Level.SEVERE, "No Resin Bricks on map for Elementals (Eurption) hazard.");
             return;
         }
 
@@ -166,7 +166,7 @@ public class Exclusive_Elementals extends hazard {
     private void sheerCold() {
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elementals (Sheer Cold)").color(NamedTextColor.AQUA),
+                text("Elements (Sheer Cold)").color(NamedTextColor.AQUA),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -222,7 +222,7 @@ public class Exclusive_Elementals extends hazard {
     private void blockBreaker() {
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elementals (Block Breaker)").color(NamedTextColor.GOLD),
+                text("Elements (Block Breaker)").color(NamedTextColor.GOLD),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -277,7 +277,7 @@ public class Exclusive_Elementals extends hazard {
         isOver = false;
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elementals (Howling Wind)").color(NamedTextColor.WHITE),
+                text("Elements (Howling Wind)").color(NamedTextColor.WHITE),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         howlingWindDirections dir;
@@ -320,6 +320,8 @@ public class Exclusive_Elementals extends hazard {
                         ),
                         BreezeWindCharge.class
                 );
+                w.setVelocity(dir.dir);
+                bw.setVelocity(dir.dir);
                 timer--;
             }
         }.runTaskTimer(knockoff.getInstance(), 1, 1);
@@ -362,7 +364,7 @@ public class Exclusive_Elementals extends hazard {
     private void corruptionZone() {
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elementals (Corruption Zone)").color(NamedTextColor.GREEN),
+                text("Elements (Corruption Zone)").color(NamedTextColor.GREEN),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         //TODO

@@ -17,6 +17,7 @@ import com.sk89q.worldedit.world.block.BlockState;
 import gg.knockoff.game.CustomEntities.MapParticles;
 import gg.knockoff.game.hazards.*;
 import io.papermc.paper.entity.LookAnchor;
+import io.papermc.paper.world.WeatheringCopperState;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -919,6 +920,27 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     public static void CloneNewMapSection() {
         MapManager.CloneNewMapSection();
+
+        MapData md = knockoff.getInstance().mapdata;
+        //cool (but gimmicky) things we do *after* the new section generates
+
+
+        /*if (md.extras.PassiveCopperGolems) {
+            int limit = knockoff.getInstance().getRandomNumber(2, 5);
+            for (int i = 0; i < limit; i++) {
+                Location loc = hazard.getValidSpot(true); //weird method but I dont wanna copy paste code
+                loc.getWorld().spawn(loc, CopperGolem.class, entity -> {
+                    entity.setOxidizing(CopperGolem.Oxidizing.waxed());
+                    switch (knockoff.getInstance().getRandomNumber(1, 6)) {
+                        case 1, 3, 5 -> {entity.setWeatheringState(WeatheringCopperState.UNAFFECTED);}
+                        case 2, 4, 6 -> {entity.setWeatheringState(WeatheringCopperState.OXIDIZED);}
+                    }
+                    entity.getAttribute(Attribute.MAX_HEALTH).setBaseValue(3);
+                });
+            }
+            //TODO put shit in (copper) chests around the map if any exist
+        }
+         */
     }
 
     public static void SpawnRandomPowerup(String pu) {
@@ -1280,10 +1302,9 @@ class HazardsManager {
         hazards.add(new Lightning("lightning"));
         //hazards.add(new Exclusive_Elementals("Elementals"));
 
-        //Temporary
         for (int i = 0; i < 3; i++) {
-            switch (md.map_nameString) {
-                case "Free Trial" -> {hazards.add(new Exclusive_TrialChamber("TrialChamber"));}
+            switch (md.extras.exclusiveHazard) {
+                case "TrialChamber" -> {hazards.add(new Exclusive_TrialChamber("TrialChamber"));}
                 case "Elements" -> {hazards.add(new Exclusive_Elementals("Elementals"));}
             }
         }

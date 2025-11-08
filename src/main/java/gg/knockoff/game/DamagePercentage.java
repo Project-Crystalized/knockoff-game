@@ -47,7 +47,8 @@ public class DamagePercentage implements Listener {
             } else if (ds.getDamageType().equals(DamageType.HOT_FLOOR) || ds.getDamageType().equals(DamageType.CACTUS)) {
                 pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(2, 4);
             } else if (ds.getDamageType().equals(DamageType.STALAGMITE)) {
-                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(5, 10);
+                pd.percent = pd.percent + (int) (event.getDamage() * 2);
+                //pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(5, 10);
             }
         }
     }

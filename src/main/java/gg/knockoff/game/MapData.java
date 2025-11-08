@@ -173,7 +173,7 @@ class MapExtraFeatures {
         try {
             String temp = data.get("exclusiveHazard").getAsString();
             switch (temp) {
-                case "TrialChamber", "Elementals" -> {
+                case "TrialChamber", "Elements" -> {
                     exclusiveHazard = temp;
                 }
                 default -> {

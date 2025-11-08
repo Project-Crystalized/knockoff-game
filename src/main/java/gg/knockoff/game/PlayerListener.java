@@ -157,9 +157,12 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
-		Player player = event.getPlayer();
-		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
 		event.setCancelled(true);
+
+		Player player = event.getPlayer();
+		if (knockoff.getInstance().GameManager == null) return;
+
+		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
@@ -494,7 +497,7 @@ public class PlayerListener implements Listener {
             }
         } else if (text.equals(text("magma"))) {
             for (Block b : e.blockList()) {
-                if (!b.getType().equals(Material.RESIN_BLOCK)) {
+                if (!b.getType().equals(Material.RESIN_BRICKS)) {
                     b.setType(Material.MAGMA_BLOCK);
                 }
             }

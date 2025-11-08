@@ -19,7 +19,6 @@ public class DamagePercentage implements Listener {
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
         if (knockoff.getInstance().GameManager == null) {
-            event.setCancelled(true);
             return;
         }
         Entity e = event.getEntity();

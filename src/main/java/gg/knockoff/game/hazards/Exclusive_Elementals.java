@@ -120,7 +120,7 @@ public class Exclusive_Elementals extends hazard {
             );
             for (BlockVector3 bV3 : region) {
                 Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
-                if (b.getType().equals(Material.RESIN_BRICK)) {
+                if (b.getType().equals(Material.RESIN_BRICKS)) {
                     blockList.add(b);
                 }
             }

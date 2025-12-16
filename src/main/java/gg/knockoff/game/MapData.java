@@ -13,6 +13,7 @@ import org.bukkit.World;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -23,12 +24,18 @@ public class MapData {
 
     public static List<JsonElement> newSectionsList = new ArrayList<>();
 
+    // ===--- These change during game
     public int CurrentXLength = 0;
     public int CurrentYLength = 0;
     public int CurrentZLength = 0;
     public int LastXLength = 0;
     public int LastYLength = 0;
     public int LastZLength = 0;
+
+    public boolean isMapSwapEnabled = false;
+    public int[] mapSwapFrom = new int[]{0, 0, 0};
+    public int[] mapSwapTo = new int[]{0, 0, 0};
+    // ===---
 
     public final Component map_name;
     public final String map_nameString;
@@ -86,6 +93,25 @@ public class MapData {
 
     public JsonElement getNewRandomSection() {
         currentSection = newSectionsList.get(knockoff.getInstance().getRandomNumber(0, newSectionsList.size()));
+        try {
+            if (currentSection.getAsJsonObject().get("type").getAsString().equals("swap")) {
+                isMapSwapEnabled = true;
+                JsonObject json = currentSection.getAsJsonObject();
+                JsonArray from = json.get("from2").getAsJsonArray();
+                JsonArray to = json.get("to2").getAsJsonArray();
+                mapSwapFrom = new int[]{ from.get(0).getAsInt(), from.get(1).getAsInt(), from.get(2).getAsInt() };
+                mapSwapTo = new int[]{ to.get(0).getAsInt(), to.get(1).getAsInt(), to.get(2).getAsInt() };
+
+            }
+            else {
+                throw new Exception("type is null or not recognised, resetting special values.");
+            }
+        } catch (Exception ex) {
+            isMapSwapEnabled = false;
+            mapSwapFrom = new int[]{0, 0, 0};
+            mapSwapTo = new int[]{0, 0, 0};
+        }
+
         CurrentXLength = getNewCurrentXlength();
         CurrentYLength = getNewCurrentYlength();
         CurrentZLength = getNewCurrentZlength();
@@ -97,13 +123,11 @@ public class MapData {
         int b = currentSection.getAsJsonObject().get("to").getAsJsonArray().get(0).getAsInt();
         return Math.abs(a - b);
     }
-
     private int getNewCurrentYlength() {
         int a = currentSection.getAsJsonObject().get("from").getAsJsonArray().get(1).getAsInt();
         int b = currentSection.getAsJsonObject().get("to").getAsJsonArray().get(1).getAsInt();
         return Math.abs(a - b);
     }
-
     private int getNewCurrentZlength() {
         int a = currentSection.getAsJsonObject().get("from").getAsJsonArray().get(2).getAsInt();
         int b = currentSection.getAsJsonObject().get("to").getAsJsonArray().get(2).getAsInt();
@@ -141,6 +165,12 @@ class MapExtraFeatures {
     public boolean BoostPads = false;
     public boolean PassiveCopperGolems = false; //Will also spawn items in (Copper) Chests to get the copper golems to move
 
+    public boolean podiumEnabled = false;
+    public int[] podium1st;
+    public int[] podium2nd;
+    public int[] podium3rd;
+    public int[] podiumTP;
+
     public String exclusiveHazard = "";
 
     JsonObject data;
@@ -158,7 +188,28 @@ class MapExtraFeatures {
         PassiveCopperGolems = getBool("PassiveCopperGolems");
         setupExclusiveHazard();
 
-        Bukkit.getLogger().log(Level.INFO, "MapExtraFeatures initialized");
+        try {
+            JsonObject podiumData = data.get("podium").getAsJsonObject();
+            podiumEnabled = true;
+
+            JsonArray first = podiumData.get("podium1st").getAsJsonArray();
+            podium1st = new int[]{ first.get(0).getAsInt(), first.get(1).getAsInt(), first.get(2).getAsInt() };
+
+            JsonArray second = podiumData.get("podium2nd").getAsJsonArray();
+            podium2nd = new int[]{ second.get(0).getAsInt(), second.get(1).getAsInt(), second.get(2).getAsInt() };
+
+            JsonArray third = podiumData.get("podium3rd").getAsJsonArray();
+            podium3rd = new int[]{ third.get(0).getAsInt(), third.get(1).getAsInt(), third.get(2).getAsInt() };
+
+            JsonArray generalTP = podiumData.get("podiumTP").getAsJsonArray();
+            podiumTP = new int[]{ generalTP.get(0).getAsInt(), generalTP.get(1).getAsInt(), generalTP.get(2).getAsInt() };
+        } catch (Exception ex) {
+            Bukkit.getLogger().log(Level.WARNING, "Podium data did not load due to invalid data. THIS IS SAFE TO IGNORE if your map config does not contain podium data.");
+            podiumEnabled = false;
+        }
+
+
+        Bukkit.getLogger().log(Level.INFO, "[Knockoff] MapExtraFeatures initialized");
     }
 
     private boolean getBool(String bool) {

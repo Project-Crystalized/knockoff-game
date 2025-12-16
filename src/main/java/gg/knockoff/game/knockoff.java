@@ -72,9 +72,9 @@ public final class knockoff extends JavaPlugin {
         }
 
         saveResource("config.yml", false);
-        if (getConfig().getInt("version") != 3) {
+        if (getConfig().getInt("version") != 4) {
             configVersion = getConfig().getInt("version");
-            getLogger().log(Level.SEVERE, "Invalid Version, Please update your config. Expecting 3 but found " + configVersion + ". You may experience fatal issues.");
+            getLogger().log(Level.SEVERE, "Invalid Version, Please update your config. Expecting 4 but found " + configVersion + ". You may experience fatal issues.");
         }
 
         //This is weird
@@ -348,7 +348,6 @@ public final class knockoff extends JavaPlugin {
         GameCountdownStarted = true;
         new BukkitRunnable() {
             int timer = 15;
-            @Override
             public void run() {
                 Bukkit.getServer().sendActionBar(translatable("crystalized.game.generic.startingin").color(NamedTextColor.GREEN)
                         .append(text(" " + (timer + 1) ).color(NamedTextColor.DARK_GRAY))

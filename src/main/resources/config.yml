@@ -26,13 +26,13 @@ tourneys:
     # When true, enables the below options to work.
     enable: false
 
-    # When true, allows for Spectators (with op) to use "/Knockoff spawn_powerup" to spawn powerups anytime during the game.
+    # When true, allows for Spectators (with op) to use "/knockoff spawn_powerup" to spawn powerups anytime during the game.
     manual_powerup_spawning: false
     
-    # When true, allows for Spectators (with op) to use "/Knockoff spawn_hazard" to spawn hazards anytime during the game.
+    # When true, allows for Spectators (with op) to use "/knockoff spawn_hazard" to spawn hazards anytime during the game.
     manual_hazard_control: false
     
-    # When true, allows for Spectators (with op) to use "/Knockoff moveMap" to manually start the map decaying anytime during the game.
+    # When true, allows for Spectators (with op) to use "/knockoff moveMap" to manually start the map decaying anytime during the game.
     # NOTE: There is a cooldown of 30 * 20 ticks to prevent bugs
     manual_map_movement: false
 
@@ -44,12 +44,17 @@ other:
     # When true, Blocks in Wind Charges' explosion radius will crystallize
     explosive_wind_charges : false
 
-    # Recreation of the Showdown mode from TubNet Knockout Tournaments.
+    # Recreation of the Showdown mode from TubNet Knockout Tournaments. Not to be confused with Overtime.
     # When true, when 2 teams/players (in solo) are left, no new map sections will generate and the current one will start slowly decaying,
     # eventually leading to there being no map section left and one (or both) players/teams falling into the void.
     # Requires at least 3 people/teams online to work properly.
     showdown: false
 
+    # Not to be confused with Showdown
+    # Normally in gameplay the island generation/decaying will go faster, eventually when overtime happens (after 6 islands) this becomes much faster.
+    # If dont want this feature for whatever reason and want to return to the old map system, you can enable this to disable Overtime.
+    disable-overtime: false
+
 
 # Don't change this
-version: 3
+version: 4

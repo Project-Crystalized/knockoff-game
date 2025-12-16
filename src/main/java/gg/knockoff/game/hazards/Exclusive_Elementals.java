@@ -334,13 +334,7 @@ public class Exclusive_Elementals extends hazard {
                 }
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    Vector velocity = p.getVelocity();
-                    switch (dir) {
-                        case NORTH -> {p.setVelocity(velocity.add(new Vector(0, 0, 0.05)));}
-                        case EAST -> {p.setVelocity(velocity.add(new Vector(-0.05, 0, 0)));}
-                        case SOUTH -> {p.setVelocity(velocity.add(new Vector(0, 0, -0.05)));}
-                        case WEST -> {p.setVelocity(velocity.add(new Vector(0.05, 0, 0)));}
-                    }
+                    p.setVelocity(p.getVelocity().add(dir.entity_dir));
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 1, 4);
@@ -348,15 +342,17 @@ public class Exclusive_Elementals extends hazard {
     }
 
     enum howlingWindDirections{
-        NORTH(new Vector(0, 0, -1)),
-        EAST(new Vector(1, 0, 0)),
-        SOUTH(new Vector(0, 0, 1)),
-        WEST(new Vector(-1, 0, 0)),
+        NORTH(new Vector(0, 0, -1), new Vector(0, 0, 0.05)),
+        EAST(new Vector(1, 0, 0), new Vector(-0.05, 0, 0)),
+        SOUTH(new Vector(0, 0, 1), new Vector(0, 0, -0.05)),
+        WEST(new Vector(-1, 0, 0), new Vector(0.05, 0, 0)),
         ;
 
         Vector dir;
-        howlingWindDirections(Vector dir) {
+        Vector entity_dir;
+        howlingWindDirections(Vector dir, Vector entity_dir) {
             this.dir = dir;
+            this.entity_dir = entity_dir;
         }
     }
 

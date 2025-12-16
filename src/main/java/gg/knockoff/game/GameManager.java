@@ -80,15 +80,48 @@ public class GameManager { //I honestly think this entire class could be optimis
     //public static String GameType = "Solo";
     public static GameTypes GameType;
     public static mapDirections plannedDirection = mapDirections.undecided;
+    public static MapSpeedPhases mapSpeedPhase = MapSpeedPhases.one;
+    private static int switchMapPhaseIn; //counting down until 0
 
     public static int Round = 0;
-    public static int RoundCounter =0;
+    public static int RoundCounter = 0;
 
     public enum mapDirections{
         undecided,
         EAST,
         SOUTH,
         WEST,
+    }
+
+    public enum MapSpeedPhases{
+        one(60, 2, false, 4 * 20, 3 * 20),
+        two(50, 2, false, 4 * 20, 3 * 20), //after 2 islands
+        three(40, 2, false, 3 * 20, 2 * 20), //after another 2 islands etc
+
+        //TODO change island despawn times here
+        overtime_1(30, 2, true, 3 * 20, 2 * 20),
+        overtime_2(25, 2, true, 3 * 20, 2 * 20),
+        overtime_3(20, 2, true, 30, 35),
+        overtime_4(15, 2, true, 20, 30),
+        overtime_5(10, 3, true, 15, 20),
+        overtime_6(5, 3, true, 7, 7),
+        ;
+
+        int maxTime;
+        int halfTime;
+        int switchToNextPhaseIn; //in Islands, if (2 or whatever this int is) islands pass, switch values in code
+        boolean isOvertime;
+        int decaydelay;
+        int decayperiod;
+
+        MapSpeedPhases(int maxTime, int switchIn, boolean isOvertime, int decaydelay, int decayperiod) {
+            this.maxTime = maxTime;
+            this.halfTime = maxTime/2;
+            this.switchToNextPhaseIn = switchIn;
+            this.isOvertime = isOvertime;
+            this.decaydelay = decaydelay;
+            this.decayperiod = decayperiod;
+        }
     }
 
     public GameManager(GameTypes type) {//Start of the game
@@ -105,6 +138,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         PlayerList.clear();
         teams = new Teams(GameType);
         showdownModeStarted = false;
+        mapSpeedPhase = MapSpeedPhases.one;
 
         // Sets the target area to air to prevent previous game's sections to interfere with the current game
         // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
@@ -124,7 +158,6 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         MapManager.placeNewSection();
         new BukkitRunnable() {
-            @Override
             public void run() {
                 playerDatas = new ArrayList<PlayerData>();
                 for (Player player : Bukkit.getOnlinePlayers()) {
@@ -162,8 +195,13 @@ public class GameManager { //I honestly think this entire class could be optimis
             p.setSneaking(false);
         }
         TeamStatus.Init();
-        GameManager.Round = 1;
-        GameManager.RoundCounter = 30;
+        Round = 1;
+        if (knockoff.getInstance().getConfig().getBoolean("other.disable-overtime")) {
+            RoundCounter = 30;
+        } else {
+            RoundCounter = 60;
+        }
+        switchMapPhaseIn = mapSpeedPhase.switchToNextPhaseIn;
 
         if (knockoff.getInstance().getConfig().getBoolean("other.showdown")) {
             if (Bukkit.getOnlinePlayers().size() < 2) {
@@ -223,10 +261,6 @@ public class GameManager { //I honestly think this entire class could be optimis
             }
         }.runTaskTimer(knockoff.getInstance(), 1 ,20);
 
-        //This is to prevent players from walking through the starting border (eg, from Bedrock clients or hacked clients walking through the border)
-        for (TeamData td : Teams.team_datas_without_spectator) {
-
-        }
         new BukkitRunnable() {
             int timer = 7 * 20;
             public void run() {
@@ -263,7 +297,6 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
 
         new BukkitRunnable() {
-            @Override
             public void run() {
                 if (knockoff.getInstance().GameManager == null) {cancel();}
                 if (knockoff.getInstance().DevMode) {
@@ -273,41 +306,67 @@ public class GameManager { //I honestly think this entire class could be optimis
                 }
 
                 GameManager.RoundCounter--;
-                if (GameManager.RoundCounter == 30 && GameManager.GameState.equals("game")) {
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        p.playSound(p, "minecraft:block.note_block.pling", 50, 2);
-                    }
-                    Server s = Bukkit.getServer();
-                    FloodgateApi floodgateapi = FloodgateApi.getInstance();
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                            p.sendMessage(text("-".repeat(40)));
-                        } else {
-                            p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+
+                //mapSwap warning if enabled
+                if (RoundCounter == mapSpeedPhase.halfTime + 10 && GameState.equals("game") &&
+                        knockoff.getInstance().mapdata.isMapSwapEnabled && !mapSpeedPhase.isOvertime) {
+                    Bukkit.getServer().sendMessage(
+                            text("The map will transform in 10 seconds, ").color(GOLD)
+                                    .append(text("Move to the ").color(RED))
+                                    .append(text("Purple Platforms! ").color(DARK_PURPLE))
+                    );
+                    Bukkit.getServer().showTitle(Title.title(text("Map Transforming").color(GOLD),
+                            text("Move to the ").color(RED).append(text("Purple Platforms!").color(DARK_PURPLE)),
+                            Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(4), Duration.ofMillis(500)))
+                    );
+                    Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(p, "minecraft:block.trial_spawner.about_to_spawn_item", 5, 0.75f);
                         }
-                    }
-                    //Will pick a random number between 1 and 20, if its Even it will fire "if", otherwise "else"
-                    //Did this because "getRandomNumber(1, 2) == 1" almost always returns 1
-                    if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
-                        s.sendMessage(text(" "));
-                        s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
-                        s.sendMessage(text(" "));
-                        SpawnRandomPowerup(null);
+                    }, 8 * 20);
+                }
+                //powerup spawn / mapSwap if enabled
+                if (RoundCounter == mapSpeedPhase.halfTime && GameState.equals("game")) {
+                    if (knockoff.getInstance().mapdata.isMapSwapEnabled && !mapSpeedPhase.isOvertime) {
+                        MapManager.mapSwap();
                     } else {
-                        s.sendMessage(text(" "));
-                        s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
-                        s.sendMessage(text(" "));
-                        SpawnRandomPowerup(null);
-                        SpawnRandomPowerup(null);
-                    }
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
-                            p.sendMessage(text("-".repeat(40)));
-                        } else {
-                            p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(p, "minecraft:block.note_block.pling", 50, 2);
+                        }
+                        Server s = Bukkit.getServer();
+                        FloodgateApi floodgateapi = FloodgateApi.getInstance();
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(text("-".repeat(40)));
+                            } else {
+                                p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                            }
+                        }
+
+                        if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
+                            s.sendMessage(text(" "));
+                            s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
+                            s.sendMessage(text(" "));
+                            SpawnRandomPowerup(null);
+                        }
+                        else {
+                            s.sendMessage(text(" "));
+                            s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup2").color(DARK_AQUA));
+                            s.sendMessage(text(" "));
+                            SpawnRandomPowerup(null);
+                            SpawnRandomPowerup(null);
+                        }
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
+                                p.sendMessage(text("-".repeat(40)));
+                            } else {
+                                p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
+                            }
                         }
                     }
                 }
+
+                //showdown mode checks
                 if (TeamStatus.getAliveTeams().size() == 2 && showdownModeEnabled) {
                     startShowdown();
                     cancel();
@@ -316,7 +375,8 @@ public class GameManager { //I honestly think this entire class could be optimis
                     cancel();
                 }
 
-                if (RoundCounter == 9 && GameManager.GameState.equals("game") && !showdownModeStarted) {
+                //map particles
+                if (RoundCounter == 9 && GameState.equals("game") && !showdownModeStarted) {
                     particles.clear();
                     plannedDirection = mapDirections.undecided;
                     MapData md = knockoff.getInstance().mapdata;
@@ -328,15 +388,25 @@ public class GameManager { //I honestly think this entire class could be optimis
                         ));
                     }
                 }
-                if (RoundCounter == 5 && GameManager.GameState.equals("game") && !showdownModeStarted) {
+                if (RoundCounter == 5 && GameState.equals("game") && !showdownModeStarted) {
                     decideMapDirection();
                 }
 
-                if (RoundCounter == 0 && GameManager.GameState.equals("game") && !showdownModeStarted) {
+                //move map particles & map movement
+                if (RoundCounter == 0 && GameState.equals("game") && !showdownModeStarted) {
                     if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
                         GameManager.CloneNewMapSection();
-                        RoundCounter = 60;
+                        if (!knockoff.getInstance().getConfig().getBoolean("other.disable-overtime")) {
+                            switchMapPhaseIn--;
+                            if (switchMapPhaseIn == 0 || switchMapPhaseIn < 0) {
+                                switchMapPhase();
+                            }
+                            RoundCounter = mapSpeedPhase.maxTime;
+                        } else {
+                            RoundCounter = 60;
+                        }
                         Round++;
+
                         for (MapParticles mp : particles) {
                             mp.isMoving = true;
                         }
@@ -346,7 +416,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                                 cancel();
                             }
                         }.runTaskTimer(knockoff.getInstance(), 5, 1);
-
                     }
                 }
             }
@@ -377,14 +446,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                     if (p.isInWater()) {
                         pd.percent++;
                     }
-
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 0, 1);
 
         //TODO clean this shit up this is a mess
         new BukkitRunnable() {
-            @Override
             public void run() {
                 //Should stop this bukkitrunnable once the game ends
                 if (knockoff.getInstance().GameManager == null) {cancel();}
@@ -615,6 +682,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         return null;
     }
+
 
     @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     private static void SetupFirstSpawns() {
@@ -943,6 +1011,31 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
          */
     }
+
+    private static void switchMapPhase() {
+        boolean wasOvertime = mapSpeedPhase.isOvertime;
+
+        //probably a better way of doing this with enums
+        switch (mapSpeedPhase) {
+            case one -> {mapSpeedPhase = MapSpeedPhases.two;}
+            case two -> {mapSpeedPhase = MapSpeedPhases.three;}
+            case three -> {mapSpeedPhase = MapSpeedPhases.overtime_1;}
+
+            case overtime_1 -> {mapSpeedPhase = MapSpeedPhases.overtime_2;}
+            case overtime_2 -> {mapSpeedPhase = MapSpeedPhases.overtime_3;}
+            case overtime_3 -> {mapSpeedPhase = MapSpeedPhases.overtime_4;}
+            case overtime_4 -> {mapSpeedPhase = MapSpeedPhases.overtime_5;}
+            case overtime_5, overtime_6 -> {mapSpeedPhase = MapSpeedPhases.overtime_6;}
+        }
+        switchMapPhaseIn = mapSpeedPhase.switchToNextPhaseIn;
+
+        if (mapSpeedPhase.isOvertime != wasOvertime) {
+            Bukkit.getServer().sendMessage(text("Overtime has begun! The game will get much faster from here. Good luck.").color(GOLD));
+        } else {
+            Bukkit.getServer().sendMessage(text("The map speed has increased! Sections will last shorter.").color(GOLD));
+        }
+    }
+
 
     public static void SpawnRandomPowerup(String pu) {
         String powerup;
@@ -1301,7 +1394,6 @@ class HazardsManager {
         hazards.add(new BeeAttack("beeattack"));
         hazards.add(new SlimesOfStacking("slimesofstacking"));
         hazards.add(new Lightning("lightning"));
-        //hazards.add(new Exclusive_Elementals("Elementals"));
 
         for (int i = 0; i < 3; i++) {
             switch (md.extras.exclusiveHazard) {
@@ -1315,7 +1407,7 @@ class HazardsManager {
         new BukkitRunnable() {
             int timer = knockoff.getInstance().getRandomNumber(30, 60);
             public void run() {
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().GameManager == null || knockoff.getInstance().GameManager.GameState == "end") {
                     cancel();
                 }
                 if (timer == 0 && !knockoff.getInstance().GameManager.showdownModeStarted) {

@@ -40,6 +40,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 import org.geysermc.floodgate.api.FloodgateApi;
 
+import javax.print.DocFlavor;
 import java.time.Duration;
 import java.util.*;
 import java.util.logging.Level;
@@ -457,7 +458,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (knockoff.getInstance().GameManager == null) {cancel();}
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (p.getLocation().getY() < -20) {//instantly kills the player when they get knocked into the void
+                    if (p.getLocation().getY() < -20 && !GameState.equals("end")) {//instantly kills the player when they get knocked into the void
                         Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                         p.teleport(loc);
                         if (p.getGameMode().equals(GameMode.SURVIVAL)) {
@@ -532,8 +533,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             int timer = 0;
             FloodgateApi floodgateapi = FloodgateApi.getInstance();
 
-            @Override
             public void run() {
+
                 switch (timer) {
                     case 2:
                         Collections.sort(playerDatas, new PlayerDataComparator());
@@ -544,13 +545,18 @@ public class GameManager { //I honestly think this entire class could be optimis
                             } else {
                                 p.sendMessage(text(" ".repeat(55)).color(GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
+                            int[] i = knockoff.getInstance().mapdata.extras.podiumTP;
+                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
                         }
                         Bukkit.getServer().sendMessage(text("")
                                 .append(text("\n").append(translatable("crystalized.game.knockoff.name").color(GOLD)).append(text(" \uE108").color(WHITE)))
                                 .append(text("\n").append(translatable("crystalized.game.generic.gameresults").color(BLUE)))
                         );
-                        if (playerDatas.size() > 0) {
-                            PlayerData first = playerDatas.get(0);
+                        if (!playerDatas.isEmpty()) {
+                            PlayerData first = playerDatas.getFirst();
+                            Player p = first.playerObject;
+                            int[] i = knockoff.getInstance().mapdata.extras.podium1st;
+                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
                             Bukkit.getServer().sendMessage(text("   1st. ")
                                     .append(text(first.player)).color(GREEN).append(text(" ".repeat(20 - first.player.length())))
                                     .append(text("" + first.kills))
@@ -558,6 +564,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                         }
                         if (playerDatas.size() > 1) {
                             PlayerData second = playerDatas.get(1);
+                            Player p = second.playerObject;
+                            int[] i = knockoff.getInstance().mapdata.extras.podium2nd;
+                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
                             Bukkit.getServer().sendMessage(text("   2nd. ")
                                     .append(text(second.player)).color(YELLOW).append(text(" ".repeat(20 - second.player.length())))
                                     .append(text("" + second.kills))
@@ -565,6 +574,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                         }
                         if (playerDatas.size() > 2) {
                             PlayerData third = playerDatas.get(2);
+                            Player p = third.playerObject;
+                            int[] i = knockoff.getInstance().mapdata.extras.podium3rd;
+                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
                             Bukkit.getServer().sendMessage(text("   3rd. ")
                                     .append(text(third.player)).color(YELLOW).append(text(" ".repeat(20 - third.player.length())))
                                     .append(text("" + third.kills))
@@ -572,6 +584,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                         }
 
                         for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.getInventory().clear();
+                            p.setGameMode(GameMode.ADVENTURE);
+
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
                                 p.sendMessage(text("-".repeat(40)).color(GOLD));
                             } else {
@@ -1133,7 +1148,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         cancel();
                     }
                     for (Player p : Bukkit.getOnlinePlayers()) {
-                        if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 250)) { //To prevent lagging on low end bedrock devices
+                        if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 400)) { //To prevent lagging on low end (bedrock) devices
                             p.sendBlockDamage(b.getLocation(), breaking, entityID);
                         }
                     }
@@ -1189,7 +1204,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
             if (pd.lives > 1) {
                 pd.lives = 1;
-                p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED)); //TODO translatable
+                p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(RED)); //TODO translatable
                 p.playSound(p, "minecraft:block.note_block.pling", 1, 0.5f);
             }
         }
@@ -1375,13 +1390,13 @@ class KnockoffProtocolLib {
 
 class HazardsManager {
 
-    public static final List<gg.knockoff.game.hazards.hazard> hazards = new ArrayList<>();
+    public static final List<hazard> hazards = new ArrayList<>();
 
     public HazardsManager() {
         MapData md = knockoff.getInstance().mapdata;
 
         hazards.clear();
-        hazards.add(new gg.knockoff.game.hazards.TNT("tnt"));
+        hazards.add(new TNT("tnt"));
         hazards.add(new SlimeTime("slimetime"));
         hazards.add(new FlyingCars("flyingcars"));
         hazards.add(new PoisonBushes("poisonbushes"));

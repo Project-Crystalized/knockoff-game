@@ -22,6 +22,7 @@ import static org.bukkit.Particle.DUST;
 public class PlayerData { //This class probably isn't optimised, but it works so who cares
 
     public String player;
+    public Player playerObject;
     public Component cachedRankIcon_small = text("?");
     public Component cachedRankIcon_full = text("rank");
     public boolean isPlayerDead = false;
@@ -42,6 +43,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
 
     public PlayerData(Player p) {
         player = p.getName();
+        playerObject = p;
         cachedRankIcon_small = Ranks.getIcon(Bukkit.getOfflinePlayer(player));
         cachedRankIcon_full = Ranks.getRankWithName(p);
 
@@ -216,7 +218,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     }
 
     public int calc_player_score() {
-        return kills;
+        return (kills + lives) - deaths;
     }
 }
 

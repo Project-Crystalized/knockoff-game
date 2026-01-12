@@ -193,16 +193,16 @@ class MapExtraFeatures {
             podiumEnabled = true;
 
             JsonArray first = podiumData.get("podium1st").getAsJsonArray();
-            podium1st = new int[]{ first.get(0).getAsInt(), first.get(1).getAsInt(), first.get(2).getAsInt() };
+            podium1st = new int[]{ first.get(0).getAsInt(), first.get(1).getAsInt(), first.get(2).getAsInt(), first.get(3).getAsInt(), first.get(4).getAsInt() };
 
             JsonArray second = podiumData.get("podium2nd").getAsJsonArray();
-            podium2nd = new int[]{ second.get(0).getAsInt(), second.get(1).getAsInt(), second.get(2).getAsInt() };
+            podium2nd = new int[]{ second.get(0).getAsInt(), second.get(1).getAsInt(), second.get(2).getAsInt(), second.get(3).getAsInt(), second.get(4).getAsInt() };
 
             JsonArray third = podiumData.get("podium3rd").getAsJsonArray();
-            podium3rd = new int[]{ third.get(0).getAsInt(), third.get(1).getAsInt(), third.get(2).getAsInt() };
+            podium3rd = new int[]{ third.get(0).getAsInt(), third.get(1).getAsInt(), third.get(2).getAsInt(), third.get(3).getAsInt(), third.get(4).getAsInt() };
 
             JsonArray generalTP = podiumData.get("podiumTP").getAsJsonArray();
-            podiumTP = new int[]{ generalTP.get(0).getAsInt(), generalTP.get(1).getAsInt(), generalTP.get(2).getAsInt() };
+            podiumTP = new int[]{ generalTP.get(0).getAsInt(), generalTP.get(1).getAsInt(), generalTP.get(2).getAsInt(), generalTP.get(3).getAsInt(), generalTP.get(4).getAsInt() };
         } catch (Exception ex) {
             Bukkit.getLogger().log(Level.WARNING, "Podium data did not load due to invalid data. THIS IS SAFE TO IGNORE if your map config does not contain podium data.");
             podiumEnabled = false;

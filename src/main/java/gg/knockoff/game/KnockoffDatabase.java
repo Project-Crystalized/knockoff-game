@@ -51,7 +51,7 @@ public class KnockoffDatabase {
     }
 
     public static void addGameIdColumn(){
-        String create_id_column = "ALTER TABLE KnockoffGames ADD COLUMN game_id INTEGER PRIMARY KEY;";
+        String create_id_column = "ALTER TABLE KnockoffGames ADD COLUMN game_id INTEGER;";
         String check_id_column = "SELECT game_id FROM KnockoffGames LIMIT 1;";
 
         String create_game_column = "ALTER TABLE KoGamesPlayers ADD COLUMN game INTEGER REFERENCES KnockoffGames(game_id);";
@@ -64,6 +64,7 @@ public class KnockoffDatabase {
             try (Connection conn = DriverManager.getConnection(URL)) {
                 conn.createStatement().execute(create_id_column);
             } catch (SQLException ex) {
+                Bukkit.getLogger().severe(ex.getMessage());
                 Bukkit.getLogger().severe("uh weird error, idk bro ;-; (id)");
             }
         }

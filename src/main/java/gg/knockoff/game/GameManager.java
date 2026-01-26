@@ -29,6 +29,8 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.SideChaining;
+import org.bukkit.block.data.type.Shelf;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -1095,6 +1097,15 @@ public class GameManager { //I honestly think this entire class could be optimis
                 BlockData bd2 = Material.CUT_COPPER_STAIRS.createBlockData();
                 bd.copyTo(bd2);
                 b.setBlockData(bd2);
+            } else if (Tag.WOODEN_SHELVES.isTagged(b.getType())) {
+                BlockFace lastFacing = ((Shelf) b.getBlockData()).getFacing();
+                b.setType(Material.OAK_SHELF);
+                Shelf bd = (Shelf) b.getBlockData();
+                bd.setPowered(false);
+                bd.setFacing(lastFacing);
+                bd.setSideChain(SideChaining.ChainPart.LEFT);
+                b.setBlockData(bd);
+                b.getState().update(false);
             } else if (blockString.contains("glass")) {
                 if (blockString.contains("pane")) {
                     BlockData bd = b.getBlockData();

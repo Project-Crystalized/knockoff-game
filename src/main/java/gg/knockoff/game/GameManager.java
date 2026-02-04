@@ -547,8 +547,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                             } else {
                                 p.sendMessage(text(" ".repeat(55)).color(GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
-                            int[] i = knockoff.getInstance().mapdata.extras.podiumTP;
-                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                int[] i = knockoff.getInstance().mapdata.extras.podiumTP;
+                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            }
                         }
                         Bukkit.getServer().sendMessage(text("")
                                 .append(text("\n").append(translatable("crystalized.game.knockoff.name").color(GOLD)).append(text(" \uE108").color(WHITE)))
@@ -557,8 +559,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (!playerDatas.isEmpty()) {
                             PlayerData first = playerDatas.getFirst();
                             Player p = first.playerObject;
-                            int[] i = knockoff.getInstance().mapdata.extras.podium1st;
-                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                int[] i = knockoff.getInstance().mapdata.extras.podium1st;
+                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            }
                             Bukkit.getServer().sendMessage(text("   1st. ")
                                     .append(text(first.player)).color(GREEN).append(text(" ".repeat(20 - first.player.length())))
                                     .append(text("" + first.kills))
@@ -567,8 +571,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (playerDatas.size() > 1) {
                             PlayerData second = playerDatas.get(1);
                             Player p = second.playerObject;
-                            int[] i = knockoff.getInstance().mapdata.extras.podium2nd;
-                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                int[] i = knockoff.getInstance().mapdata.extras.podium2nd;
+                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            }
                             Bukkit.getServer().sendMessage(text("   2nd. ")
                                     .append(text(second.player)).color(YELLOW).append(text(" ".repeat(20 - second.player.length())))
                                     .append(text("" + second.kills))
@@ -577,8 +583,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (playerDatas.size() > 2) {
                             PlayerData third = playerDatas.get(2);
                             Player p = third.playerObject;
-                            int[] i = knockoff.getInstance().mapdata.extras.podium3rd;
-                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                int[] i = knockoff.getInstance().mapdata.extras.podium3rd;
+                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            }
                             Bukkit.getServer().sendMessage(text("   3rd. ")
                                     .append(text(third.player)).color(YELLOW).append(text(" ".repeat(20 - third.player.length())))
                                     .append(text("" + third.kills))
@@ -586,8 +594,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         }
 
                         for (Player p : Bukkit.getOnlinePlayers()) {
-                            p.getInventory().clear();
-                            p.setGameMode(GameMode.ADVENTURE);
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                p.getInventory().clear();
+                                p.setGameMode(GameMode.ADVENTURE);
+                            }
 
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
                                 p.sendMessage(text("-".repeat(40)).color(GOLD));

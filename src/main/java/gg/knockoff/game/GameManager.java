@@ -36,6 +36,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -680,6 +682,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             lore.add(translatable("crystalized.item.nexusblock.desc").color(DARK_GRAY));
             lore.add(translatable("crystalized.item.nexusblock.desc2").color(DARK_GRAY));
             im.lore(lore);
+            PersistentDataContainer pdc = im.getPersistentDataContainer();
+            pdc.set(new NamespacedKey("knockoff", "iscrystal"), PersistentDataType.BOOLEAN, true);
             item.setItemMeta(im);
             player.getInventory().addItem(item);
         }

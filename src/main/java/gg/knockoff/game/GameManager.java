@@ -1129,10 +1129,14 @@ public class GameManager { //I honestly think this entire class could be optimis
                 } else {
                     b.setType(Material.PINK_STAINED_GLASS);
                 }
-            } else if (Tag.WOOL_CARPETS.isTagged(b.getType()) || Tag.RAILS.isTagged(b.getType())) {
+            } else if (Tag.WOOL_CARPETS.isTagged(b.getType()) || Tag.RAILS.isTagged(b.getType()) || Tag.PRESSURE_PLATES.isTagged(b.getType())) {
                 b.setType(Material.PINK_CARPET);
-            } else if (Tag.FENCES.isTagged(b.getType()) || Tag.WALLS.isTagged(b.getType())) {
+            } else if (Tag.FENCES.isTagged(b.getType()) || Tag.WALLS.isTagged(b.getType()) || Tag.BARS.isTagged(b.getType())) {
                 b.setType(Material.PINK_STAINED_GLASS_PANE);
+            } else if (b.getType().equals(Material.SCULK_SENSOR) || b.getType().equals(Material.CALIBRATED_SCULK_SENSOR)) {
+                b.setType(Material.CUT_COPPER_SLAB);
+            } else if (Tag.WOODEN_BUTTONS.isTagged(b.getType())) {
+                b.setType(Material.CHERRY_BUTTON);
             }
 
             else {

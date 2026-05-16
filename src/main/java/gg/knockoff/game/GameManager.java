@@ -14,6 +14,7 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
+import gg.crystalized.lobby.LevelManager;
 import gg.knockoff.game.CustomEntities.MapParticles;
 import gg.knockoff.game.hazards.*;
 import io.papermc.paper.entity.LookAnchor;
@@ -620,10 +621,14 @@ public class GameManager { //I honestly think this entire class could be optimis
         Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
 
         for (Player p : Bukkit.getOnlinePlayers()) {
+            try {
+                LevelManager.giveExperience(p, 5);
+                LevelManager.giveMoney(p, 20);
+            }catch(NoClassDefFoundError e){}
             p.kick(text(""));
         }
 
-				// send players back to lobby
+				// FixMe send players back to lobby
         //This causes a bug where players stay on too long, so a new game starts and everything becomes bugged
         /*
 				ByteArrayDataOutput out = ByteStreams.newDataOutput();

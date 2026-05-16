@@ -9,14 +9,19 @@ import com.sk89q.worldedit.regions.Region;
 import gg.knockoff.game.GameManager;
 import gg.knockoff.game.MapData;
 import gg.knockoff.game.knockoff;
+import io.papermc.paper.datacomponent.DataComponentTypes;
+import io.papermc.paper.datacomponent.item.CustomModelData;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.NamespacedKey;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -173,6 +178,7 @@ public class Exclusive_Elementals extends hazard {
             p.playSound(p, "minecraft:block.beacon.activate", 1, 1); //TODO placeholder sound
         }
         crystalsToIce(false);
+        sheerCold_setCrystalCMD(1);
         new BukkitRunnable() {
             int timer = 10 * 20;
             public void run() {
@@ -180,12 +186,26 @@ public class Exclusive_Elementals extends hazard {
                 timer--;
                 if (timer == 0) {
                     for (Player p : Bukkit.getOnlinePlayers()) {
+                        sheerCold_setCrystalCMD(0);
                         p.playSound(p, "minecraft:block.beacon.deactivate", 1, 1); //TODO placeholder sound
                     }
                     cancel();
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 1, 1);
+    }
+
+    private void sheerCold_setCrystalCMD(float i) {
+        for (Player p : Bukkit.getOnlinePlayers()) {
+            PlayerInventory inv = p.getInventory();
+            for (ItemStack item : inv) {
+                if (item != null) {
+                    if (item.getPersistentDataContainer().has(new NamespacedKey("knockoff", "iscrystal"))) {
+                        item.setData(DataComponentTypes.CUSTOM_MODEL_DATA, CustomModelData.customModelData().addFloat(i).build());
+                    }
+                }
+            }
+        }
     }
 
     private void crystalsToIce(boolean sounds) {
@@ -204,7 +224,7 @@ public class Exclusive_Elementals extends hazard {
                                 b.getType().equals(Material.GRAY_GLAZED_TERRACOTTA) ||
                                 b.getType().equals(Material.BLACK_GLAZED_TERRACOTTA)
                 ) {
-                    b.setType(Material.ICE);
+                    b.setType(Material.FROSTED_ICE);
                     if (sounds) {
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             p.playSound(p, "minecraft:entity.generic.swim", 1, 1); //TODO temporary

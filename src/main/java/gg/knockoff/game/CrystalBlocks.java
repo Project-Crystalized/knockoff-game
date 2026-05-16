@@ -1,6 +1,5 @@
 package gg.knockoff.game;
 
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,9 +11,7 @@ import org.bukkit.block.data.Directional;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -35,22 +32,17 @@ public class CrystalBlocks implements Listener {
             p.sendMessage(text("[!] You cannot place blocks outside the map's borders!").color(NamedTextColor.RED));
             return;
         }
-        if (p.getInventory().getItemInMainHand().getType().equals(Material.AMETHYST_BLOCK)) {
-            itemUsed = p.getInventory().getItemInMainHand();
-            Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
-                p.getInventory().getItemInMainHand().setAmount(64);
-            }, 2);
-        } else if (p.getInventory().getItemInOffHand().getType().equals(Material.AMETHYST_BLOCK)) {
-            itemUsed = p.getInventory().getItemInOffHand();
-            Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
-                p.getInventory().getItemInOffHand().setAmount(64);
-            }, 2);
-        } else {
-            return;
-        }
+
+        itemUsed = event.getItemInHand();
+        Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
+            event.getItemInHand().setAmount(64);
+        }, 2);
 
         //may cause errors with the 2nd check if you place a vanilla amethyst block with nothing, not my problem as that wont happen without the player being in creative
         if (itemUsed.hasItemMeta() && itemUsed.getItemMeta().hasItemModel()) {
+            if (!itemUsed.getPersistentDataContainer().has(new NamespacedKey("knockoff", "iscrystal"))) {
+                return;
+            }
             ItemMeta meta = itemUsed.getItemMeta();
             NamespacedKey itemModel = meta.getItemModel();
 
@@ -102,27 +94,17 @@ public class CrystalBlocks implements Listener {
     public void PlayerPunchBlock(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block block = player.getTargetBlock(null ,5);
-        if (knockoff.getInstance().GameManager != null) {
-            if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
-                //idk how to make this better
-                if (
-                        block.getType().equals(Material.WHITE_GLAZED_TERRACOTTA)
-                                || block.getType().equals(Material.GRAY_GLAZED_TERRACOTTA)
-                                || block.getType().equals(Material.LIGHT_GRAY_GLAZED_TERRACOTTA)
-                                || block.getType().equals(Material.BLACK_GLAZED_TERRACOTTA)
-                                || block.getType().equals(Material.AMETHYST_BLOCK)
-                                || block.getType().equals(Material.PURPUR_BLOCK)
-                                || block.getType().equals(Material.PURPUR_SLAB)
-                                || block.getType().equals(Material.PURPUR_STAIRS)
-                                || block.getType().equals(Material.CUT_COPPER_SLAB)
-                                || block.getType().equals(Material.CUT_COPPER_STAIRS)
-                                || block.getType().equals(Material.PINK_STAINED_GLASS)
-                                || block.getType().equals(Material.PINK_STAINED_GLASS_PANE)
-                                || block.getType().equals(Material.PINK_CARPET)
-                                || (block.getType().equals(Material.ROOTED_DIRT) && knockoff.getInstance().mapdata.map_nameString.equals("Elements"))
-                ){
-                    Location blockloc = new Location(Bukkit.getWorld("world"), block.getLocation().getBlockX(), block.getLocation().getBlockY(), block.getLocation().getBlockZ());
-                    blockloc.getBlock().breakNaturally(true);
+        if (knockoff.getInstance().GameManager != null && event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            switch (block.getType()) {
+                case WHITE_GLAZED_TERRACOTTA, GRAY_GLAZED_TERRACOTTA, LIGHT_GRAY_GLAZED_TERRACOTTA, BLACK_GLAZED_TERRACOTTA,
+                     AMETHYST_BLOCK, CUT_COPPER_SLAB, CUT_COPPER_STAIRS, PINK_STAINED_GLASS, PINK_STAINED_GLASS_PANE,
+                     PINK_CARPET, FROSTED_ICE
+                        -> {
+                    if (block.getType().equals(Material.FROSTED_ICE)) {
+                        block.setType(Material.AIR);
+                    } else {
+                        block.breakNaturally(true);
+                    }
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
                     pd.blocksbroken++;
                 }
@@ -133,5 +115,15 @@ public class CrystalBlocks implements Listener {
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         event.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockFade(BlockFadeEvent e) {
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void onBlockFromTo(BlockFromToEvent e) {
+        e.setCancelled(true);
     }
 }

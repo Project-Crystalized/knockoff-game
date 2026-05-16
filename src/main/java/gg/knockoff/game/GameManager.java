@@ -30,11 +30,15 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
+import org.bukkit.block.data.SideChaining;
+import org.bukkit.block.data.type.Shelf;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.persistence.PersistentDataContainer;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -546,8 +550,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                             } else {
                                 p.sendMessage(text(" ".repeat(55)).color(GOLD).decoration(TextDecoration.STRIKETHROUGH,  true));
                             }
-                            int[] i = knockoff.getInstance().mapdata.extras.podiumTP;
-                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                int[] i = knockoff.getInstance().mapdata.extras.podiumTP;
+                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            }
                         }
                         Bukkit.getServer().sendMessage(text("")
                                 .append(text("\n").append(translatable("crystalized.game.knockoff.name").color(GOLD)).append(text(" \uE108").color(WHITE)))
@@ -556,8 +562,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (!playerDatas.isEmpty()) {
                             PlayerData first = playerDatas.getFirst();
                             Player p = first.playerObject;
-                            int[] i = knockoff.getInstance().mapdata.extras.podium1st;
-                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                int[] i = knockoff.getInstance().mapdata.extras.podium1st;
+                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            }
                             Bukkit.getServer().sendMessage(text("   1st. ")
                                     .append(text(first.player)).color(GREEN).append(text(" ".repeat(20 - first.player.length())))
                                     .append(text("" + first.kills))
@@ -566,8 +574,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (playerDatas.size() > 1) {
                             PlayerData second = playerDatas.get(1);
                             Player p = second.playerObject;
-                            int[] i = knockoff.getInstance().mapdata.extras.podium2nd;
-                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                int[] i = knockoff.getInstance().mapdata.extras.podium2nd;
+                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            }
                             Bukkit.getServer().sendMessage(text("   2nd. ")
                                     .append(text(second.player)).color(YELLOW).append(text(" ".repeat(20 - second.player.length())))
                                     .append(text("" + second.kills))
@@ -576,8 +586,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (playerDatas.size() > 2) {
                             PlayerData third = playerDatas.get(2);
                             Player p = third.playerObject;
-                            int[] i = knockoff.getInstance().mapdata.extras.podium3rd;
-                            p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                int[] i = knockoff.getInstance().mapdata.extras.podium3rd;
+                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                            }
                             Bukkit.getServer().sendMessage(text("   3rd. ")
                                     .append(text(third.player)).color(YELLOW).append(text(" ".repeat(20 - third.player.length())))
                                     .append(text("" + third.kills))
@@ -585,8 +597,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         }
 
                         for (Player p : Bukkit.getOnlinePlayers()) {
-                            p.getInventory().clear();
-                            p.setGameMode(GameMode.ADVENTURE);
+                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                                p.getInventory().clear();
+                                p.setGameMode(GameMode.ADVENTURE);
+                            }
 
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
                                 p.sendMessage(text("-".repeat(40)).color(GOLD));
@@ -673,6 +687,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             lore.add(translatable("crystalized.item.nexusblock.desc").color(DARK_GRAY));
             lore.add(translatable("crystalized.item.nexusblock.desc2").color(DARK_GRAY));
             im.lore(lore);
+            PersistentDataContainer pdc = im.getPersistentDataContainer();
+            pdc.set(new NamespacedKey("knockoff", "iscrystal"), PersistentDataType.BOOLEAN, true);
             item.setItemMeta(im);
             player.getInventory().addItem(item);
         }
@@ -1100,6 +1116,15 @@ public class GameManager { //I honestly think this entire class could be optimis
                 BlockData bd2 = Material.CUT_COPPER_STAIRS.createBlockData();
                 bd.copyTo(bd2);
                 b.setBlockData(bd2);
+            } else if (Tag.WOODEN_SHELVES.isTagged(b.getType())) {
+                BlockFace lastFacing = ((Shelf) b.getBlockData()).getFacing();
+                b.setType(Material.OAK_SHELF);
+                Shelf bd = (Shelf) b.getBlockData();
+                bd.setPowered(false);
+                bd.setFacing(lastFacing);
+                bd.setSideChain(SideChaining.ChainPart.LEFT);
+                b.setBlockData(bd);
+                b.getState().update(false);
             } else if (blockString.contains("glass")) {
                 if (blockString.contains("pane")) {
                     BlockData bd = b.getBlockData();
@@ -1109,10 +1134,14 @@ public class GameManager { //I honestly think this entire class could be optimis
                 } else {
                     b.setType(Material.PINK_STAINED_GLASS);
                 }
-            } else if (Tag.WOOL_CARPETS.isTagged(b.getType()) || Tag.RAILS.isTagged(b.getType())) {
+            } else if (Tag.WOOL_CARPETS.isTagged(b.getType()) || Tag.RAILS.isTagged(b.getType()) || Tag.PRESSURE_PLATES.isTagged(b.getType())) {
                 b.setType(Material.PINK_CARPET);
-            } else if (Tag.FENCES.isTagged(b.getType()) || Tag.WALLS.isTagged(b.getType())) {
+            } else if (Tag.FENCES.isTagged(b.getType()) || Tag.WALLS.isTagged(b.getType()) || Tag.BARS.isTagged(b.getType())) {
                 b.setType(Material.PINK_STAINED_GLASS_PANE);
+            } else if (b.getType().equals(Material.SCULK_SENSOR) || b.getType().equals(Material.CALIBRATED_SCULK_SENSOR)) {
+                b.setType(Material.CUT_COPPER_SLAB);
+            } else if (Tag.WOODEN_BUTTONS.isTagged(b.getType())) {
+                b.setType(Material.CHERRY_BUTTON);
             }
 
             else {

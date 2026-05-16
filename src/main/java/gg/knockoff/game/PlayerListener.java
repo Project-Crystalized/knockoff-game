@@ -535,11 +535,6 @@ public class PlayerListener implements Listener {
     }
 
     @EventHandler
-    public void onBlockUpdate(BlockFromToEvent e) {
-        e.setCancelled(true);
-    }
-
-    @EventHandler
     public void onVaultUnlock(VaultChangeStateEvent e) {
         Player p = e.getPlayer();
         Block b = e.getBlock().getLocation().getBlock();

@@ -109,7 +109,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         overtime_3(20, 2, true, 30, 35),
         overtime_4(15, 2, true, 20, 30),
         overtime_5(10, 3, true, 15, 20),
-        overtime_6(5, 3, true, 7, 7),
+        overtime_6(7, 3, true, 9, 9),
         ;
 
         int maxTime;
@@ -1099,7 +1099,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void convertBlocktoCrystal(Block b) {
-        if (!(b.getType().equals(Material.MANGROVE_LEAVES) || b.isEmpty() || b.getType().equals(Material.LIGHT))) {
+        if (!(b.getType().equals(Material.MANGROVE_LEAVES) || b.isEmpty() || b.getType().equals(Material.LIGHT) || b.getType().equals(Material.STRING))) {
             String blockString = b.getType().toString().toLowerCase();
             if (Tag.SLABS.isTagged(b.getType())) {
                 BlockData bd = b.getBlockData();

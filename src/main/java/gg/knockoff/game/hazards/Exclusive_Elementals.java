@@ -6,6 +6,7 @@ import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
+import com.sk89q.worldedit.world.World;
 import gg.knockoff.game.GameManager;
 import gg.knockoff.game.MapData;
 import gg.knockoff.game.knockoff;
@@ -17,11 +18,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -72,7 +76,7 @@ public class Exclusive_Elementals extends hazard {
     }
 
     private miniHazards figureOutMiniHazard() {
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -116,7 +120,7 @@ public class Exclusive_Elementals extends hazard {
         );
 
         //get blocks to spawn eurptions on
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -209,7 +213,7 @@ public class Exclusive_Elementals extends hazard {
     }
 
     private void crystalsToIce(boolean sounds) {
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -242,7 +246,7 @@ public class Exclusive_Elementals extends hazard {
     private void blockBreaker() {
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elements (Block Breaker)").color(NamedTextColor.GOLD),
+                text("Elements (Block Breaker)").color(GOLD),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -264,7 +268,7 @@ public class Exclusive_Elementals extends hazard {
     }
 
     private void blockBreakerEffect() {
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -362,10 +366,10 @@ public class Exclusive_Elementals extends hazard {
     }
 
     enum howlingWindDirections{
-        NORTH(new Vector(0, 0, -1), new Vector(0, 0, 0.05)),
-        EAST(new Vector(1, 0, 0), new Vector(-0.05, 0, 0)),
-        SOUTH(new Vector(0, 0, 1), new Vector(0, 0, -0.05)),
-        WEST(new Vector(-1, 0, 0), new Vector(0.05, 0, 0)),
+        NORTH(new Vector(0, 0, -1), new Vector(0, 0, -0.05)),
+        EAST(new Vector(1, 0, 0), new Vector(0.05, 0, 0)),
+        SOUTH(new Vector(0, 0, 1), new Vector(0, 0, 0.05)),
+        WEST(new Vector(-1, 0, 0), new Vector(-0.05, 0, 0)),
         ;
 
         Vector dir;
@@ -377,12 +381,116 @@ public class Exclusive_Elementals extends hazard {
     }
 
 
+    enum corruptionZoneEffects{
+        jumpBoost(PotionEffectType.JUMP_BOOST, "Jump Boost", 4, 20 * 8),
+        speed(PotionEffectType.SPEED, "Speed", 4, 20 * 4),
+        strength(PotionEffectType.STRENGTH, "Strength", 3, 20 * 8),
+        ;
+
+        final PotionEffectType ef;
+        final String name;
+        final int ampLimit;
+        final int ticks;
+        corruptionZoneEffects(PotionEffectType ef, String name, int ampLimit, int ticks) {
+            this.ef = ef;
+            this.name = name;
+            this.ampLimit = ampLimit;
+            this.ticks = ticks;
+        }
+    }
+
     private void corruptionZone() {
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
                 text("Elements (Corruption Zone)").color(NamedTextColor.GREEN),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
-        //TODO
+
+        List<Block> blockList = new ArrayList<>();
+        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
+            MapData md = knockoff.getInstance().mapdata;
+            Region region = new CuboidRegion(
+                    BlockVector3.at(GameManager.SectionPlaceLocationX, GameManager.SectionPlaceLocationY, GameManager.SectionPlaceLocationZ),
+                    BlockVector3.at(GameManager.SectionPlaceLocationX + md.CurrentXLength, GameManager.SectionPlaceLocationY + md.CurrentYLength, GameManager.SectionPlaceLocationZ + md.CurrentZLength)
+            );
+            for (BlockVector3 bV3 : region) {
+                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                if (b.getType().equals(Material.TORCHFLOWER)) {
+                    blockList.add(b);
+                }
+            }
+        } catch (Exception e) {
+            Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
+            e.printStackTrace();
+        }
+
+        new BukkitRunnable() {
+            int timer = 0;
+            ArmorStand aoeEntity1;
+            corruptionZoneEffects effect = null;
+            public void run() {
+                switch (timer) {
+                    case 1 -> {
+                        //decide effect
+                        switch (knockoff.getInstance().getRandomNumber(1, 6)) {
+                            case 1, 4 -> {effect = corruptionZoneEffects.jumpBoost;}
+                            case 2, 5 -> {effect = corruptionZoneEffects.speed;}
+                            case 3, 6 -> {effect = corruptionZoneEffects.strength;}
+                        }
+
+                        Collections.shuffle(blockList);
+                        aoeEntity1 = Bukkit.getWorld("world").spawn(blockList.get(knockoff.getInstance().getRandomNumber(0, blockList.size())).getLocation(), ArmorStand.class, entity -> {
+                            aoeEntity1.setGravity(false);
+                            aoeEntity1.getAttribute(Attribute.SCALE).setBaseValue(0.1);
+                            aoeEntity1.setGlowing(true);
+                        });
+
+                    }
+                    case 20 * 2, 20 * 6 -> {
+                        summonAOE(aoeEntity1.getLocation(), effect);
+                    }
+                    case 20 * 12 -> {
+                        aoeEntity1.remove();
+                        cancel();
+                    }
+                }
+                timer++;
+            }
+        }.runTaskTimer(knockoff.getInstance(), 1,1);
+    }
+
+    private void summonAOE(Location loc, corruptionZoneEffects effect) {
+        TextDisplay text = loc.getWorld().spawn(loc, TextDisplay.class, entity -> {
+            entity.setBillboard(Display.Billboard.CENTER);
+            entity.text(text(" "));
+        });
+        new BukkitRunnable() {
+            int timer = 20 * 5;
+            public void run() {
+                text.text(text(effect.name + " in: " + timer/20));
+                timer--;
+                if (knockoff.getInstance().GameManager == null) {
+                    text.remove();
+                    cancel();
+                }
+                if (timer == 0) {
+                    for (Entity e : text.getNearbyEntities(5, 80, 5)) {
+                        if (e instanceof LivingEntity le) {
+                            int amp;
+                            try {
+                                amp = le.getPotionEffect(effect.ef).getAmplifier();
+                            } catch (NullPointerException ex) {
+                                amp = -1;
+                            }
+
+                            le.addPotionEffect(new PotionEffect(effect.ef, effect.ticks, amp + 1, false, true, true));
+                        }
+                    }
+                    text.remove();
+                    cancel();
+                }
+            }
+        }.runTaskTimer(knockoff.getInstance(), 2, 1);
     }
 }

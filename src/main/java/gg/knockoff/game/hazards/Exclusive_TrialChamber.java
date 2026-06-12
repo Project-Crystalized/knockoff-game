@@ -43,7 +43,7 @@ public class Exclusive_TrialChamber extends hazard {
         Location loc;
         List<Block> blockList = new ArrayList<>();
 
-        //Check for Trial Spawners beore picking random spot
+        //Check for Trial Spawners before picking random spot
         com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;

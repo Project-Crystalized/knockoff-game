@@ -1,6 +1,7 @@
 package gg.knockoff.game;
 
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
+import gg.crystalized.lobby.Achievement;
 import gg.crystalized.lobby.Lobby_plugin;
 import gg.crystalized.lobby.Ranks;
 import io.papermc.paper.entity.LookAnchor;
@@ -194,6 +195,11 @@ public class PlayerListener implements Listener {
 			for (Player p : Bukkit.getOnlinePlayers()) {
 				//p.playSound(p, "minecraft:block.anvil.place", 0.5F, 0.5f); //commented out since this is kinda annoying - Callum
 				p.playSound(player.getLocation(), "minecraft:entity.firework_rocket.blast_far", 4, 1); //TODO make actual firework
+			}
+
+			//achievements shit
+			if (attacker.getInventory().getItemInMainHand().getType().equals(Material.GOLDEN_SWORD)) { //too lazy to properly check for a glove, this should work fine - Callum
+				Achievement.getAchievement("ko_glovekill", attacker).setProgress(100);
 			}
 		}
 		pd.addDeath(1);
@@ -539,7 +545,11 @@ public class PlayerListener implements Listener {
         Player p = e.getPlayer();
         Block b = e.getBlock().getLocation().getBlock();
 		Vault data = (Vault) b.getBlockData();
-        if (e.getNewState().equals(org.bukkit.block.data.type.Vault.State.EJECTING)) {
+		if (e.getNewState().equals(Vault.State.UNLOCKING)) {
+			//achievement shit, p will be null if the vault state is EJECTING
+			Achievement.getAchievement("ko_unlocker", p).setProgress(100);
+		}
+        if (e.getNewState().equals(Vault.State.EJECTING)) {
 			List<String> powerups;
 			e.setCancelled(true);
 			b.setType(Material.AMETHYST_BLOCK);

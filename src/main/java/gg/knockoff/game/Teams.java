@@ -516,8 +516,8 @@ class CustomPlayerNametags {
 						);
 					}
 				}
-			}
-		}.runTaskTimer(knockoff.getInstance(), 1, 1);
+			} //Change to 1L as it is expecting a long (During database issues debuging) - Mish
+		}.runTaskTimer(knockoff.getInstance(), 1L, 1L);
 	}
 }
 

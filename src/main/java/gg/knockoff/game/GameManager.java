@@ -182,6 +182,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 player.unlistPlayer(p);
             }
             PlayerList.add(p.getName());
+            //Border is created here. But due to a delay before teleporting needs adjusting, to players new positon
             WorldBorder PlayerBorder = Bukkit.getServer().createWorldBorder();
             p.setWorldBorder(PlayerBorder);
             PlayerBorder.setCenter(p.getX() + 0.5, p.getZ() + 0.5);
@@ -732,19 +733,21 @@ public class GameManager { //I honestly think this entire class could be optimis
         MapData md = knockoff.getInstance().mapdata;
         int offset = md.currentSection.getAsJsonObject().get("spawn_offset").getAsInt();
 
-        //TODO Misherop uncomment this for new spawn thingy
-        /*
+        //TODO recoment and uncoment if the fix won't work - Mish
+        //Works
+
         new BukkitRunnable() {
             public void run() {
                 for (TeamData td : Teams.team_datas_without_spectator) {
                     spawnSpawnPlatformAndTP(Teams.get_team_from_string(td.name), td.name);
                 }
                 cancel();
-            }
+            } //Due to delay border needs to be adjusted after tp
         }.runTaskTimer(knockoff.getInstance(), 10, 1);
-        */
 
-        //EVERYTHING BELOW WILL BE REMOVED, Misherop comment everything below so it doesn't run
+
+        //Everything below has been commented as requsted, uncomment to go back to the old way
+        /*
 
         if (!Teams.blue.isEmpty()) {
             com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
@@ -959,6 +962,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
         }
 
+
+         */
     }
     
     private static void spawnSpawnPlatformAndTP(List<String> players, String team) {
@@ -1015,14 +1020,43 @@ public class GameManager { //I honestly think this entire class could be optimis
 
             b.setBlockData(dir);
             b.getState().update();
-            GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30), false);
+            //Extended the time after which the platform breaks, as it was too fast after the border disapered
+            GameManager.startBreakingCrystal(b, 10 * 20, knockoff.getInstance().getRandomNumber(20, 30), false);
         }
 
         Location ploc = new Location(Bukkit.getWorld("world"), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
         for (String s : players) {
-            Player p = Bukkit.getPlayer(s);
+            //Makes sure that the exact name of the player is being used, to avoid partial matches/miss matches.
+            Player p = Bukkit.getPlayerExact(s);
+            //makes sure that the player is not offline and not null before attempting teeleportation
+            if (p == null || !p.isOnline()) {
+                //Logs the player that is offline or null that has attempted to be teleported
+                Bukkit.getLogger().warning("Can't teleport the player of name: "+ s + " due to them being offline or not existing. For the team "
+                        + team + ".");
+                continue; //Continues through the players loop
+            }
             p.sendMessage(text("ploc: X:" + ploc.x() + " Y:" + ploc.y() + " Z:" + ploc.z()));
-            p.teleport(ploc);
+            //Does the player telportation and returns the boolean when sussesful
+            boolean teleportedOnPlatform = p.teleport(ploc);
+            //If teleportation was not sussesfull
+            if (!teleportedOnPlatform) {
+                Bukkit.getLogger().warning("Teleportation failed for this player " + s );
+                continue; //Continues through the loop
+            }
+
+            //Gets the player world border
+            WorldBorder startingBorder = p.getWorldBorder();
+
+            //If it is not null then sets a border to the plocs position
+            if (startingBorder != null) {
+                //With the center of ploc location
+                startingBorder.setCenter(ploc.getX(), ploc.getZ());
+                //With the size of 3 how it was
+                startingBorder.setSize(3);
+                //with worning distanse 0, so screen won't be red
+                startingBorder.setWarningDistance(0);
+            }
+            //The rest as it was
             p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
                     knockoff.getInstance().mapdata.getCurrentMiddleYLength(),
                     knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES

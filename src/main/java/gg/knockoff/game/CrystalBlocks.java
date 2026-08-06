@@ -1,10 +1,7 @@
 package gg.knockoff.game;
 
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.Directional;
@@ -95,7 +92,18 @@ public class CrystalBlocks implements Listener {
         Player player = event.getPlayer();
         Block block = player.getTargetBlock(null ,5);
         if (knockoff.getInstance().GameManager != null && event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            //Gets the player's starter border
+            WorldBorder startingBorder = player.getWorldBorder();
+
+            //If border is not null and the size is smaller or equal to 3 which is the size of the starting border
+            if (startingBorder != null && startingBorder.getSize() <= 3.0) {
+                //Prevents the players breaking of the starter platform, while in the starter border.
+                event.setCancelled(true);
+                //returns so the other stuff won't run
+                return;
+            }
             switch (block.getType()) {
+
                 case WHITE_GLAZED_TERRACOTTA, GRAY_GLAZED_TERRACOTTA, LIGHT_GRAY_GLAZED_TERRACOTTA, BLACK_GLAZED_TERRACOTTA,
                      AMETHYST_BLOCK, CUT_COPPER_SLAB, CUT_COPPER_STAIRS, PINK_STAINED_GLASS, PINK_STAINED_GLASS_PANE,
                      PINK_CARPET, FROSTED_ICE

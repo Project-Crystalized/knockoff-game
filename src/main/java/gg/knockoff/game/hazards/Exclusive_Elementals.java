@@ -14,11 +14,9 @@ import io.papermc.paper.datacomponent.DataComponentTypes;
 import io.papermc.paper.datacomponent.item.CustomModelData;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
@@ -382,13 +380,17 @@ public class Exclusive_Elementals extends hazard {
 
 
     enum corruptionZoneEffects{
+        //More ideas for effects if invisability and levitation, but levitation could end up being more harming
+        //While invis could be a little bit over powered, so for now slow falling was added.
         jumpBoost(PotionEffectType.JUMP_BOOST, "Jump Boost", 4, 20 * 8),
         speed(PotionEffectType.SPEED, "Speed", 4, 20 * 4),
         strength(PotionEffectType.STRENGTH, "Strength", 3, 20 * 8),
+        slowFalling(PotionEffectType.SLOW_FALLING, "Slow Falling", 0, 20 * 6),
         ;
 
         final PotionEffectType ef;
         final String name;
+        //Not sure if amplification limit was the plan, but I think it is a good idea to not go crazy high
         final int ampLimit;
         final int ticks;
         corruptionZoneEffects(PotionEffectType ef, String name, int ampLimit, int ticks) {
@@ -424,6 +426,12 @@ public class Exclusive_Elementals extends hazard {
             Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
             e.printStackTrace();
         }
+        //Added a blcocklist empty check, for safety
+        if (blockList.isEmpty()) {
+            //will show a warning if no torchflowers were found
+            knockoff.getInstance().getLogger().warning("No torch flowers were found to create a coruption zone");
+            return;
+        }
 
         new BukkitRunnable() {
             int timer = 0;
@@ -433,17 +441,28 @@ public class Exclusive_Elementals extends hazard {
                 switch (timer) {
                     case 1 -> {
                         //decide effect
-                        switch (knockoff.getInstance().getRandomNumber(1, 6)) {
-                            case 1, 4 -> {effect = corruptionZoneEffects.jumpBoost;}
-                            case 2, 5 -> {effect = corruptionZoneEffects.speed;}
-                            case 3, 6 -> {effect = corruptionZoneEffects.strength;}
+                        //added extra numbers for 4th effect
+                        switch (knockoff.getInstance().getRandomNumber(1, 8)) {
+                            case 1, 5 -> {effect = corruptionZoneEffects.jumpBoost;}
+                            case 2, 6 -> {effect = corruptionZoneEffects.speed;}
+                            case 3, 7 -> {effect = corruptionZoneEffects.strength;}
+                            case 4, 8 -> {effect = corruptionZoneEffects.slowFalling;}
                         }
 
                         Collections.shuffle(blockList);
-                        aoeEntity1 = Bukkit.getWorld("world").spawn(blockList.get(knockoff.getInstance().getRandomNumber(0, blockList.size())).getLocation(), ArmorStand.class, entity -> {
-                            aoeEntity1.setGravity(false);
-                            aoeEntity1.getAttribute(Attribute.SCALE).setBaseValue(0.1);
-                            aoeEntity1.setGlowing(true);
+                        //made sure blockList.size() is - 1, as arrays and lists start at 0 index, so this will be the last valid index
+                        //From java doc: IndexOutOfBoundsException – if the index is out of range (index < 0 || index >= size())
+                        //Must not be equal or bigger to size, or smaller than zero. 
+                        aoeEntity1 = Bukkit.getWorld("world").spawn(blockList.get(knockoff.getInstance().
+                                getRandomNumber(0, blockList.size() - 1)).getLocation(), ArmorStand.class, entity -> {
+                            //As armor stand has taken on the entity replaced aoeEntity so it should be set correctly here
+                            entity.setGravity(false);
+                            //Made sure to get scale first and add a null check so if scale is null nothing would happen
+                            AttributeInstance scale = entity.getAttribute(Attribute.SCALE);
+                            if(scale != null){
+                                scale.setBaseValue(0.1);
+                            }
+                            entity.setGlowing(true);
                         });
 
                     }
@@ -454,6 +473,17 @@ public class Exclusive_Elementals extends hazard {
                         aoeEntity1.remove();
                         cancel();
                     }
+                }
+                // Soul fire Particles spawn around the torch flower, with slight offset
+                if (aoeEntity1 != null) {
+                    Location particleLoc = aoeEntity1.getLocation().clone().add(0.5, 1.0, 0.5);
+                    particleLoc.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, particleLoc,
+                            5,
+                            2.5,
+                            0.5,
+                            2.5,
+                            0.01
+                    );
                 }
                 timer++;
             }
@@ -473,20 +503,60 @@ public class Exclusive_Elementals extends hazard {
                 if (knockoff.getInstance().GameManager == null) {
                     text.remove();
                     cancel();
+                    //made sure it returns as well.
+                    return;
                 }
                 if (timer == 0) {
+                    //Made the whole logic work with online players, and so that the player needs to be withing 5 blocks height wise as well
+                    //As the previous height was allowing players to be much higher
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+
+                        //For extra safety makes sure that players in other worlds are ignored
+                        //Though it should not happen
+                        if (!player.getWorld().equals(loc.getWorld())) {
+                            continue;
+                        }
+                        //Makes sure that players who are in spectator are ignored
+                        if(player.getGameMode() == GameMode.SPECTATOR){
+                            continue;
+                        }
+                        //The radius in which the effect will be applied
+                        double radius = 5.0;
+
+                        //Only affects players withing the 5 block radius of the corruption zone
+                        //distance squared, should be a bit better than just regular distanse as regular distanse checker uses Math.sqrt
+                        //Which is not recomended to repetedly call for performance, and can be unrelyable and return NAN if it overflows.
+                        //But alternatively can be ".distance(loc) <= radius (which is 5)
+                        if (player.getLocation().distanceSquared(loc) <= radius * radius) {
+                            //Gets the current effect
+                            PotionEffect currentEffect = player.getPotionEffect(effect.ef);
+                            //sets intial amplifier to zero
+                            int amplifier = 0;
+                            //If player has the effect increases the amplifier withtin the given limit
+                            if (currentEffect != null) {
+                                //Math mini selects the smaller number, meaning that if amplifer exides the ampLimit
+                                //It will set the amplifier to the limit
+                                amplifier = Math.min(currentEffect.getAmplifier() + 1, effect.ampLimit);
+                            }
+                            //adds the potion effect with the calculated amplifier
+                            player.addPotionEffect(new PotionEffect(effect.ef, effect.ticks, amplifier, false, true, true));
+                        }
+                    }
+
+                    /* Old logic, with crazy with big height range
                     for (Entity e : text.getNearbyEntities(5, 80, 5)) {
-                        if (e instanceof LivingEntity le) {
+                        //Replaced living entity with a player as it should happen for player only
+                        if (e instanceof Player player) {
                             int amp;
                             try {
-                                amp = le.getPotionEffect(effect.ef).getAmplifier();
+                                amp = player.getPotionEffect(effect.ef).getAmplifier();
                             } catch (NullPointerException ex) {
                                 amp = -1;
                             }
 
-                            le.addPotionEffect(new PotionEffect(effect.ef, effect.ticks, amp + 1, false, true, true));
+                            player.addPotionEffect(new PotionEffect(effect.ef, effect.ticks, amp + 1, false, true, true));
                         }
-                    }
+                    }*/
                     text.remove();
                     cancel();
                 }

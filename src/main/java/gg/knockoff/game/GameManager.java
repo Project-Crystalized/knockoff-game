@@ -58,7 +58,7 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 public class GameManager { //I honestly think this entire class could be optimised because of how long it is
     public static List<PlayerData> playerDatas;
     public Teams teams;
-    public HazardsManager hazards = new HazardsManager();
+    public HazardsManager hazards;
     public static List<Block> blocksCrystallizing = new ArrayList<>();
     public static List<MapParticles> particles = new ArrayList<>();
 
@@ -164,6 +164,10 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
 
         MapManager.placeNewSection();
+
+        //so that it adds the ellemental effects to the list as well
+        //Moved while figuring out the hazard command issue, should be safer here, after teams are created and first map is placed
+        hazards = new HazardsManager();
         new BukkitRunnable() {
             public void run() {
                 playerDatas = new ArrayList<PlayerData>();
@@ -1486,6 +1490,8 @@ class HazardsManager {
         hazards.add(new Lightning("lightning"));
 
         for (int i = 0; i < 3; i++) {
+            //tried with md.map_nameString, it also works
+            //Made it work with md.extras.exclusiveHazard, just needs to be in a config.
             switch (md.extras.exclusiveHazard) {
                 case "TrialChamber" -> {hazards.add(new Exclusive_TrialChamber("TrialChamber"));}
                 case "Elements" -> {hazards.add(new Exclusive_Elementals("Elementals"));}
@@ -1511,6 +1517,14 @@ class HazardsManager {
     }
 
     public void NewHazard(hazard type) {
+        //Addded a null checker, when type is equal to null.
+        //This is safest for example when map config is not set up to have extras.
+        if(type == null){
+            knockoff.getInstance().getLogger().warning("Trying to spawn a hazard that doesn't exist. Make sure that you added extras to map config if" +
+                    " the map is supposed to have extra map based hazards.");
+            //returns so the further code doesn't excecute
+            return;
+        }
         try {
             type.start();
         } catch (Exception e) {
@@ -1519,8 +1533,13 @@ class HazardsManager {
     }
 
     public hazard getHazard(String name) {
+        //Shows the hazard that is being searched
+        knockoff.getInstance().getLogger().info("Looking for hazard: " + name + "");
         for (hazard h : hazards) {
-            if (h.name.equals(name)) {
+            //Shows all registered hazards, was used for debuging
+            knockoff.getInstance().getLogger().info("Hazards that exists: " + h.name + "");
+            //Made so it ignores case.
+            if (h.name.equalsIgnoreCase(name)) {
                 return h;
             }
         }

@@ -177,6 +177,8 @@ class MapExtraFeatures {
 
     public MapExtraFeatures(JsonObject json) {
         try {
+            //Probobly due to the config reset no longer works
+            //Fixed the config
             data = json.get("extras").getAsJsonObject();
         } catch (Exception ex) {
             return;
@@ -222,6 +224,7 @@ class MapExtraFeatures {
 
     private void setupExclusiveHazard() {
         try {
+            //Fixed the config so it works again.
             String temp = data.get("exclusiveHazard").getAsString();
             switch (temp) {
                 case "TrialChamber", "Elements" -> {

@@ -465,7 +465,9 @@ public class Exclusive_Elementals extends hazard {
                         });
 
                     }
-                    case 20 * 2, 20 * 6 -> {
+                    //Changed so it starts at 1 sec, instead of 2 sec, letting count down fully go through to 5 sec
+                    //No longer overlaps
+                    case 20 * 1, 20 * 6 -> {
                         //Moved the effect desion here, as mite said
                         // so that it changes after giving, so it could either stack up. Or amplification grows if same one
                         //decide effect

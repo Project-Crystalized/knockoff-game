@@ -56,6 +56,8 @@ public class PlayerListener implements Listener {
 		Player p = event.getPlayer();
 		FloodgateApi floodgateapi = FloodgateApi.getInstance();
 		event.joinMessage(Component.text(""));
+		//makes sure all active effects are cleared, cause I noticed strenght 2 was staying
+		p.clearActivePotionEffects();
 
 		if (knockoff.getInstance().GameManager == null) {
 			p.teleport(knockoff.getInstance().mapdata.get_que_spawn(p.getWorld()));
@@ -158,6 +160,11 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
+		//When dying cleares the effects and reapllies the effects which are supposed to be there
+		//So that the player won't keep those effects
+		event.getPlayer().clearActivePotionEffects();
+		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
+		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
 		event.setCancelled(true);
 
 		Player player = event.getPlayer();
@@ -382,6 +389,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void OnPlayerDisconnect(PlayerConnectionCloseEvent event) {
+
 		if (knockoff.getInstance().GameManager != null) {
 			Teams.DisconnectPlayer(event.getPlayerName());
 		}
@@ -392,6 +400,7 @@ public class PlayerListener implements Listener {
             }
 		}
 	}
+
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent e) {
@@ -565,4 +574,17 @@ public class PlayerListener implements Listener {
             KnockoffItem.DropPowerup(b.getLocation().clone().add(0.5, 1, 0.5), powerups.get(knockoff.getInstance().getRandomNumber(0, powerups.size())));
         }
     }
+	//Makes sure that when teleported with a plugin all effects are cleared and needed ones reaply
+	//Fixes the bug with levitation in the lobby, and then levitating in the starter as well.
+	@EventHandler
+	public void playerTeleportEvent(PlayerTeleportEvent event){
+		if(!event.getCause().equals(PlayerTeleportEvent.TeleportCause.PLUGIN)){
+			return;
+		}
+		event.getPlayer().clearActivePotionEffects();
+		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
+		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
+
+
+	}
 }

@@ -559,7 +559,8 @@ public class Exclusive_Elementals extends hazard {
             entity.text(text(" "));
         });
         new BukkitRunnable() {
-            //TODO: Need to make sure that text can't overlap with the next text effect. So will rewrite this part a bit
+            //DONE: Need to make sure that text can't overlap with the next text effect. So will rewrite this part a bit
+
             int timer = 20 * 5;
             public void run() {
                 //changed the colour to yellow so it is easier to see

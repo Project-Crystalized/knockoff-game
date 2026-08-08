@@ -382,10 +382,11 @@ public class Exclusive_Elementals extends hazard {
     enum corruptionZoneEffects{
         //More ideas for effects if invisability and levitation, but levitation could end up being more harming
         //While invis could be a little bit over powered, so for now slow falling was added.
-        jumpBoost(PotionEffectType.JUMP_BOOST, "Jump Boost", 4, 20 * 8),
-        speed(PotionEffectType.SPEED, "Speed", 4, 20 * 4),
-        strength(PotionEffectType.STRENGTH, "Strength", 3, 20 * 8),
-        slowFalling(PotionEffectType.SLOW_FALLING, "Slow Falling", 0, 20 * 6),
+        //Made them last longer in seconds, otherwise it just runs out almost imiditely
+        jumpBoost(PotionEffectType.JUMP_BOOST, "Jump Boost", 4, 20 * 30),
+        speed(PotionEffectType.SPEED, "Speed", 4, 20 * 40),
+        strength(PotionEffectType.STRENGTH, "Strength", 3, 20 * 70),
+        slowFalling(PotionEffectType.SLOW_FALLING, "Slow Falling", 0, 20 * 60),
         ;
 
         final PotionEffectType ef;
@@ -440,19 +441,12 @@ public class Exclusive_Elementals extends hazard {
             public void run() {
                 switch (timer) {
                     case 1 -> {
-                        //decide effect
-                        //added extra numbers for 4th effect
-                        switch (knockoff.getInstance().getRandomNumber(1, 8)) {
-                            case 1, 5 -> {effect = corruptionZoneEffects.jumpBoost;}
-                            case 2, 6 -> {effect = corruptionZoneEffects.speed;}
-                            case 3, 7 -> {effect = corruptionZoneEffects.strength;}
-                            case 4, 8 -> {effect = corruptionZoneEffects.slowFalling;}
-                        }
+
 
                         Collections.shuffle(blockList);
                         //made sure blockList.size() is - 1, as arrays and lists start at 0 index, so this will be the last valid index
                         //From java doc: IndexOutOfBoundsException – if the index is out of range (index < 0 || index >= size())
-                        //Must not be equal or bigger to size, or smaller than zero. 
+                        //Must not be equal or bigger to size, or smaller than zero.
                         aoeEntity1 = Bukkit.getWorld("world").spawn(blockList.get(knockoff.getInstance().
                                 getRandomNumber(0, blockList.size() - 1)).getLocation(), ArmorStand.class, entity -> {
                             //As armor stand has taken on the entity replaced aoeEntity so it should be set correctly here
@@ -462,11 +456,26 @@ public class Exclusive_Elementals extends hazard {
                             if(scale != null){
                                 scale.setBaseValue(0.1);
                             }
+                            //Made sure it is invisible
+                            entity.setInvisible(true);
+                            //makes sure that arrmor stand is a marker for a small collision box
+                            entity.setMarker(true);
                             entity.setGlowing(true);
+
                         });
 
                     }
                     case 20 * 2, 20 * 6 -> {
+                        //Moved the effect desion here, as mite said
+                        // so that it changes after giving, so it could either stack up. Or amplification grows if same one
+                        //decide effect
+                        //added extra numbers for 4th effect
+                        switch (knockoff.getInstance().getRandomNumber(1, 8)) {
+                            case 1, 5 -> {effect = corruptionZoneEffects.jumpBoost;}
+                            case 2, 6 -> {effect = corruptionZoneEffects.speed;}
+                            case 3, 7 -> {effect = corruptionZoneEffects.strength;}
+                            case 4, 8 -> {effect = corruptionZoneEffects.slowFalling;}
+                        }
                         summonAOE(aoeEntity1.getLocation(), effect);
                     }
                     case 20 * 12 -> {
@@ -474,31 +483,85 @@ public class Exclusive_Elementals extends hazard {
                         cancel();
                     }
                 }
-                // Soul fire Particles spawn around the torch flower, with slight offset
+
                 if (aoeEntity1 != null) {
+                    //the location of the particles with a slight offset.
                     Location particleLoc = aoeEntity1.getLocation().clone().add(0.5, 1.0, 0.5);
+                    //aded a circle particles around with the same as effect giving radius so it is easier to know where to stand
+                    double radius = 5.0;
+                    //It will spawn 32 paritcle around
+                    //Similiar to dragon arrow circle
+                    for (int i = 0; i < 32; i++) {
+                        //Calculating the angle where each particle must be
+                        double angle = 2 * Math.PI * i / 32;
+                        //Calculating the x and z location
+                        double x = Math.cos(angle) * radius;
+                        double z = Math.sin(angle) * radius;
+                        //Adds the circle offset location
+                        Location circleLoc = particleLoc.clone().add(x, 0, z);
+                        //Spawns the aqua dust particle, at it's respective location in a circle
+                        particleLoc.getWorld().spawnParticle(Particle.DUST, circleLoc,
+                                1,
+                                0,
+                                0,
+                                0,
+                                0,
+                                new Particle.DustOptions(Color.AQUA, 2.0f)
+                        );
+                    }
+                    // Soul fire Particles spawn around the torch flower, with slight offset
+                    //Inside that circle
+                    //Reduced the amount as mite asked
                     particleLoc.getWorld().spawnParticle(Particle.SOUL_FIRE_FLAME, particleLoc,
-                            5,
+                            2,
                             2.5,
                             0.5,
                             2.5,
                             0.01
                     );
+                    // The blue trial particles that mite suggested
+                    particleLoc.getWorld().spawnParticle(Particle.TRIAL_SPAWNER_DETECTION_OMINOUS, particleLoc,
+                            1,
+                            2.5,
+                            0.5,
+                            2.5,
+                            0.01
+                    );
+                    //This spawns the locator particles in the air, going up
+                    for (double y = 1; y <= 20; y += 0.5) {
+                        //copies where the rest of particles spawn and adds y each time
+                        //By the end should be + 20 original height, creating a pillar of dust particles
+                        Location locatorLoc = particleLoc.clone().add(0, y, 0);
+                        //spawns one aqua dust particle per loop, creating 38 total, attracting player attention, so it is easier to find
+                        particleLoc.getWorld().spawnParticle(Particle.DUST, locatorLoc,
+                                1,
+                                0,
+                                0,
+                                0,
+                                0,
+                                new Particle.DustOptions(Color.AQUA, 2.0f)
+                        );
+                    }
                 }
+
                 timer++;
             }
         }.runTaskTimer(knockoff.getInstance(), 1,1);
     }
 
     private void summonAOE(Location loc, corruptionZoneEffects effect) {
-        TextDisplay text = loc.getWorld().spawn(loc, TextDisplay.class, entity -> {
+        //Added height for the text location so it easier to see aboce tghe flower
+        Location textLoc = loc.clone().add(0.5, 1.5, 0.5);
+        TextDisplay text = loc.getWorld().spawn(textLoc, TextDisplay.class, entity -> {
             entity.setBillboard(Display.Billboard.CENTER);
             entity.text(text(" "));
         });
         new BukkitRunnable() {
+            //TODO: Need to make sure that text can't overlap with the next text effect. So will rewrite this part a bit
             int timer = 20 * 5;
             public void run() {
-                text.text(text(effect.name + " in: " + timer/20));
+                //changed the colour to yellow so it is easier to see
+                text.text(text(effect.name + " in: " + timer/20).color(NamedTextColor.YELLOW));
                 timer--;
                 if (knockoff.getInstance().GameManager == null) {
                     text.remove();

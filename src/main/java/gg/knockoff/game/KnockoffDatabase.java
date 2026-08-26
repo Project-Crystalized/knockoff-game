@@ -91,8 +91,7 @@ public class KnockoffDatabase {
             game_stmt.setString(3, GameManager.GameType.toString());
             game_stmt.executeUpdate();
 
-            String save_player = "INSERT INTO KoGamesPlayers(player_uuid, team, kills, deaths, blocks_placed, blocks_broken, items_collected, items_used, games_won)"
-                    + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+            String save_player = "INSERT INTO KoGamesPlayers(game, player_uuid, team, kills, deaths, blocks_placed, blocks_broken, items_collected, items_used, games_won) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement player_stmt = conn.prepareStatement(save_player);
             for (Player p : Bukkit.getOnlinePlayers()) {
                 PlayerData pd = gm.getPlayerData(p);
@@ -108,9 +107,9 @@ public class KnockoffDatabase {
                 player_stmt.setInt(8, pd.powerupscollected);
                 player_stmt.setInt(9, pd.powerupsused);
                 if (WinningTeam.equals(Teams.GetPlayerTeam(p))) {
-                    player_stmt.setInt(9, 1);
+                    player_stmt.setInt(10, 1);
                 } else {
-                    player_stmt.setInt(9, 0);
+                    player_stmt.setInt(10, 0);
                 }
                 player_stmt.executeUpdate();
             }

@@ -1,7 +1,6 @@
 package gg.knockoff.game;
 
 import com.destroystokyo.paper.ParticleBuilder;
-import gg.crystalized.lobby.Lobby_plugin;
 import gg.crystalized.lobby.Ranks;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -44,8 +43,12 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     public PlayerData(Player p) {
         player = p.getName();
         playerObject = p;
-        cachedRankIcon_small = Ranks.getIcon(Bukkit.getOfflinePlayer(player));
-        cachedRankIcon_full = Ranks.getRankWithName(p);
+				try {
+        	cachedRankIcon_small = Ranks.getIcon(Bukkit.getOfflinePlayer(player));
+        	cachedRankIcon_full = Ranks.getRankWithName(p);
+				} catch (NoClassDefFoundError e) {
+					Bukkit.getLogger().warning("no lobby plugin, so no ranks");
+				}
 
         new BukkitRunnable() {
             int timer = 0;

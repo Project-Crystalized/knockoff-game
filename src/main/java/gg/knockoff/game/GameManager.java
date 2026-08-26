@@ -537,10 +537,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                 player.playSound(player, "crystalized:effect.ls_game_won", 50, 1);
 
                 //achievement shit x2, 2 achievements here guys holy moly
-                Achievement.getAchievement("ko_win", player).setProgress(100);
-                if (knockoff.getInstance().GameManager.getPlayerData(player).lives == 5) {
-                    Achievement.getAchievement("ko_flawlesswin", player).setProgress(100);
-                }
+								try {
+                	Achievement.getAchievement("ko_win", player).setProgress(100);
+                	if (knockoff.getInstance().GameManager.getPlayerData(player).lives == 5) {
+                    	Achievement.getAchievement("ko_flawlesswin", player).setProgress(100);
+                	}
+								} catch (NoClassDefFoundError e) {}
             } else {
                 player.playSound(player, "crystalized:effect.ls_game_lost", 50, 1);
             }

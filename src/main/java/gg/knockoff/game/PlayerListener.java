@@ -205,9 +205,11 @@ public class PlayerListener implements Listener {
 			}
 
 			//achievements shit
-			if (attacker.getInventory().getItemInMainHand().getType().equals(Material.GOLDEN_SWORD)) { //too lazy to properly check for a glove, this should work fine - Callum
-				Achievement.getAchievement("ko_glovekill", attacker).setProgress(100);
-			}
+			try {
+				if (attacker.getInventory().getItemInMainHand().getType().equals(Material.GOLDEN_SWORD)) { //too lazy to properly check for a glove, this should work fine - Callum
+					Achievement.getAchievement("ko_glovekill", attacker).setProgress(100);
+				}
+			} catch (NoClassDefFoundError e) {}
 		}
 		pd.addDeath(1);
 		pd.isPlayerDead = true;
@@ -296,9 +298,15 @@ public class PlayerListener implements Listener {
 		event.setCancelled(true);
 		//this is dumb
 		if (knockoff.getInstance().GameManager == null) {
+			try {
 			Bukkit.getServer().sendMessage(Ranks.getName(Bukkit.getOfflinePlayer(p.getName()))
 					.append(Component.text(": "))
 					.append(event.message()));
+					} catch (NoClassDefFoundError e) {
+			Bukkit.getServer().sendMessage(Component.text(p.getName())
+					.append(Component.text(": "))
+					.append(event.message()));
+			}
 		} else {
 			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
 			Bukkit.getServer().sendMessage(pd.cachedRankIcon_small
@@ -554,10 +562,12 @@ public class PlayerListener implements Listener {
         Player p = e.getPlayer();
         Block b = e.getBlock().getLocation().getBlock();
 		Vault data = (Vault) b.getBlockData();
-		if (e.getNewState().equals(Vault.State.UNLOCKING)) {
-			//achievement shit, p will be null if the vault state is EJECTING
-			Achievement.getAchievement("ko_unlocker", p).setProgress(100);
-		}
+		try {
+			if (e.getNewState().equals(Vault.State.UNLOCKING)) {
+				//achievement shit, p will be null if the vault state is EJECTING
+				Achievement.getAchievement("ko_unlocker", p).setProgress(100);
+			}
+		} catch (NoClassDefFoundError error) {}
         if (e.getNewState().equals(Vault.State.EJECTING)) {
 			List<String> powerups;
 			e.setCancelled(true);

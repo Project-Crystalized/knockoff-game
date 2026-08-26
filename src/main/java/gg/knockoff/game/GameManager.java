@@ -193,7 +193,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             PlayerBorder.setSize(3);
 
             GiveTeamItems(p);
-            if (Teams.GetPlayerTeam(p) == "spectator") {
+            if (Teams.GetPlayerTeam(p).equals("spectator")) {
                 p.setGameMode(GameMode.SPECTATOR);
             } else {
                 p.setGameMode(GameMode.ADVENTURE);
@@ -298,7 +298,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     private void StartGameLoop() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (Teams.GetPlayerTeam(p) != "spectator") {
+            if (!Teams.GetPlayerTeam(p).equals("spectator")) {
                 p.setGameMode(GameMode.SURVIVAL);
             } else {
                 p.setGameMode(GameMode.SPECTATOR);
@@ -687,7 +687,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         //for debugging
         //Bukkit.getLogger().log(Level.INFO, "[GAMEMANAGER] Player " + player.getName() + "Is in Team " + Teams.GetPlayerTeam(player));
 
-        if (Teams.GetPlayerTeam(player) != "spectator") {
+        if (!Teams.GetPlayerTeam(player).equals("spectator")) {
             TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
             im.setItemModel(td.item_model);
             inv.setChestplate(colorArmor(td.color, new ItemStack(Material.LEATHER_CHESTPLATE)));
@@ -1441,7 +1441,7 @@ class KnockoffProtocolLib {
                 Player updated_player = get_player_by_entity_id(packet.getIntegers().read(0));
                 if (gc == null
                         || updated_player == null
-                        || Teams.GetPlayerTeam(updated_player) != Teams.GetPlayerTeam(event.getPlayer())) {
+                        || !Teams.GetPlayerTeam(updated_player).equals(Teams.GetPlayerTeam(event.getPlayer()))) {
                     return;
                 }
                 event.setPacket(packet = packet.deepClone());

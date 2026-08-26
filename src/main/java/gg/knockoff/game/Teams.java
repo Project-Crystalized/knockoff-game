@@ -415,7 +415,7 @@ class TeamStatus {
 		}
 
 		for (String loop_team : team_statuses.keySet()) {
-			if (loop_team == team) {
+			if (loop_team.equals(team)) {
 				continue;
 			}
 			if (team_statuses.get(loop_team) > 0) {

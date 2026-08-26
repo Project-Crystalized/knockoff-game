@@ -395,7 +395,7 @@ public class PlayerListener implements Listener {
 		}
 		if (knockoff.getInstance().GameManager != null && Bukkit.getOnlinePlayers().isEmpty()) {
 			Bukkit.getLogger().log(Level.WARNING, "[!] All players have disconnected. The Game will now end.");
-            if (knockoff.getInstance().GameManager.GameState != "end") {
+            if (!knockoff.getInstance().GameManager.GameState.equals("end")) {
                 knockoff.getInstance().GameManager.ForceEndGame();
             }
 		}

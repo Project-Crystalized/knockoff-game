@@ -64,9 +64,13 @@ public final class knockoff extends JavaPlugin {
         Bukkit.getWorld("world").setGameRule(GameRules.MOB_GRIEFING, true);
         Bukkit.getWorld("world").setDifficulty(Difficulty.NORMAL);
 
+		try {
         if (!Lobby_plugin.getInstance().passive_mode) {
             getLogger().log(Level.SEVERE, "Please enable passive mode in the Lobby Plugin's Config. Knockoff will disable to prevent exceptions and bugs.");
         }
+				} catch (NoClassDefFoundError e) {
+			getLogger().warning("no lobby plugin found, continueing without");
+		}
 
         saveResource("config.yml", false);
         if (getConfig().getInt("version") != 4) {

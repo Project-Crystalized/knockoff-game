@@ -257,7 +257,7 @@ public class PlayerListener implements Listener {
 						}
 						case 0 -> {
 							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
-							if (GameManager.GameState.equals("game")) {
+							if (GameManager.state == GameState.GAME) {
 								tpPlayersBack(player);
 								player.setGameMode(GameMode.SURVIVAL);
 								pd.setDeathtimer(0);
@@ -411,7 +411,7 @@ public class PlayerListener implements Listener {
 		}
 		if (knockoff.getInstance().GameManager != null && Bukkit.getOnlinePlayers().isEmpty()) {
 			Bukkit.getLogger().log(Level.WARNING, "[!] All players have disconnected. The Game will now end.");
-            if (!knockoff.getInstance().GameManager.GameState.equals("end")) {
+            if (knockoff.getInstance().GameManager.state != GameState.END) {
                 knockoff.getInstance().GameManager.ForceEndGame();
             }
 		}

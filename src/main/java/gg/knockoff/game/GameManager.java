@@ -69,7 +69,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static int LastSectionPlaceLocationY = 0;
     public static int LastSectionPlaceLocationZ = -1000;
     public ArrayList<String> PlayerList = new ArrayList<String>();
-    public static String GameState = "game"; //can be "game" (game running), "end" (game ending)
+    public static GameState state = GameState.GAME;
     public static boolean showdownModeEnabled = false;
     public static boolean showdownModeStarted = false; //This is enabled when its effects actually start, above checks if its enabled in config.
     public static boolean mapMoving = false;
@@ -134,7 +134,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public GameManager(GameTypes type) {//Start of the game
         knockoff.getInstance().reloadConfig();
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
-        GameState = "game";
+        state = GameState.GAME;
         for (Entity e : Bukkit.getWorld("world").getEntities()) {
             if (e instanceof TextDisplay) {
                 e.remove();
@@ -322,7 +322,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 GameManager.RoundCounter--;
 
                 //mapSwap warning if enabled
-                if (RoundCounter == mapSpeedPhase.halfTime + 10 && GameState.equals("game") &&
+                if (RoundCounter == mapSpeedPhase.halfTime + 10 && state == GameState.GAME &&
                         knockoff.getInstance().mapdata.isMapSwapEnabled && !mapSpeedPhase.isOvertime) {
                     Bukkit.getServer().sendMessage(
                             text("The map will transform in 10 seconds, ").color(GOLD)
@@ -340,7 +340,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     }, 8 * 20);
                 }
                 //powerup spawn / mapSwap if enabled
-                if (RoundCounter == mapSpeedPhase.halfTime && GameState.equals("game")) {
+                if (RoundCounter == mapSpeedPhase.halfTime && state == GameState.GAME) {
                     if (knockoff.getInstance().mapdata.isMapSwapEnabled && !mapSpeedPhase.isOvertime) {
                         MapManager.mapSwap();
                     } else {
@@ -390,7 +390,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 }
 
                 //map particles
-                if (RoundCounter == 9 && GameState.equals("game") && !showdownModeStarted) {
+                if (RoundCounter == 9 && state == GameState.GAME && !showdownModeStarted) {
                     particles.clear();
                     plannedDirection = mapDirections.undecided;
                     MapData md = knockoff.getInstance().mapdata;
@@ -402,12 +402,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                         ));
                     }
                 }
-                if (RoundCounter == 5 && GameState.equals("game") && !showdownModeStarted) {
+                if (RoundCounter == 5 && state == GameState.GAME && !showdownModeStarted) {
                     decideMapDirection();
                 }
 
                 //move map particles & map movement
-                if (RoundCounter == 0 && GameState.equals("game") && !showdownModeStarted) {
+                if (RoundCounter == 0 && state == GameState.GAME && !showdownModeStarted) {
                     if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {
                         GameManager.CloneNewMapSection();
                         if (!knockoff.getInstance().getConfig().getBoolean("other.disable-overtime")) {
@@ -472,7 +472,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (knockoff.getInstance().GameManager == null) {cancel();}
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (p.getLocation().getY() < -20 && !GameState.equals("end")) {//instantly kills the player when they get knocked into the void
+                    if (p.getLocation().getY() < -20 && state != GameState.END) {//instantly kills the player when they get knocked into the void
                         Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                         p.teleport(loc);
                         if (p.getGameMode().equals(GameMode.SURVIVAL)) {
@@ -515,7 +515,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void StartEndGame(String WinningTeam, TeamData td) {
-        GameState = "end";
+        state = GameState.END;
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (GameManager.GameType.equals(GameTypes.StanderedSolos)) {
                 Player lastPlayer = Bukkit.getPlayer(Teams.get_team_from_string(WinningTeam).getFirst());
@@ -1504,7 +1504,7 @@ class HazardsManager {
         new BukkitRunnable() {
             int timer = knockoff.getInstance().getRandomNumber(30, 60);
             public void run() {
-                if (knockoff.getInstance().GameManager == null || knockoff.getInstance().GameManager.GameState == "end") {
+                if (knockoff.getInstance().GameManager == null || knockoff.getInstance().GameManager.state == GameState.END) {
                     cancel();
                 }
                 if (timer == 0 && !knockoff.getInstance().GameManager.showdownModeStarted) {

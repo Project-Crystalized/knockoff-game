@@ -232,7 +232,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                             player.showTitle(Title.title(translatable("crystalized.game.knockoff.go").color(GOLD), text(" "),
                                     Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(1), Duration.ofSeconds(1))));
                             player.playSound(player, "crystalized:effect.countdown_end", 50, 1);
-                            player.getWorldBorder().reset();
+                            WorldBorder wb = player.getWorldBorder();
+                            if (wb != null) {
+                                wb.reset();
+                            }
                         }
                         StartGameLoop();
                         cancel();
@@ -728,6 +731,29 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
         Bukkit.getLogger().warning("[Knockoff] No PlayerData found for player \"" + p.getName() + "). They are likely a spectator or joined mid-game. PlayerData is only created for players online at game start.");
         return null;
+    }
+
+    // Registers a player who joins mid-game as a spectator.
+    public void addSpectator(Player p) {
+        Teams.spectator.add(p.getName());
+
+        PlayerData pd = new PlayerData(p);
+        pd.isEliminated = true;
+        pd.isPlayerDead = true;
+        pd.lives = 0;
+        playerDatas.add(pd);
+
+        p.setGameMode(GameMode.SPECTATOR);
+        p.getInventory().clear();
+        p.clearActivePotionEffects();
+        p.teleport(knockoff.getInstance().mapdata.get_que_spawn(p.getWorld()));
+
+        WorldBorder PlayerBorder = Bukkit.getServer().createWorldBorder();
+        p.setWorldBorder(PlayerBorder);
+        PlayerBorder.setCenter(p.getX() + 0.5, p.getZ() + 0.5);
+        PlayerBorder.setSize(3);
+
+        Bukkit.getLogger().info("[Knockoff] " + p.getName() + " joined mid-game as a spectator.");
     }
 
 

@@ -149,7 +149,8 @@ public class PlayerListener implements Listener {
                 }
             }.runTaskTimer(knockoff.getInstance(), 1, 1);
 		} else {
-			p.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
+			knockoff.getInstance().GameManager.addSpectator(p);
+			p.sendMessage(text("A game is currently in progress, so you have joined as a spectator.").color(NamedTextColor.GRAY));
 		}
 	}
 

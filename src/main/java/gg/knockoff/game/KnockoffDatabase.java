@@ -95,6 +95,7 @@ public class KnockoffDatabase {
             PreparedStatement player_stmt = conn.prepareStatement(save_player);
             for (Player p : Bukkit.getOnlinePlayers()) {
                 PlayerData pd = gm.getPlayerData(p);
+                if (pd == null) continue;
 
                 int game_id = conn.prepareStatement("SELECT last_insert_rowid();").executeQuery().getInt("last_insert_rowid()");
                 player_stmt.setInt(1, game_id);

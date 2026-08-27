@@ -33,6 +33,7 @@ public class TNT extends hazard {
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                    if (pd == null) continue;
                     if (!pd.isPlayerDead) {
                         Location loc = new Location(player.getWorld(), player.getX(), player.getY() + 10, player.getZ(), player.getYaw(), player.getPitch());
                         TNTPrimed TNT = player.getWorld().spawn(loc, TNTPrimed.class, entity -> {

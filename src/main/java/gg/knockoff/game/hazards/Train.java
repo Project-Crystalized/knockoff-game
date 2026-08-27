@@ -142,6 +142,7 @@ public class Train extends hazard {
                 for (Entity e : train.getNearbyEntities(4, 4, 4)) {
                     if (e instanceof Player p) {
                         PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                        if (pd == null) continue;
                         p.setVelocity(new Vector(0.5, 2, 0));
                         pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(40, 60);
                     }

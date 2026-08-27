@@ -171,6 +171,7 @@ public class PlayerListener implements Listener {
 		if (knockoff.getInstance().GameManager == null) return;
 
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+		if (pd == null) return;
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
@@ -195,6 +196,7 @@ public class PlayerListener implements Listener {
 					.append(player.getKiller().displayName()));
 			Player attacker = player.getKiller();
 			PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
+			if (pda == null) return;
 			pda.addKill(1);
 			attacker.showTitle(Title.title(text(" "), text("[\uE103] ").append(player.displayName()),
 					Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
@@ -309,6 +311,12 @@ public class PlayerListener implements Listener {
 			}
 		} else {
 			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+			if (pd == null) {
+				Bukkit.getServer().sendMessage(Component.text(p.getName())
+						.append(Component.text(": "))
+						.append(event.message()));
+				return;
+			}
 			Bukkit.getServer().sendMessage(pd.cachedRankIcon_small
 					.append(text(" "))
 					.append(p.displayName())
@@ -377,7 +385,7 @@ public class PlayerListener implements Listener {
         }
 
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-		if (pd.lives == 1) {
+		if (pd != null && pd.lives == 1) {
 			p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED)); //TODO translatable
 			p.playSound(p, "minecraft:block.note_block.pling", 1, 0.5f);
 		}
@@ -437,6 +445,7 @@ public class PlayerListener implements Listener {
 	public void OnPlayerPickupItem(EntityPickupItemEvent event) {
 		Player player = (Player) event.getEntity();
 		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+		if (pd == null) return;
 		pd.powerupscollected++;
 		List<Component> component = new ArrayList<>();
 		if (pd.cachedRankIcon_full.equals(text(""))) {
@@ -454,6 +463,7 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 		if (knockoff.getInstance().GameManager != null) {
 			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+			if (pd == null) return;
 			if (event.getHand() != EquipmentSlot.HAND || event.getItem() == null) {
 				return;
 			}

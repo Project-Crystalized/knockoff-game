@@ -490,12 +490,16 @@ class CustomPlayerNametags {
 
 		new BukkitRunnable() {
 			public void run() {
-				if (knockoff.getInstance().GameManager == null || !player.isOnline()
-						|| knockoff.getInstance().GameManager.getPlayerData(player).isPlayerDead) {
+				if (knockoff.getInstance().GameManager == null || !player.isOnline()) {
 					displayfront.remove();
 					cancel();
 				} else {
 					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+					if (pd == null) {
+						displayfront.remove();
+						cancel();
+						return;
+					}
 					if (pd.isPlayerDead) {
 						displayfront.text(text(""));
 					} else {

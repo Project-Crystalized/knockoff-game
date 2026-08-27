@@ -265,6 +265,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     case 1:
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             PlayerData pd = getPlayerData(p);
+                            if (pd == null) continue;
                             p.getAttribute(Attribute.MAX_HEALTH).setBaseValue(pd.getLives() * 2);
                         }
                         break;
@@ -303,6 +304,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             } else {
                 p.setGameMode(GameMode.SPECTATOR);
                 PlayerData pd = getPlayerData(p);
+                if (pd == null) continue;
                 pd.isEliminated = true;
                 pd.lives = 0;
             }
@@ -437,6 +439,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = getPlayerData(p);
+                    if (pd == null) continue;
                     if (knockoff.getInstance().GameManager == null) {
                         cancel();
                     }
@@ -539,7 +542,8 @@ public class GameManager { //I honestly think this entire class could be optimis
                 //achievement shit x2, 2 achievements here guys holy moly
 								try {
                 	Achievement.getAchievement("ko_win", player).setProgress(100);
-                	if (knockoff.getInstance().GameManager.getPlayerData(player).lives == 5) {
+                	PlayerData pd2 = knockoff.getInstance().GameManager.getPlayerData(player);
+                	if (pd2 != null && pd2.lives == 5) {
                     	Achievement.getAchievement("ko_flawlesswin", player).setProgress(100);
                 	}
 								} catch (NoClassDefFoundError e) {}
@@ -722,14 +726,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 return pd;
             }
         }
-        //Bukkit.getServer().sendMessage(text("error occured, a player didnt have associated data")); //fuck you
-        Bukkit.getLogger().warning("player name: " + p.getName());
-        //Thread.dumpStack();
-
-        for (PlayerData pd : playerDatas) {
-            Bukkit.getLogger().warning(pd.player);
-        }
-
+        Bukkit.getLogger().warning("[Knockoff] No PlayerData found for player \"" + p.getName() + "). They are likely a spectator or joined mid-game. PlayerData is only created for players online at game start.");
         return null;
     }
 
@@ -1283,6 +1280,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static void startShowdown() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+            if (pd == null) continue;
             if (pd.lives > 1) {
                 pd.lives = 1;
                 p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(RED)); //TODO translatable
@@ -1366,9 +1364,10 @@ class TabMenu {
             List<String> team = Teams.get_team_from_string(td.name);
             for (String string : team) {
                 Player player = Bukkit.getPlayer(string);
+                if (player == null) continue;
                 PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
-                if (player != null) {
-                    StatsPlayerList = StatsPlayerList.append();
+                if (pd == null) continue;
+                StatsPlayerList = StatsPlayerList.append();
                     if (pd.isOnline) {
                         if (pd.isPlayerDead) {
                             if (pd.isEliminated) {
@@ -1410,7 +1409,6 @@ class TabMenu {
                             .append(text(pd.getKills()))
                             .append(text(" \uE103 "))
                             .append(text(pd.getDeaths()));
-                }
             }
         }
 
@@ -1424,6 +1422,7 @@ class TabMenu {
 
     private static String getDeathTimerIcon(Player p) {
         PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+        if (pd == null) return "\uE130";
         //TODO figure out this shit I hate maths
 
         return "\uE130";

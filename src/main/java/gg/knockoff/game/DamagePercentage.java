@@ -24,6 +24,7 @@ public class DamagePercentage implements Listener {
         Entity e = event.getEntity();
         if (e instanceof Player) {
             PlayerData pd = knockoff.getInstance().GameManager.getPlayerData((Player) e);
+            if (pd == null) return;
 
             DamageSource ds = event.getDamageSource();
             if (ds.getDamageType().equals(DamageType.FALL)) {
@@ -66,6 +67,7 @@ public class DamagePercentage implements Listener {
         if (entity instanceof Player && damager instanceof Player) {
             Player p = (Player) e.getEntity();
             PlayerData ppd = knockoff.getInstance().GameManager.getPlayerData(p);
+            if (ppd == null) return;
             Player d = (Player) e.getDamager();
             GameManager gm = knockoff.getInstance().GameManager;
 

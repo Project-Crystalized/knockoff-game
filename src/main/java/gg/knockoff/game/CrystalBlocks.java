@@ -22,6 +22,7 @@ public class CrystalBlocks implements Listener {
         Player p = event.getPlayer();
         Block b = event.getBlock();
         PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+        if (pd == null) return;
         ItemStack itemUsed;
 
         if (!(MapManager.isInsideCurrentSection(b.getLocation()) || MapManager.isInsideDecayingSection(b.getLocation()))) {
@@ -114,7 +115,7 @@ public class CrystalBlocks implements Listener {
                         block.breakNaturally(true);
                     }
                     PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
-                    pd.blocksbroken++;
+                    if (pd != null) pd.blocksbroken++;
                 }
             }
         }

@@ -519,6 +519,13 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     public static void StartEndGame(String WinningTeam, TeamData td) {
         state = GameState.END;
+        //remove spectators so they are not ranked in the game results or teleported to the podium
+        for (Iterator<PlayerData> it = playerDatas.iterator(); it.hasNext(); ) {
+            PlayerData pd = it.next();
+            if (pd.playerObject != null && Teams.GetPlayerTeam(pd.playerObject).equals("spectator")) {
+                it.remove();
+            }
+        }
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (GameManager.GameType.equals(GameTypes.StanderedSolos)) {
                 Player lastPlayer = Bukkit.getPlayer(Teams.get_team_from_string(WinningTeam).getFirst());
@@ -1153,7 +1160,9 @@ public class GameManager { //I honestly think this entire class could be optimis
         boolean IsValidSpot = false;
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-        while (!IsValidSpot && knockoff.getInstance().GameManager != null) { //Last check is here to prevent a rare crash
+        int attempts = 0;
+        while (!IsValidSpot && knockoff.getInstance().GameManager != null && attempts < 1000) { //attempt cap prevents an infinite loop freezing the server
+            attempts++;
             blockloc = new Location(Bukkit.getWorld("world"),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
@@ -1169,6 +1178,10 @@ public class GameManager { //I honestly think this entire class could be optimis
             } else {
                 IsValidSpot = false;
             }
+        }
+        if (!IsValidSpot) {
+            knockoff.getInstance().getLogger().severe("Could not find a valid spot to spawn a powerup after 1000 attempts. Skipping.");
+            return; //couldn't find a valid spot, skip the powerup instead of freezing the server
         }
         KnockoffItem.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 1, blockloc.getBlockZ()), powerup);
     }
@@ -1387,6 +1400,7 @@ class TabMenu {
 
 
         for (TeamData td : Teams.team_datas) {
+            if (td.name.equals("spectator")) continue;
             List<String> team = Teams.get_team_from_string(td.name);
             for (String string : team) {
                 Player player = Bukkit.getPlayer(string);

@@ -94,6 +94,7 @@ public class KnockoffDatabase {
             String save_player = "INSERT INTO KoGamesPlayers(game, player_uuid, team, kills, deaths, blocks_placed, blocks_broken, items_collected, items_used, games_won) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement player_stmt = conn.prepareStatement(save_player);
             for (Player p : Bukkit.getOnlinePlayers()) {
+                if (Teams.GetPlayerTeam(p).equals("spectator")) continue;
                 PlayerData pd = gm.getPlayerData(p);
                 if (pd == null) continue;
 

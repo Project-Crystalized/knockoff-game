@@ -24,7 +24,9 @@ public class hazard {
         boolean IsValidSpot = false;
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-        while (!IsValidSpot && knockoff.getInstance().GameManager != null) {
+        int attempts = 0;
+        while (!IsValidSpot && knockoff.getInstance().GameManager != null && attempts < 1000) { //attempt cap prevents an infinite loop freezing the server
+            attempts++;
             blockloc = new Location(Bukkit.getWorld("world"),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
@@ -40,6 +42,10 @@ public class hazard {
             } else {
                 IsValidSpot = false;
             }
+        }
+        //if no spot was found, fall back to the last tried location rather than looping forever
+        if (!IsValidSpot) {
+            knockoff.getInstance().getLogger().severe("Could not find a valid spot for a hazard after 1000 attempts. Using the last tried location.");
         }
         if (get2loc) {
             return blockloc2;

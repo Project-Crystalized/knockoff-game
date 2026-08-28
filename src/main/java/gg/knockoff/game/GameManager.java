@@ -687,6 +687,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             }
         }
 
+        blocksCrystallizing.clear();
+
         SectionPlaceLocationX = 1000;
         SectionPlaceLocationY = 0;
         SectionPlaceLocationZ = 1000;
@@ -1243,6 +1245,11 @@ public class GameManager { //I honestly think this entire class could be optimis
                 float breaking = 0.0F;
                 int entityID = knockoff.getInstance().getRandomNumber(1, 10000);
                 public void run() {
+                    if (knockoff.getInstance().gameManager == null) {
+                        blocksCrystallizing.remove(b);
+                        cancel();
+                        return;
+                    }
                     if (convert) {
                         convertBlocktoCrystal(b);
                     }

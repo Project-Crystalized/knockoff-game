@@ -26,7 +26,7 @@ public class KnockoffDatabase {
                 + "timestamp INTEGER"
                 + ");";
         String create_ko_players = "CREATE TABLE IF NOT EXISTS KoGamesPlayers ("
-                + "game INTEGER REFERENCES LiteStrikeGames(game_id),"
+                + "game INTEGER REFERENCES KnockoffGames(game_id),"
                 + "player_uuid BYTES,"
                 + "team STRING,"
                 + "kills INTEGER,"

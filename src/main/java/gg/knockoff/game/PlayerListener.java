@@ -266,6 +266,7 @@ public class PlayerListener implements Listener {
 								CustomPlayerNametags.CustomPlayerNametags(player);
 							}
 							cancel();
+							return;
 						}
 					}
 					if (!pd.isPlayerDead) {

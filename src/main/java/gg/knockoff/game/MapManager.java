@@ -5,7 +5,6 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.sk89q.worldedit.EditSession;
-import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
 import com.sk89q.worldedit.extent.clipboard.BlockArrayClipboard;
 import com.sk89q.worldedit.function.mask.ExistingBlockMask;
@@ -199,7 +198,7 @@ public class MapManager {
                 break;
         }
 
-        try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+        try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(BukkitAdapter.adapt(world))) {
             CuboidRegion region = new CuboidRegion(
                     BukkitAdapter.adapt(world),
                     BlockVector3.at(from.get(0).getAsInt(), from.get(1).getAsInt(), from.get(2).getAsInt()),
@@ -208,7 +207,7 @@ public class MapManager {
             BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
 
             ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(
-                    BukkitAdapter.adapt(world), region, clipboard, region.getMinimumPoint()
+                    editSession, region, clipboard, region.getMinimumPoint()
             );
             Operations.complete(forwardExtentCopy);
 
@@ -279,14 +278,14 @@ public class MapManager {
                     }
 
                     World world = Bukkit.getWorld("world");
-                    try (EditSession editSession = WorldEdit.getInstance().newEditSession(BukkitAdapter.adapt(world))) {
+                    try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(BukkitAdapter.adapt(world))) {
                         CuboidRegion region = new CuboidRegion(
                                 BukkitAdapter.adapt(world),
                                 BlockVector3.at(from[0], from[1], from[2]),
                                 BlockVector3.at(to[0], to[1], to[2])
                         );
                         BlockArrayClipboard clipboard = new BlockArrayClipboard(region);
-                        ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(BukkitAdapter.adapt(world), region, clipboard, region.getMinimumPoint());
+                        ForwardExtentCopy forwardExtentCopy = new ForwardExtentCopy(editSession, region, clipboard, region.getMinimumPoint());
                         Operations.complete(forwardExtentCopy);
 
                         Operation operation = new ClipboardHolder(clipboard)

@@ -49,7 +49,7 @@ public class BeeAttack extends hazard {
         new BukkitRunnable() {
             int BeesAmount = knockoff.getInstance().getRandomNumber(3, 6);
             public void run() {
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     loc.getBlock().setType(Material.AIR);
                     loc2.getBlock().setType(Material.AIR);
                     cancel();

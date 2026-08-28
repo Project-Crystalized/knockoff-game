@@ -50,7 +50,7 @@ public class FlyingCars extends hazard {
                     }
                     cancel();
                 }
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
                 spawnFlyingCar();

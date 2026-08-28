@@ -234,10 +234,10 @@ public class ScoreboardManager {
 
         new BukkitRunnable() {
             public void run() {
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     cancel();
                 } else {
-                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                    PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
                     if (pd == null) {return;}
                     if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
                         if (knockoff.getInstance().getConfig().getBoolean("tourneys.manual_map_movement")) {

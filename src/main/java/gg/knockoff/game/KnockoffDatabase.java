@@ -82,7 +82,7 @@ public class KnockoffDatabase {
 
     public static void save_game(String WinningTeam) {
         String save_game = "INSERT INTO KnockoffGames(map, winner_team, gametype, timestamp) VALUES(?, ?, ?, unixepoch())";
-        GameManager gm = knockoff.getInstance().GameManager;
+        GameManager gm = knockoff.getInstance().gameManager;
 
         try (Connection conn = DriverManager.getConnection(URL)) {
             PreparedStatement game_stmt = conn.prepareStatement(save_game);

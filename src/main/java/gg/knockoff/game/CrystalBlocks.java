@@ -21,7 +21,7 @@ public class CrystalBlocks implements Listener {
     public void WhenCrystalBlockPlaced(BlockPlaceEvent event) {
         Player p = event.getPlayer();
         Block b = event.getBlock();
-        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+        PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
         if (pd == null) return;
         ItemStack itemUsed;
 
@@ -82,7 +82,7 @@ public class CrystalBlocks implements Listener {
             pd.blocksplaced++;
         }
 
-        GameManager gm = knockoff.getInstance().GameManager;
+        GameManager gm = knockoff.getInstance().gameManager;
         if (gm.showdownModeStarted) {
             gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(3 * 20, 15 * 20), knockoff.getInstance().getRandomNumber(20, 8 * 20), false);
         }
@@ -92,7 +92,7 @@ public class CrystalBlocks implements Listener {
     public void PlayerPunchBlock(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block block = player.getTargetBlock(null ,5);
-        if (knockoff.getInstance().GameManager != null && event.getAction() == Action.LEFT_CLICK_BLOCK) {
+        if (knockoff.getInstance().gameManager != null && event.getAction() == Action.LEFT_CLICK_BLOCK) {
             //Gets the player's starter border
             WorldBorder startingBorder = player.getWorldBorder();
 
@@ -114,7 +114,7 @@ public class CrystalBlocks implements Listener {
                     } else {
                         block.breakNaturally(true);
                     }
-                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                    PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
                     if (pd != null) pd.blocksbroken++;
                 }
             }

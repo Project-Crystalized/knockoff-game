@@ -25,7 +25,7 @@ public class hazard {
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         int attempts = 0;
-        while (!IsValidSpot && knockoff.getInstance().GameManager != null && attempts < 1000) { //attempt cap prevents an infinite loop freezing the server
+        while (!IsValidSpot && knockoff.getInstance().gameManager != null && attempts < 1000) { //attempt cap prevents an infinite loop freezing the server
             attempts++;
             blockloc = new Location(Bukkit.getWorld("world"),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,

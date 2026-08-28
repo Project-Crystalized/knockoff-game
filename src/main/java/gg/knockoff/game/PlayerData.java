@@ -129,7 +129,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 }
                 p.setLevel(0);
 
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
             }

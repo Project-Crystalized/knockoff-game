@@ -55,7 +55,7 @@ public class Lightning extends hazard {
         new BukkitRunnable() {
             int timer = knockoff.getInstance().getRandomNumber(4, 6);
             public void run() {
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     name.remove();
                     cancel();
                 }

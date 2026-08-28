@@ -91,7 +91,7 @@ public class Exclusive_TrialChamber extends hazard {
             Location spawnLoc = loc.clone().add(0, 1, 0);
 
             public void run() {
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
                 if (timer == 0) {
@@ -114,12 +114,12 @@ public class Exclusive_TrialChamber extends hazard {
         //For entitiesSpawned
         new BukkitRunnable() {
             public void run() {
-                if (knockoff.getInstance().GameManager == null || entitiesSpawned.isEmpty()) {
+                if (knockoff.getInstance().gameManager == null || entitiesSpawned.isEmpty()) {
                     cancel();
                 }
                 try {
                     for (Breeze b : entitiesSpawned) {
-                        if (knockoff.getInstance().GameManager == null) {
+                        if (knockoff.getInstance().gameManager == null) {
                             b.remove();
                         }
                         int maxhealth = (int) b.getAttribute(Attribute.MAX_HEALTH).getBaseValue();

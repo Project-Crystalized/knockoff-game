@@ -389,7 +389,7 @@ class TeamStatus {
 		int counter = 0;
 		for (String p_name : Teams.get_team_from_string(team)) {
 			Player p = Bukkit.getPlayer(p_name);
-			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+			PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
 			if (pd == null) {
 				return;
 			}
@@ -458,7 +458,7 @@ class TeamStatus {
 		new BukkitRunnable() {
 			public void run() {
 				for (TeamData td : Teams.team_datas) {
-					if (knockoff.getInstance().GameManager == null) {
+					if (knockoff.getInstance().gameManager == null) {
 						cancel();
 					} 
 					// Check if all players in the team are alive. If not set them to dead
@@ -490,11 +490,11 @@ class CustomPlayerNametags {
 
 		new BukkitRunnable() {
 			public void run() {
-				if (knockoff.getInstance().GameManager == null || !player.isOnline()) {
+				if (knockoff.getInstance().gameManager == null || !player.isOnline()) {
 					displayfront.remove();
 					cancel();
 				} else {
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+					PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
 					if (pd == null) {
 						displayfront.remove();
 						cancel();

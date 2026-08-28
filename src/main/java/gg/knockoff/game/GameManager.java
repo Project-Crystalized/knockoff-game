@@ -290,8 +290,8 @@ public class GameManager { //I honestly think this entire class could be optimis
         new BukkitRunnable() {
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (knockoff.getInstance().GameManager == null) {cancel();}
-                    if (knockoff.getInstance().GameManager != null) {
+                    if (knockoff.getInstance().gameManager == null) {cancel();}
+                    if (knockoff.getInstance().gameManager != null) {
                         TabMenu.SendTabMenu(p);
                     }
                 }
@@ -315,7 +315,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         new BukkitRunnable() {
             public void run() {
-                if (knockoff.getInstance().GameManager == null) {cancel();}
+                if (knockoff.getInstance().gameManager == null) {cancel();}
                 if (knockoff.getInstance().DevMode) {
                     Round = 0;
                     RoundCounter = 0;
@@ -443,7 +443,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = getPlayerData(p);
                     if (pd == null) continue;
-                    if (knockoff.getInstance().GameManager == null) {
+                    if (knockoff.getInstance().gameManager == null) {
                         cancel();
                     }
                     if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
@@ -472,7 +472,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         new BukkitRunnable() {
             public void run() {
                 //Should stop this bukkitrunnable once the game ends
-                if (knockoff.getInstance().GameManager == null) {cancel();}
+                if (knockoff.getInstance().gameManager == null) {cancel();}
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (p.getLocation().getY() < -20 && state != GameState.END) {//instantly kills the player when they get knocked into the void
@@ -552,7 +552,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 //achievement shit x2, 2 achievements here guys holy moly
 								try {
                 	Achievement.getAchievement("ko_win", player).setProgress(100);
-                	PlayerData pd2 = knockoff.getInstance().GameManager.getPlayerData(player);
+                	PlayerData pd2 = knockoff.getInstance().gameManager.getPlayerData(player);
                 	if (pd2 != null && pd2.lives == 5) {
                     	Achievement.getAchievement("ko_flawlesswin", player).setProgress(100);
                 	}
@@ -690,9 +690,9 @@ public class GameManager { //I honestly think this entire class could be optimis
         SectionPlaceLocationX = 1000;
         SectionPlaceLocationY = 0;
         SectionPlaceLocationZ = 1000;
-        knockoff.getInstance().GameManager.teams = null;
-        knockoff.getInstance().GameManager.hazards = null;
-        knockoff.getInstance().GameManager = null;
+        knockoff.getInstance().gameManager.teams = null;
+        knockoff.getInstance().gameManager.hazards = null;
+        knockoff.getInstance().gameManager = null;
     }
 
     public static void GiveTeamItems(Player player) {
@@ -1007,7 +1007,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
                 knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8), // TODO temp
                 knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
-        if (knockoff.getInstance().GameManager == null || players.isEmpty()) {
+        if (knockoff.getInstance().gameManager == null || players.isEmpty()) {
             return;
         }
         List<Block> tempBlockList = new ArrayList<>();
@@ -1161,7 +1161,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
         int attempts = 0;
-        while (!IsValidSpot && knockoff.getInstance().GameManager != null && attempts < 1000) { //attempt cap prevents an infinite loop freezing the server
+        while (!IsValidSpot && knockoff.getInstance().gameManager != null && attempts < 1000) { //attempt cap prevents an infinite loop freezing the server
             attempts++;
             blockloc = new Location(Bukkit.getWorld("world"),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
@@ -1318,7 +1318,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     public static void startShowdown() {
         for (Player p : Bukkit.getOnlinePlayers()) {
-            PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+            PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
             if (pd == null) continue;
             if (pd.lives > 1) {
                 pd.lives = 1;
@@ -1405,7 +1405,7 @@ class TabMenu {
             for (String string : team) {
                 Player player = Bukkit.getPlayer(string);
                 if (player == null) continue;
-                PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
                 if (pd == null) continue;
                 StatsPlayerList = StatsPlayerList.append();
                     if (pd.isOnline) {
@@ -1461,7 +1461,7 @@ class TabMenu {
     }
 
     private static String getDeathTimerIcon(Player p) {
-        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+        PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
         if (pd == null) return "\uE130";
         //TODO figure out this shit I hate maths
 
@@ -1477,7 +1477,7 @@ class KnockoffProtocolLib {
         return new PacketAdapter(knockoff.getInstance(), PacketType.Play.Server.ENTITY_METADATA) {
             @Override
             public void onPacketSending(PacketEvent event) {
-                GameManager gc = knockoff.getInstance().GameManager;
+                GameManager gc = knockoff.getInstance().gameManager;
                 PacketContainer packet = event.getPacket();
                 Player updated_player = get_player_by_entity_id(packet.getIntegers().read(0));
                 if (gc == null
@@ -1544,10 +1544,10 @@ class HazardsManager {
         new BukkitRunnable() {
             int timer = knockoff.getInstance().getRandomNumber(30, 60);
             public void run() {
-                if (knockoff.getInstance().GameManager == null || knockoff.getInstance().GameManager.state == GameState.END) {
+                if (knockoff.getInstance().gameManager == null || knockoff.getInstance().gameManager.state == GameState.END) {
                     cancel();
                 }
-                if (timer == 0 && !knockoff.getInstance().GameManager.showdownModeStarted) {
+                if (timer == 0 && !knockoff.getInstance().gameManager.showdownModeStarted) {
                     timer = knockoff.getInstance().getRandomNumber(30, 60);
                     NewHazard(hazards.get(knockoff.getInstance().getRandomNumber(0, hazards.size())));
                 }

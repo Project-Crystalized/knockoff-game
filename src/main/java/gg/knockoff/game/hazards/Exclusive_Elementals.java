@@ -144,7 +144,7 @@ public class Exclusive_Elementals extends hazard {
         new BukkitRunnable() {
             int timer = knockoff.getInstance().getRandomNumber(3, 6);
             public void run() {
-                if (timer == 0 || knockoff.getInstance().GameManager == null) {
+                if (timer == 0 || knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
 
@@ -314,10 +314,10 @@ public class Exclusive_Elementals extends hazard {
         // (breeze) wind charges and main loop
         new BukkitRunnable() {
             int timer = 10 * 20;
-            GameManager gm = knockoff.getInstance().GameManager;
+            GameManager gm = knockoff.getInstance().gameManager;
             MapData md = knockoff.getInstance().mapdata;
             public void run() {
-                if (knockoff.getInstance().GameManager == null || timer == 0) {
+                if (knockoff.getInstance().gameManager == null || timer == 0) {
                     isOver = true;
                     cancel();
                     for (Player p : Bukkit.getOnlinePlayers()) {
@@ -351,7 +351,7 @@ public class Exclusive_Elementals extends hazard {
         //player effects
         new BukkitRunnable() {
             public void run() {
-                if (isOver || knockoff.getInstance().GameManager == null) {
+                if (isOver || knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
 
@@ -566,7 +566,7 @@ public class Exclusive_Elementals extends hazard {
                 //changed the colour to yellow so it is easier to see
                 text.text(text(effect.name + " in: " + timer/20).color(NamedTextColor.YELLOW));
                 timer--;
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     text.remove();
                     cancel();
                     //made sure it returns as well.

@@ -50,12 +50,12 @@ public class FloorIsCrystals extends hazard {
                         crystal(below.clone().add(0, 1, 0).getBlock());
                     }
                 }
-                if (IsHazardOver || knockoff.getInstance().GameManager == null) {
+                if (IsHazardOver || knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
             }
             void crystal(Block b) {
-                GameManager gm = knockoff.getInstance().GameManager;
+                GameManager gm = knockoff.getInstance().gameManager;
                 gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(13, 20), true);
             }
         }.runTaskTimer(knockoff.getInstance(), 3, 1);

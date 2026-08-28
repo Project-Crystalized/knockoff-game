@@ -18,12 +18,12 @@ public class DamagePercentage implements Listener {
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
-        if (knockoff.getInstance().GameManager == null) {
+        if (knockoff.getInstance().gameManager == null) {
             return;
         }
         Entity e = event.getEntity();
         if (e instanceof Player) {
-            PlayerData pd = knockoff.getInstance().GameManager.getPlayerData((Player) e);
+            PlayerData pd = knockoff.getInstance().gameManager.getPlayerData((Player) e);
             if (pd == null) return;
 
             DamageSource ds = event.getDamageSource();
@@ -58,7 +58,7 @@ public class DamagePercentage implements Listener {
     public void onEntityDamageEntity(EntityDamageByEntityEvent e) {
         Entity entity = e.getEntity();
         Entity damager = e.getDamager();
-        if (knockoff.getInstance().GameManager == null) {
+        if (knockoff.getInstance().gameManager == null) {
             e.setCancelled(true);
             return;
         }
@@ -66,10 +66,10 @@ public class DamagePercentage implements Listener {
         //player to player
         if (entity instanceof Player && damager instanceof Player) {
             Player p = (Player) e.getEntity();
-            PlayerData ppd = knockoff.getInstance().GameManager.getPlayerData(p);
+            PlayerData ppd = knockoff.getInstance().gameManager.getPlayerData(p);
             if (ppd == null) return;
             Player d = (Player) e.getDamager();
-            GameManager gm = knockoff.getInstance().GameManager;
+            GameManager gm = knockoff.getInstance().gameManager;
 
             if (gm.teams.GetPlayerTeam(p).equals(gm.teams.GetPlayerTeam(d))) {
                 e.setCancelled(true);

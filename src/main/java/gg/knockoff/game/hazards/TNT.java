@@ -32,7 +32,7 @@ public class TNT extends hazard {
             int timer = 0;
             public void run() {
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+                    PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
                     if (pd == null) continue;
                     if (!pd.isPlayerDead) {
                         Location loc = new Location(player.getWorld(), player.getX(), player.getY() + 10, player.getZ(), player.getYaw(), player.getPitch());
@@ -42,7 +42,7 @@ public class TNT extends hazard {
                     }
                     player.playSound(player, "minecraft:entity.tnt.primed", 50, 1);
                 }
-                if (timer == 3 || knockoff.getInstance().GameManager == null) {
+                if (timer == 3 || knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
                 timer++;

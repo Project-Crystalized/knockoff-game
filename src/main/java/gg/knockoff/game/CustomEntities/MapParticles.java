@@ -60,7 +60,7 @@ public class MapParticles {
                     moveTowardsNewSection(new Location(Bukkit.getWorld("world"), md.getCurrentMiddleXLength(), md.getCurrentMiddleYLength(), md.getCurrentMiddleZLength()));
                     cancel();
                 }
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
             }
@@ -75,7 +75,7 @@ public class MapParticles {
                 builder.offset(0.1, 0.1, 0.1);
                 builder.spawn();
 
-                if (knockoff.getInstance().GameManager == null || stand.isDead()) {
+                if (knockoff.getInstance().gameManager == null || stand.isDead()) {
                     cancel();
                 }
             }
@@ -106,7 +106,7 @@ public class MapParticles {
                     stand.setVelocity(new Vector(x, y, z).normalize().multiply(0.25));
                 } catch (Exception ignored) {}
 
-                if (MapManager.isInsideCurrentSection(loc) || knockoff.getInstance().GameManager == null || stand.isDead()) {
+                if (MapManager.isInsideCurrentSection(loc) || knockoff.getInstance().gameManager == null || stand.isDead()) {
                     stand.remove();
                     cancel();
                 }

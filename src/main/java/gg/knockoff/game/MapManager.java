@@ -41,7 +41,7 @@ import static net.kyori.adventure.text.format.NamedTextColor.RED;
 public class MapManager {
 
     public static void CloneNewMapSection() {
-        GameManager GameManager = knockoff.getInstance().GameManager;
+        GameManager GameManager = knockoff.getInstance().gameManager;
         MapData md = knockoff.getInstance().mapdata;
 
         //clear last section before spawning new one
@@ -72,7 +72,7 @@ public class MapManager {
                 .append(translatable("crystalized.game.knockoff.chat.movetosafety2").color(RED).decoration(TextDecoration.BOLD, true))
         );
         //CopyRandomMapSection();
-        knockoff.getInstance().GameManager.mapMoving = true;
+        knockoff.getInstance().gameManager.mapMoving = true;
 
         //In the case the command is used instead of this being called naturally
         if (GameManager.plannedDirection.equals(gg.knockoff.game.GameManager.mapDirections.undecided)) {
@@ -98,12 +98,12 @@ public class MapManager {
         MapData md = knockoff.getInstance().mapdata;
         Region region = null;
 
-        int fromX = knockoff.getInstance().GameManager.LastSectionPlaceLocationX;
-        int fromY = knockoff.getInstance().GameManager.LastSectionPlaceLocationY;
-        int fromZ = knockoff.getInstance().GameManager.LastSectionPlaceLocationZ;
-        int toX = knockoff.getInstance().GameManager.LastSectionPlaceLocationX + md.LastXLength;
-        int toY = knockoff.getInstance().GameManager.LastSectionPlaceLocationY + md.LastYLength;
-        int toZ = knockoff.getInstance().GameManager.LastSectionPlaceLocationZ + md.LastZLength;
+        int fromX = knockoff.getInstance().gameManager.LastSectionPlaceLocationX;
+        int fromY = knockoff.getInstance().gameManager.LastSectionPlaceLocationY;
+        int fromZ = knockoff.getInstance().gameManager.LastSectionPlaceLocationZ;
+        int toX = knockoff.getInstance().gameManager.LastSectionPlaceLocationX + md.LastXLength;
+        int toY = knockoff.getInstance().gameManager.LastSectionPlaceLocationY + md.LastYLength;
+        int toZ = knockoff.getInstance().gameManager.LastSectionPlaceLocationZ + md.LastZLength;
 
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             region = new CuboidRegion(
@@ -121,7 +121,7 @@ public class MapManager {
             e.printStackTrace();
         }
 
-        GameManager gm = knockoff.getInstance().GameManager;
+        GameManager gm = knockoff.getInstance().gameManager;
 
         for (Block b : blockList) {
             //gm.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(2 * 20, 5 * 20), knockoff.getInstance().getRandomNumber(3 * 20, 3 * 20), true);
@@ -146,7 +146,7 @@ public class MapManager {
 
             public void run() {
                 int i = 0;
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     stop();
                 }
                 for (Block b : blockListFinal) {
@@ -213,7 +213,7 @@ public class MapManager {
 
             Operation operation = new ClipboardHolder(clipboard)
                     .createPaste(editSession)
-                    .to(BlockVector3.at(knockoff.getInstance().GameManager.SectionPlaceLocationX, knockoff.getInstance().GameManager.SectionPlaceLocationY, knockoff.getInstance().GameManager.SectionPlaceLocationZ))
+                    .to(BlockVector3.at(knockoff.getInstance().gameManager.SectionPlaceLocationX, knockoff.getInstance().gameManager.SectionPlaceLocationY, knockoff.getInstance().gameManager.SectionPlaceLocationZ))
                     .build();
             Operations.complete(operation);
         } catch (Exception e) {
@@ -225,7 +225,7 @@ public class MapManager {
             Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
                 String a = sectionJson.get("remove_block").getAsString();
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + knockoff.getInstance().GameManager.SectionPlaceLocationX + "," + knockoff.getInstance().GameManager.SectionPlaceLocationY + "," + knockoff.getInstance().GameManager.SectionPlaceLocationZ);
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + knockoff.getInstance().gameManager.SectionPlaceLocationX + "," + knockoff.getInstance().gameManager.SectionPlaceLocationY + "," + knockoff.getInstance().gameManager.SectionPlaceLocationZ);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
             }, 2);
@@ -249,7 +249,7 @@ public class MapManager {
             new BukkitRunnable() {
                 int timer = 0;
                 public void run() {
-                    if (knockoff.getInstance().GameManager == null) {
+                    if (knockoff.getInstance().gameManager == null) {
                         cancel();
                         return;
                     }
@@ -290,7 +290,7 @@ public class MapManager {
 
                         Operation operation = new ClipboardHolder(clipboard)
                                 .createPaste(editSession)
-                                .to(BlockVector3.at(knockoff.getInstance().GameManager.SectionPlaceLocationX, knockoff.getInstance().GameManager.SectionPlaceLocationY, knockoff.getInstance().GameManager.SectionPlaceLocationZ))
+                                .to(BlockVector3.at(knockoff.getInstance().gameManager.SectionPlaceLocationX, knockoff.getInstance().gameManager.SectionPlaceLocationY, knockoff.getInstance().gameManager.SectionPlaceLocationZ))
                                 .build();
                         Operations.complete(operation);
                     } catch (Exception e) {
@@ -302,7 +302,7 @@ public class MapManager {
                         Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
                             String a = knockoff.getInstance().mapdata.currentSection.getAsJsonObject().get("remove_block").getAsString();
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + knockoff.getInstance().GameManager.SectionPlaceLocationX + "," + knockoff.getInstance().GameManager.SectionPlaceLocationY + "," + knockoff.getInstance().GameManager.SectionPlaceLocationZ);
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + knockoff.getInstance().gameManager.SectionPlaceLocationX + "," + knockoff.getInstance().gameManager.SectionPlaceLocationY + "," + knockoff.getInstance().gameManager.SectionPlaceLocationZ);
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
                         }, 2);
@@ -321,9 +321,9 @@ public class MapManager {
     //We could make a worldedit region and do shit with that, but I feel like making worldedit actions everytime this is called is stupid - Callum
     public static boolean isInsideCurrentSection(Location loc) {
         if (!(
-                loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength() || loc.getBlockY() < (knockoff.getInstance().GameManager.SectionPlaceLocationY - 20)
-                || loc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength() || loc.getBlockX() < knockoff.getInstance().GameManager.SectionPlaceLocationX
-                || loc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength() || loc.getBlockZ() < knockoff.getInstance().GameManager.SectionPlaceLocationZ
+                loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength() || loc.getBlockY() < (knockoff.getInstance().gameManager.SectionPlaceLocationY - 20)
+                || loc.getBlockX() > knockoff.getInstance().mapdata.getCurrentXLength() || loc.getBlockX() < knockoff.getInstance().gameManager.SectionPlaceLocationX
+                || loc.getBlockZ() > knockoff.getInstance().mapdata.getCurrentZLength() || loc.getBlockZ() < knockoff.getInstance().gameManager.SectionPlaceLocationZ
         )) {
             return true;
         }
@@ -333,9 +333,9 @@ public class MapManager {
     public static boolean isInsideDecayingSection(Location loc) {
         MapData md = knockoff.getInstance().mapdata;
         if (!(
-                loc.getBlockY() > knockoff.getInstance().GameManager.LastSectionPlaceLocationY + md.LastYLength || loc.getBlockY() < (knockoff.getInstance().GameManager.LastSectionPlaceLocationY - 20)
-                || loc.getBlockX() > knockoff.getInstance().GameManager.LastSectionPlaceLocationX + md.LastXLength || loc.getBlockX() < knockoff.getInstance().GameManager.LastSectionPlaceLocationX
-                || loc.getBlockZ() > knockoff.getInstance().GameManager.LastSectionPlaceLocationZ + md.LastZLength || loc.getBlockZ() < knockoff.getInstance().GameManager.LastSectionPlaceLocationZ
+                loc.getBlockY() > knockoff.getInstance().gameManager.LastSectionPlaceLocationY + md.LastYLength || loc.getBlockY() < (knockoff.getInstance().gameManager.LastSectionPlaceLocationY - 20)
+                || loc.getBlockX() > knockoff.getInstance().gameManager.LastSectionPlaceLocationX + md.LastXLength || loc.getBlockX() < knockoff.getInstance().gameManager.LastSectionPlaceLocationX
+                || loc.getBlockZ() > knockoff.getInstance().gameManager.LastSectionPlaceLocationZ + md.LastZLength || loc.getBlockZ() < knockoff.getInstance().gameManager.LastSectionPlaceLocationZ
         )) {
             return true;
         }

@@ -59,7 +59,7 @@ public class PlayerListener implements Listener {
 		//makes sure all active effects are cleared, cause I noticed strenght 2 was staying
 		p.clearActivePotionEffects();
 
-		if (knockoff.getInstance().GameManager == null) {
+		if (knockoff.getInstance().gameManager == null) {
 			p.teleport(knockoff.getInstance().mapdata.get_que_spawn(p.getWorld()));
 			p.getInventory().clear();
 			p.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
@@ -149,7 +149,7 @@ public class PlayerListener implements Listener {
                 }
             }.runTaskTimer(knockoff.getInstance(), 1, 1);
 		} else {
-			knockoff.getInstance().GameManager.addSpectator(p);
+			knockoff.getInstance().gameManager.addSpectator(p);
 			p.sendMessage(text("A game is currently in progress, so you have joined as a spectator.").color(NamedTextColor.GRAY));
 		}
 	}
@@ -169,9 +169,9 @@ public class PlayerListener implements Listener {
 		event.setCancelled(true);
 
 		Player player = event.getPlayer();
-		if (knockoff.getInstance().GameManager == null) return;
+		if (knockoff.getInstance().gameManager == null) return;
 
-		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+		PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
 		if (pd == null) return;
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
@@ -196,7 +196,7 @@ public class PlayerListener implements Listener {
 					.append(translatable("crystalized.game.knockoff.chat.deathknockoff"))
 					.append(player.getKiller().displayName()));
 			Player attacker = player.getKiller();
-			PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
+			PlayerData pda = knockoff.getInstance().gameManager.getPlayerData(attacker);
 			if (pda == null) return;
 			pda.addKill(1);
 			attacker.showTitle(Title.title(text(" "), text("[\uE103] ").append(player.displayName()),
@@ -301,7 +301,7 @@ public class PlayerListener implements Listener {
 		Player p = event.getPlayer();
 		event.setCancelled(true);
 		//this is dumb
-		if (knockoff.getInstance().GameManager == null) {
+		if (knockoff.getInstance().gameManager == null) {
 			try {
 			Bukkit.getServer().sendMessage(Ranks.getName(Bukkit.getOfflinePlayer(p.getName()))
 					.append(Component.text(": "))
@@ -312,7 +312,7 @@ public class PlayerListener implements Listener {
 					.append(event.message()));
 			}
 		} else {
-			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+			PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
 			if (pd == null) {
 				Bukkit.getServer().sendMessage(Component.text(p.getName())
 						.append(Component.text(": "))
@@ -334,7 +334,7 @@ public class PlayerListener implements Listener {
 				knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8), // TODO temp
 				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
 		Location ploc = new Location(Bukkit.getWorld("world"), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
-		if (knockoff.getInstance().GameManager == null || p == null) {
+		if (knockoff.getInstance().gameManager == null || p == null) {
 			return;
 		}
 		List<Block> tempBlockList = new ArrayList<>();
@@ -386,7 +386,7 @@ public class PlayerListener implements Listener {
             GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30), false);
         }
 
-		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+		PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
 		if (pd != null && pd.lives == 1) {
 			p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED)); //TODO translatable
 			p.playSound(p, "minecraft:block.note_block.pling", 1, 0.5f);
@@ -408,13 +408,13 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void OnPlayerDisconnect(PlayerConnectionCloseEvent event) {
 
-		if (knockoff.getInstance().GameManager != null) {
+		if (knockoff.getInstance().gameManager != null) {
 			Teams.DisconnectPlayer(event.getPlayerName());
 		}
-		if (knockoff.getInstance().GameManager != null && Bukkit.getOnlinePlayers().isEmpty()) {
+		if (knockoff.getInstance().gameManager != null && Bukkit.getOnlinePlayers().isEmpty()) {
 			Bukkit.getLogger().log(Level.WARNING, "[!] All players have disconnected. The Game will now end.");
-            if (knockoff.getInstance().GameManager.state != GameState.END) {
-                knockoff.getInstance().GameManager.ForceEndGame();
+            if (knockoff.getInstance().gameManager.state != GameState.END) {
+                knockoff.getInstance().gameManager.ForceEndGame();
             }
 		}
 	}
@@ -446,7 +446,7 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void OnPlayerPickupItem(EntityPickupItemEvent event) {
 		Player player = (Player) event.getEntity();
-		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+		PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
 		if (pd == null) return;
 		pd.powerupscollected++;
 		List<Component> component = new ArrayList<>();
@@ -463,8 +463,8 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void OnPlayerItemInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
-		if (knockoff.getInstance().GameManager != null) {
-			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+		if (knockoff.getInstance().gameManager != null) {
+			PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
 			if (pd == null) return;
 			if (event.getHand() != EquipmentSlot.HAND || event.getItem() == null) {
 				return;
@@ -511,7 +511,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void OnInventoryMoveItem(InventoryClickEvent event) {
-		if (knockoff.getInstance().GameManager == null) {
+		if (knockoff.getInstance().gameManager == null) {
 			event.setCancelled(true);
 		}
 	}
@@ -522,13 +522,13 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		e.setCancelled(true);
-		if (knockoff.getInstance().GameManager == null) {return;}
+		if (knockoff.getInstance().gameManager == null) {return;}
 		e.getLocation().createExplosion(null, 1.5F, false, false);
         Component text = e.getEntity().customName();
 
         if (text == null) {
             for (Block b : e.blockList()) {
-                knockoff.getInstance().GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(11, 16), true);
+                knockoff.getInstance().gameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(11, 16), true);
             }
         } else if (text.equals(text("magma"))) {
             for (Block b : e.blockList()) {
@@ -547,7 +547,7 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onSnowballHit(ProjectileHitEvent e) {
-        if (knockoff.getInstance().GameManager == null) {return;}
+        if (knockoff.getInstance().gameManager == null) {return;}
         Entity entity = e.getEntity();
         if (entity instanceof Snowball s) {
             Component text = s.customName();

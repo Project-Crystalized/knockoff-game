@@ -40,7 +40,7 @@ public class WaterSprouts extends hazard {
 
             public void run() {
                 spawnWaterSprout();
-                if (timer == 0 || knockoff.getInstance().GameManager == null) {
+                if (timer == 0 || knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
                 timer--;
@@ -51,7 +51,7 @@ public class WaterSprouts extends hazard {
     private static void spawnWaterSprout() {
         List<Location> locs = new ArrayList<>();
         Location center = getValidSpot(false);
-        if (knockoff.getInstance().GameManager == null) {return;}
+        if (knockoff.getInstance().gameManager == null) {return;}
         locs.add(center);
         locs.add(center.clone().add(1, 0, 0)); //right
         locs.add(center.clone().add(-1, 0, 0)); //left

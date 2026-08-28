@@ -117,7 +117,7 @@ public class Train extends hazard {
         new BukkitRunnable() {
             int soundTimer = 0;
             public void run() {
-                if (knockoff.getInstance().GameManager == null ||
+                if (knockoff.getInstance().gameManager == null ||
                         ( (!swapXandZ && train.getLocation().getX() > endX) || (swapXandZ && train.getLocation().getZ() > endX) )
                 ) {
                     train.remove();
@@ -141,7 +141,7 @@ public class Train extends hazard {
                 //player knockback
                 for (Entity e : train.getNearbyEntities(4, 4, 4)) {
                     if (e instanceof Player p) {
-                        PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+                        PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
                         if (pd == null) continue;
                         p.setVelocity(new Vector(0.5, 2, 0));
                         pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(40, 60);

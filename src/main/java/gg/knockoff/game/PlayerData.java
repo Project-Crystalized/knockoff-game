@@ -60,21 +60,19 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 p.removePotionEffect(PotionEffectType.DARKNESS);
 
                 //percent shit
+                if (p.getGameMode().equals(GameMode.SPECTATOR)) {
+                    percent = 0;
+                }
                 if (percent > 0) {
                     if (savedPercent != percent) {
                         savedPercent = percent;
                         timer = 6 * 20;
                     } else {
-                        timer --;
+                        timer--;
                         if (timer == 0) {
                             percent--;
                             savedPercent = percent;
                             timer = 1;
-                        }
-                        else if (p.getGameMode().equals(GameMode.SPECTATOR)) {
-                            percent = 0;
-                            savedPercent = -1;
-                            timer = 0;
                         }
                     }
                 } else {

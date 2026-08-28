@@ -465,6 +465,17 @@ class TeamStatus {
 					update_team_status(td.name);
 				}
 
+				// If no teams have alive players, the last players died in the same tick
+				// (or this is a bug). End the game anyway with an arbitrary winner instead of softlocking.
+				if (getAliveTeams().isEmpty() && knockoff.getInstance().gameManager != null) {
+					TeamData fallback = Teams.team_datas_without_spectator.getFirst();
+					Bukkit.getLogger().log(Level.WARNING, "[Knockoff] All teams died in the same tick (or this is a bug). Ending the game with an arbitrary winner: " + fallback.name);
+					Bukkit.getServer().sendMessage(text("All players died at the same time! Ending the game.").color(TextColor.color(0xFFAA00)));
+					GameManager.StartEndGame(fallback.name, fallback);
+					cancel();
+					return;
+				}
+
 				for (TeamData td : Teams.team_datas) {
 					if (is_only_team_alive(td.name)) {
 						GameManager.StartEndGame(td.name, td);

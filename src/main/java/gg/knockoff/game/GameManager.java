@@ -1371,7 +1371,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void decideMapDirection() {
-        switch (knockoff.getInstance().getRandomNumber(1, 9)) {
+        switch (knockoff.getInstance().getRandomNumber(1, 10)) {
             case 1, 4, 7 -> {
                 GameManager.plannedDirection = mapDirections.EAST;
             }

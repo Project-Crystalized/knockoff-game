@@ -21,6 +21,7 @@ public class CrystalBlocks implements Listener {
     public void WhenCrystalBlockPlaced(BlockPlaceEvent event) {
         Player p = event.getPlayer();
         Block b = event.getBlock();
+        if (knockoff.getInstance().gameManager == null) return;
         PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
         if (pd == null) return;
         ItemStack itemUsed;

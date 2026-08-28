@@ -571,19 +571,20 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onVaultUnlock(VaultChangeStateEvent e) {
-        Player p = e.getPlayer();
-        Block b = e.getBlock().getLocation().getBlock();
-		Vault data = (Vault) b.getBlockData();
+    Block b = e.getBlock().getLocation().getBlock();
 		try {
 			if (e.getNewState().equals(Vault.State.UNLOCKING)) {
 				//achievement shit, p will be null if the vault state is EJECTING
+      	Player p = e.getPlayer();
 				Achievement.getAchievement("ko_unlocker", p).setProgress(100);
 			}
 		} catch (NoClassDefFoundError error) {}
-        if (e.getNewState().equals(Vault.State.EJECTING)) {
+
+      if (e.getNewState().equals(Vault.State.EJECTING)) {
 			List<String> powerups;
 			e.setCancelled(true);
 			b.setType(Material.AMETHYST_BLOCK);
+			Vault data = (Vault) b.getBlockData();
 			if (data.isOminous()) {
 				powerups = Arrays.asList("KnockoutOrb", "ExplosiveOrb", "PoisonOrb", "TrialChamberMace");
 			} else {
@@ -594,7 +595,7 @@ public class PlayerListener implements Listener {
             }
             Collections.shuffle(powerups);
             KnockoffItem.DropPowerup(b.getLocation().clone().add(0.5, 1, 0.5), powerups.get(knockoff.getInstance().getRandomNumber(0, powerups.size())));
-        }
+      }
     }
 	//Makes sure that when teleported with a plugin all effects are cleared and needed ones reaply
 	//Fixes the bug with levitation in the lobby, and then levitating in the starter as well.

@@ -20,9 +20,9 @@ import java.util.logging.Level;
 public class MapData {
 
     public final double[] queue_spawn;
-    public static JsonElement currentSection;
+    public JsonElement currentSection;
 
-    public static List<JsonElement> newSectionsList = new ArrayList<>();
+    public List<JsonElement> newSectionsList = new ArrayList<>();
 
     // ===--- These change during game
     public int CurrentXLength = 0;

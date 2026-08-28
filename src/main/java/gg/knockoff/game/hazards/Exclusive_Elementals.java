@@ -304,7 +304,7 @@ public class Exclusive_Elementals extends hazard {
         );
         howlingWindDirections dir;
 
-        switch (knockoff.getInstance().getRandomNumber(1, 8)) {
+        switch (knockoff.getInstance().getRandomNumber(1, 9)) {
             case 1, 5 -> {dir = howlingWindDirections.NORTH;}
             case 2, 6 -> {dir = howlingWindDirections.EAST;}
             case 3, 7 -> {dir = howlingWindDirections.SOUTH;}
@@ -472,7 +472,7 @@ public class Exclusive_Elementals extends hazard {
                         // so that it changes after giving, so it could either stack up. Or amplification grows if same one
                         //decide effect
                         //added extra numbers for 4th effect
-                        switch (knockoff.getInstance().getRandomNumber(1, 8)) {
+                        switch (knockoff.getInstance().getRandomNumber(1, 9)) {
                             case 1, 5 -> {effect = corruptionZoneEffects.jumpBoost;}
                             case 2, 6 -> {effect = corruptionZoneEffects.speed;}
                             case 3, 7 -> {effect = corruptionZoneEffects.strength;}

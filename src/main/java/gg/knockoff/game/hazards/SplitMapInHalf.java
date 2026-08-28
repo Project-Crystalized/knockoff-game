@@ -47,7 +47,7 @@ public class SplitMapInHalf extends hazard {
             int corruptionSize;
             int offset = knockoff.getInstance().getRandomNumber(-5, 5);
 
-            switch (knockoff.getInstance().getRandomNumber(1, 10)) {
+            switch (knockoff.getInstance().getRandomNumber(1, 11)) {
                 case 2, 4, 6, 8, 10-> {
                     //X axis
                     corruptionSize = 4; //md.CurrentXLength / 8;

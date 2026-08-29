@@ -522,7 +522,13 @@ public class GameManager { //I honestly think this entire class could be optimis
         //remove spectators so they are not ranked in the game results or teleported to the podium
         for (Iterator<PlayerData> it = playerDatas.iterator(); it.hasNext(); ) {
             PlayerData pd = it.next();
-            if (pd.playerObject != null && Teams.GetPlayerTeam(pd.playerObject).equals("spectator")) {
+            if (pd.playerObject == null) {
+                it.remove();
+                continue;
+            }
+            String team = Teams.GetPlayerTeam(pd.playerObject);
+            //GetPlayerTeam returns null for players not on any team (e.g. disconnected players), skip them too
+            if (team == null || team.equals("spectator")) {
                 it.remove();
             }
         }

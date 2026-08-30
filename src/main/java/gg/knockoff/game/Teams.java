@@ -389,10 +389,9 @@ class TeamStatus {
 		int counter = 0;
 		for (String p_name : Teams.get_team_from_string(team)) {
 			Player p = Bukkit.getPlayer(p_name);
+			if (p == null) continue; // offline member: don't count, don't abort
 			PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
-			if (pd == null) {
-				return;
-			}
+			if (pd == null) continue; // no PlayerData: skip, don't freeze the counter
 			if (!pd.isEliminated) {
 				counter++;
 			}

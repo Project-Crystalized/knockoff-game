@@ -168,15 +168,14 @@ public class GameManager { //I honestly think this entire class could be optimis
         //so that it adds the ellemental effects to the list as well
         //Moved while figuring out the hazard command issue, should be safer here, after teams are created and first map is placed
         hazards = new HazardsManager();
-        new BukkitRunnable() {
-            public void run() {
-                playerDatas = new ArrayList<PlayerData>();
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    PlayerData p = new PlayerData(player);
-                    playerDatas.add(p);
-                }
-            }
-        }.runTaskLater(knockoff.getInstance(), 1);
+
+        //Init PlayerData synchronously (after teams/map are placed, same position as the old deferred runnable).
+        //Doing it here instead of a runTaskLater keeps playerDatas non-null during construction, so map-gen
+        //damage events (EntityDamageEvent -> getPlayerData) can't NPE on a still-null list.
+        playerDatas = new ArrayList<PlayerData>();
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            playerDatas.add(new PlayerData(player));
+        }
 
         SetupFirstSpawns();
 
@@ -739,6 +738,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public PlayerData getPlayerData(Player p) {
+        if (playerDatas == null) return null;
         for (PlayerData pd : playerDatas) {
             if (pd.player.equals(p.getName())) {
                 return pd;

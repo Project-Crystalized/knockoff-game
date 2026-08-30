@@ -12,6 +12,7 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.util.TriState;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
@@ -607,7 +608,7 @@ public class PlayerListener implements Listener {
 		event.getPlayer().clearActivePotionEffects();
 		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
 		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
-
-
+		//Extingishing fire before teleporting to the game area as well
+		event.getPlayer().setFireTicks(0);
 	}
 }

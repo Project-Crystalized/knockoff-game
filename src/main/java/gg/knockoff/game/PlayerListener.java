@@ -259,8 +259,8 @@ public class PlayerListener implements Listener {
 						}
 						case 0 -> {
 							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
-							if (GameManager.state == GameState.GAME) {
-								tpPlayersBack(player);
+						if (GameManager.state == GameState.GAME && player.isOnline()) {
+							tpPlayersBack(player);
 								player.setGameMode(GameMode.SURVIVAL);
 								pd.setDeathtimer(0);
 								pd.isPlayerDead = false;
@@ -335,7 +335,7 @@ public class PlayerListener implements Listener {
 				knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8), // TODO temp
 				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
 		Location ploc = new Location(Bukkit.getWorld("world"), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
-		if (knockoff.getInstance().gameManager == null || p == null) {
+		if (knockoff.getInstance().gameManager == null || p == null || !p.isOnline()) {
 			return;
 		}
 		List<Block> tempBlockList = new ArrayList<>();

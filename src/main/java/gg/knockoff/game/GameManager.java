@@ -744,7 +744,6 @@ public class GameManager { //I honestly think this entire class could be optimis
                 return pd;
             }
         }
-        Bukkit.getLogger().warning("[Knockoff] No PlayerData found for player \"" + p.getName() + "). They are likely a spectator or joined mid-game. PlayerData is only created for players online at game start.");
         return null;
     }
 
@@ -752,11 +751,17 @@ public class GameManager { //I honestly think this entire class could be optimis
     public void addSpectator(Player p) {
         Teams.spectator.add(p.getName());
 
-        PlayerData pd = new PlayerData(p);
+        //Reuse the existing PlayerData if the player already has one (e.g. left mid-game and rejoined).
+        //Creating a duplicate would leave the original (non-eliminated) entry in playerDatas, which
+        //getPlayerData returns first, making them count as "alive" on the spectator team and win the game.
+        PlayerData pd = getPlayerData(p);
+        if (pd == null) {
+            pd = new PlayerData(p);
+            playerDatas.add(pd);
+        }
         pd.isEliminated = true;
         pd.isPlayerDead = true;
         pd.lives = 0;
-        playerDatas.add(pd);
 
         p.setGameMode(GameMode.SPECTATOR);
         p.getInventory().clear();

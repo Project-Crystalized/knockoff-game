@@ -522,12 +522,11 @@ public class GameManager { //I honestly think this entire class could be optimis
         for (Iterator<PlayerData> it = playerDatas.iterator(); it.hasNext(); ) {
             PlayerData pd = it.next();
             if (pd.playerObject == null) {
-                it.remove();
                 continue;
             }
             String team = Teams.GetPlayerTeam(pd.playerObject);
-            //GetPlayerTeam returns null for players not on any team (e.g. disconnected players), skip them too
-            if (team == null || team.equals("spectator")) {
+            //GetPlayerTeam returns null for players not on any team, skip them too
+            if (team != null && team.equals("spectator")) {
                 it.remove();
             }
         }
@@ -595,7 +594,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (!playerDatas.isEmpty()) {
                             PlayerData first = playerDatas.getFirst();
                             Player p = first.playerObject;
-                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                            if (p != null && knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 int[] i = knockoff.getInstance().mapdata.extras.podium1st;
                                 p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
                             }
@@ -607,7 +606,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (playerDatas.size() > 1) {
                             PlayerData second = playerDatas.get(1);
                             Player p = second.playerObject;
-                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                            if (p != null && knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 int[] i = knockoff.getInstance().mapdata.extras.podium2nd;
                                 p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
                             }
@@ -619,7 +618,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         if (playerDatas.size() > 2) {
                             PlayerData third = playerDatas.get(2);
                             Player p = third.playerObject;
-                            if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
+                            if (p != null && knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 int[] i = knockoff.getInstance().mapdata.extras.podium3rd;
                                 p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
                             }

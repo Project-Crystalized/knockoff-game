@@ -32,6 +32,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     public int deathtimer = 0;
     public int startingDeathTimerInt = 0;
     public boolean isOnline = true;
+    public boolean isParticipant = true;
     public int blocksplaced = 0;
     public int blocksbroken = 0;
     public int powerupscollected = 0;

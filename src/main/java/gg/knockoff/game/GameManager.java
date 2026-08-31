@@ -518,15 +518,12 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     public static void StartEndGame(String WinningTeam, TeamData td) {
         state = GameState.END;
-        //remove spectators so they are not ranked in the game results or teleported to the podium
         for (Iterator<PlayerData> it = playerDatas.iterator(); it.hasNext(); ) {
             PlayerData pd = it.next();
             if (pd.playerObject == null) {
                 continue;
             }
-            String team = Teams.GetPlayerTeam(pd.playerObject);
-            //GetPlayerTeam returns null for players not on any team, skip them too
-            if (team != null && team.equals("spectator")) {
+            if (!pd.isParticipant) {
                 it.remove();
             }
         }
@@ -775,6 +772,8 @@ public class GameManager { //I honestly think this entire class could be optimis
         PlayerData pd = getPlayerData(p);
         if (pd == null) {
             pd = new PlayerData(p);
+            //Pure spectator who never played this game - don't rank them in the results.
+            pd.isParticipant = false;
             playerDatas.add(pd);
         }
         markEliminated(pd);

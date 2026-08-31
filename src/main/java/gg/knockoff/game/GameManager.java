@@ -747,6 +747,25 @@ public class GameManager { //I honestly think this entire class could be optimis
         return null;
     }
 
+    // Marks a player as eliminated when they disconnect, so their PlayerData isn't
+    // left in a stale "alive" state while they're away (which could let them win or
+    // get mis-ranked). Rejoin makes them a spectator, but the data is set here.
+    public void markPlayerDisconnected(String playerName) {
+        if (playerDatas == null) return;
+        for (PlayerData pd : playerDatas) {
+            if (pd.player.equals(playerName)) {
+                markEliminated(pd);
+                return;
+            }
+        }
+    }
+
+    private void markEliminated(PlayerData pd) {
+        pd.isEliminated = true;
+        pd.isPlayerDead = true;
+        pd.lives = 0;
+    }
+
     // Registers a player who joins mid-game as a spectator.
     public void addSpectator(Player p) {
         Teams.spectator.add(p.getName());
@@ -759,9 +778,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             pd = new PlayerData(p);
             playerDatas.add(pd);
         }
-        pd.isEliminated = true;
-        pd.isPlayerDead = true;
-        pd.lives = 0;
+        markEliminated(pd);
 
         p.setGameMode(GameMode.SPECTATOR);
         p.getInventory().clear();

@@ -411,6 +411,7 @@ public class PlayerListener implements Listener {
 
 		if (knockoff.getInstance().gameManager != null) {
 			Teams.DisconnectPlayer(event.getPlayerName());
+			knockoff.getInstance().gameManager.markPlayerDisconnected(event.getPlayerName());
 		}
 		if (knockoff.getInstance().gameManager != null && Bukkit.getOnlinePlayers().isEmpty()) {
 			Bukkit.getLogger().log(Level.WARNING, "[!] All players have disconnected. The Game will now end.");

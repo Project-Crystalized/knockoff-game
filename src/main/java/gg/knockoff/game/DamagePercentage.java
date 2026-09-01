@@ -1,6 +1,7 @@
 package gg.knockoff.game;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
@@ -23,7 +24,8 @@ public class DamagePercentage implements Listener {
         }
         Entity e = event.getEntity();
         if (e instanceof Player) {
-            PlayerData pd = knockoff.getInstance().gameManager.getPlayerData((Player) e);
+            Player p = (Player) e;
+            PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
             if (pd == null) return;
 
             DamageSource ds = event.getDamageSource();
@@ -32,7 +34,15 @@ public class DamagePercentage implements Listener {
                 return;
             }
             if (ds.getDamageType().equals(DamageType.EXPLOSION) || ds.getDamageType().equals(DamageType.PLAYER_EXPLOSION)) {
-                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(6, 8);
+                int strength = (int) event.getOriginalDamage(EntityDamageEvent.DamageModifier.BASE);
+                pd.percent = pd.percent + strength;
+                Location source = ds.getSourceLocation();
+                if (source != null) {
+                    Vector dir = p.getLocation().toVector().subtract(source.toVector()).setY(0);
+                    dir.normalize();
+                    Vector kb = dir.multiply(strength);
+                    Bukkit.getScheduler().runTask(knockoff.getInstance(), () -> p.setVelocity(p.getVelocity().add(kb)));
+                }
             } else if (ds.getDamageType().equals(DamageType.MAGIC) || ds.getDamageType().equals(DamageType.WITHER)) {
                 pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(5, 6);
             } else if (ds.getDamageType().equals(DamageType.MOB_ATTACK) || ds.getDamageType().equals(DamageType.MOB_ATTACK_NO_AGGRO)) {

@@ -1178,10 +1178,34 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
 
+    //Picks a random powerup, making the Boost and Grappling orbs more likely as the
+    //game progresses. Boosted weight grows from 1x up to
+    //a cap, so early game stays balanced while late game skews toward these orbs.
+    private static String pickWeightedPowerup() {
+        double bonus = Math.min(5.0, 1.0 + Round / 4.0);
+        double total = 0;
+        List<Double> weights = new ArrayList<>();
+        for (Object o : KnockoffItem.ItemList) {
+            String item = o.toString();
+            double w = (item.equals("BoostOrb") || item.equals("GrapplingOrb")) ? bonus : 1.0;
+            weights.add(w);
+            total += w;
+        }
+        double r = Math.random() * total;
+        double acc = 0;
+        for (int i = 0; i < KnockoffItem.ItemList.size(); i++) {
+            acc += weights.get(i);
+            if (r < acc) {
+                return KnockoffItem.ItemList.get(i).toString();
+            }
+        }
+        return KnockoffItem.ItemList.get(KnockoffItem.ItemList.size() - 1).toString();
+    }
+
     public static void SpawnRandomPowerup(String pu) {
         String powerup;
         if (pu == null) {
-            powerup = KnockoffItem.ItemList.get(knockoff.getInstance().getRandomNumber(0, KnockoffItem.ItemList.size())).toString();
+            powerup = pickWeightedPowerup();
         } else {
             powerup = pu;
         }

@@ -4,7 +4,6 @@ import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import gg.crystalized.lobby.Achievement;
 import gg.crystalized.lobby.Lobby_plugin;
 import gg.crystalized.lobby.Ranks;
-import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.event.block.VaultChangeStateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.key.Key;
@@ -17,7 +16,6 @@ import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Vault;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -260,11 +258,15 @@ public class PlayerListener implements Listener {
 						case 0 -> {
 							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
 						if (GameManager.state == GameState.GAME && player.isOnline()) {
-							tpPlayersBack(player);
+							knockoff.getInstance().gameManager.spawnSpawnPlatformAndTP(List.of(player.getName()), 4 * 20, false);
 								player.setGameMode(GameMode.SURVIVAL);
 								pd.setDeathtimer(0);
 								pd.isPlayerDead = false;
 								CustomPlayerNametags.CustomPlayerNametags(player);
+								if (pd.lives == 1) {
+									player.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED));
+									player.playSound(player, "minecraft:block.note_block.pling", 1, 0.5f);
+								}
 							}
 							cancel();
 							return;
@@ -326,79 +328,6 @@ public class PlayerListener implements Listener {
 					.append(Component.text(": "))
 					.append(event.message()));
 		}
-	}
-
-	private static void tpPlayersBack(Player p) {
-
-		Location middleLoc = new Location(Bukkit.getWorld("world"),
-				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
-				knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8), // TODO temp
-				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
-		Location ploc = new Location(Bukkit.getWorld("world"), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
-		if (knockoff.getInstance().gameManager == null || p == null || !p.isOnline()) {
-			return;
-		}
-		List<Block> tempBlockList = new ArrayList<>();
-		tempBlockList.add(middleLoc.getBlock());
-		tempBlockList.add(middleLoc.clone().add(1, 0, 0).getBlock());
-		tempBlockList.add(middleLoc.clone().add(-1, 0, 0).getBlock());
-		tempBlockList.add(middleLoc.clone().add(0, 0, 1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(1, 0, 1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(-1, 0, 1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(0, 0, -1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(1, 0, -1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(-1, 0, -1).getBlock());
-
-        for (Block b : tempBlockList) {
-            switch (Teams.GetPlayerTeam(p)) {
-                case "blue", "cyan", "green", "lemon" -> {
-                    b.setType(Material.WHITE_GLAZED_TERRACOTTA);
-                }
-                case "lime", "magenta", "orange", "peach" -> {
-                    b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-                }
-                case "purple", "white", "yellow", "red" -> {
-                    b.setType(Material.GRAY_GLAZED_TERRACOTTA);
-                }
-                case "weak", "strong" -> {
-                    b.setType(Material.BLACK_GLAZED_TERRACOTTA);
-                }
-            }
-            Directional dir = (Directional) b.getBlockData();
-
-            //set direction to match the item model's model
-            switch (Teams.GetPlayerTeam(p)) {
-                case "blue", "lime", "purple", "weak" -> {
-                    dir.setFacing(BlockFace.EAST);
-                }
-                case "cyan", "magenta", "red", "strong" -> {
-                    dir.setFacing(BlockFace.NORTH);
-                }
-                case "green", "orange", "white" -> {
-                    dir.setFacing(BlockFace.SOUTH);
-                }
-                case "lemon", "peach", "yellow" -> {
-                    dir.setFacing(BlockFace.WEST);
-                }
-            }
-
-            b.setBlockData(dir);
-            b.getState().update();
-            GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30), false);
-        }
-
-		PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
-		if (pd != null && pd.lives == 1) {
-			p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED)); //TODO translatable
-			p.playSound(p, "minecraft:block.note_block.pling", 1, 0.5f);
-		}
-
-		middleLoc.getBlock().getState().update();
-		p.teleport(ploc);
-		p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
-				knockoff.getInstance().mapdata.getCurrentMiddleYLength(),
-				knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES
-        );
 	}
 
 	@EventHandler

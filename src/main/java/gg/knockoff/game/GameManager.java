@@ -803,7 +803,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         new BukkitRunnable() {
             public void run() {
                 for (TeamData td : Teams.team_datas_without_spectator) {
-                    spawnSpawnPlatformAndTP(Teams.get_team_from_string(td.name), td.name);
+                    knockoff.getInstance().gameManager.spawnSpawnPlatformAndTP(Teams.get_team_from_string(td.name), 10 * 20, true);
                 }
                 cancel();
             } //Due to delay border needs to be adjusted after tp
@@ -1030,14 +1030,21 @@ public class GameManager { //I honestly think this entire class could be optimis
          */
     }
     
-    private static void spawnSpawnPlatformAndTP(List<String> players, String team) {
-        Location middleLoc = new Location(Bukkit.getWorld("world"),
-                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
-                knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8), // TODO temp
-                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
-        if (knockoff.getInstance().gameManager == null || players.isEmpty()) {
+    void spawnSpawnPlatformAndTP(List<String> players, int breakDelay, boolean setBorder) {
+        if (players.isEmpty()) {
             return;
         }
+        Location middleLoc = new Location(Bukkit.getWorld("world"),
+                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
+                knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8),
+                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
+
+        Player firstPlayer = Bukkit.getPlayerExact(players.get(0));
+        if (firstPlayer == null) {
+            return;
+        }
+        String team = Teams.GetPlayerTeam(firstPlayer);
+
         List<Block> tempBlockList = new ArrayList<>();
         tempBlockList.add(middleLoc.getBlock());
         tempBlockList.add(middleLoc.clone().add(1, 0, 0).getBlock());
@@ -1050,82 +1057,49 @@ public class GameManager { //I honestly think this entire class could be optimis
         tempBlockList.add(middleLoc.clone().add(-1, 0, -1).getBlock());
 
         for (Block b : tempBlockList) {
-            switch (team) {
-                case "blue", "cyan", "green", "lemon" -> {
-                    b.setType(Material.WHITE_GLAZED_TERRACOTTA);
-                }
-                case "lime", "magenta", "orange", "peach" -> {
-                    b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-                }
-                case "purple", "white", "yellow", "red" -> {
-                    b.setType(Material.GRAY_GLAZED_TERRACOTTA);
-                }
-                case "weak", "strong" -> {
-                    b.setType(Material.BLACK_GLAZED_TERRACOTTA);
-                }
-            }
-            Directional dir = (Directional) b.getBlockData();
-
-            //set direction to match the item model's model
-            switch (team) {
-                case "blue", "lime", "purple", "weak" -> {
-                    dir.setFacing(BlockFace.EAST);
-                }
-                case "cyan", "magenta", "red", "strong" -> {
-                    dir.setFacing(BlockFace.NORTH);
-                }
-                case "green", "orange", "white" -> {
-                    dir.setFacing(BlockFace.SOUTH);
-                }
-                case "lemon", "peach", "yellow" -> {
-                    dir.setFacing(BlockFace.WEST);
-                }
-            }
-
-            b.setBlockData(dir);
-            b.getState().update();
-            //Extended the time after which the platform breaks, as it was too fast after the border disapered
-            GameManager.startBreakingCrystal(b, 10 * 20, knockoff.getInstance().getRandomNumber(20, 30), false);
+            applyTeamStyle(b, team);
+            startBreakingCrystal(b, breakDelay, knockoff.getInstance().getRandomNumber(20, 30), false);
         }
 
         Location ploc = new Location(Bukkit.getWorld("world"), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
         for (String s : players) {
-            //Makes sure that the exact name of the player is being used, to avoid partial matches/miss matches.
             Player p = Bukkit.getPlayerExact(s);
-            //makes sure that the player is not offline and not null before attempting teeleportation
             if (p == null || !p.isOnline()) {
-                //Logs the player that is offline or null that has attempted to be teleported
-                Bukkit.getLogger().warning("Can't teleport the player of name: "+ s + " due to them being offline or not existing. For the team "
-                        + team + ".");
-                continue; //Continues through the players loop
+                Bukkit.getLogger().warning("Can't teleport the player of name: " + s + " due to them being offline or not existing.");
+                continue;
             }
-            p.sendMessage(text("ploc: X:" + ploc.x() + " Y:" + ploc.y() + " Z:" + ploc.z()));
-            //Does the player telportation and returns the boolean when sussesful
-            boolean teleportedOnPlatform = p.teleport(ploc);
-            //If teleportation was not sussesfull
-            if (!teleportedOnPlatform) {
-                Bukkit.getLogger().warning("Teleportation failed for this player " + s );
-                continue; //Continues through the loop
+            p.teleport(ploc);
+            if (setBorder) {
+                WorldBorder startingBorder = p.getWorldBorder();
+                if (startingBorder != null) {
+                    startingBorder.setCenter(ploc.getX(), ploc.getZ());
+                    startingBorder.setSize(3);
+                    startingBorder.setWarningDistance(0);
+                }
             }
-
-            //Gets the player world border
-            WorldBorder startingBorder = p.getWorldBorder();
-
-            //If it is not null then sets a border to the plocs position
-            if (startingBorder != null) {
-                //With the center of ploc location
-                startingBorder.setCenter(ploc.getX(), ploc.getZ());
-                //With the size of 3 how it was
-                startingBorder.setSize(3);
-                //with worning distanse 0, so screen won't be red
-                startingBorder.setWarningDistance(0);
-            }
-            //The rest as it was
             p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
                     knockoff.getInstance().mapdata.getCurrentMiddleYLength(),
                     knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES
             );
         }
+    }
+
+    private static void applyTeamStyle(Block b, String team) {
+        switch (team) {
+            case "blue", "cyan", "green", "lemon" -> b.setType(Material.WHITE_GLAZED_TERRACOTTA);
+            case "lime", "magenta", "orange", "peach" -> b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
+            case "purple", "white", "yellow", "red" -> b.setType(Material.GRAY_GLAZED_TERRACOTTA);
+            case "weak", "strong" -> b.setType(Material.BLACK_GLAZED_TERRACOTTA);
+        }
+        Directional dir = (Directional) b.getBlockData();
+        switch (team) {
+            case "blue", "lime", "purple", "weak" -> dir.setFacing(BlockFace.EAST);
+            case "cyan", "magenta", "red", "strong" -> dir.setFacing(BlockFace.NORTH);
+            case "green", "orange", "white" -> dir.setFacing(BlockFace.SOUTH);
+            case "lemon", "peach", "yellow" -> dir.setFacing(BlockFace.WEST);
+        }
+        b.setBlockData(dir);
+        b.getState().update();
     }
 
     public static void CloneNewMapSection() {

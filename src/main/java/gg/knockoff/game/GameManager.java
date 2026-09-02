@@ -1034,16 +1034,42 @@ public class GameManager { //I honestly think this entire class could be optimis
         if (players.isEmpty()) {
             return;
         }
-        Location middleLoc = new Location(Bukkit.getWorld("world"),
-                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
-                knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8),
-                knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
-
         Player firstPlayer = Bukkit.getPlayerExact(players.get(0));
         if (firstPlayer == null) {
             return;
         }
         String team = Teams.GetPlayerTeam(firstPlayer);
+
+        Location middleLoc = null;
+        int attempts = 0;
+        while (attempts < 1000) {
+            attempts++;
+            int x = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX - 5, knockoff.getInstance().mapdata.getCurrentXLength() + 5);
+            int y = knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(0, 5);
+            int z = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ - 5, knockoff.getInstance().mapdata.getCurrentZLength() + 5);
+            Location candidate = new Location(Bukkit.getWorld("world"), x + 0.5, y, z + 0.5);
+
+            boolean tooClose = false;
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                if (p.getLocation().distance(candidate) < 10) {
+                    tooClose = true;
+                    break;
+                }
+            }
+            if (tooClose) continue;
+
+            if (!hasNearbyTerrain(candidate)) continue;
+
+            middleLoc = candidate;
+            break;
+        }
+
+        if (middleLoc == null) {
+            middleLoc = new Location(Bukkit.getWorld("world"),
+                    knockoff.getInstance().mapdata.getCurrentMiddleXLength() + 0.5,
+                    knockoff.getInstance().mapdata.getCurrentMiddleYLength(),
+                    knockoff.getInstance().mapdata.getCurrentMiddleZLength() + 0.5);
+        }
 
         List<Block> tempBlockList = new ArrayList<>();
         tempBlockList.add(middleLoc.getBlock());
@@ -1082,6 +1108,19 @@ public class GameManager { //I honestly think this entire class could be optimis
                     knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES
             );
         }
+    }
+
+    private static boolean hasNearbyTerrain(Location loc) {
+        World world = loc.getWorld();
+        for (int dist = 1; dist <= 10; dist++) {
+            if (!world.getBlockAt(loc.clone().add(dist, 0, 0)).getType().equals(Material.AIR)) return true;
+            if (!world.getBlockAt(loc.clone().add(-dist, 0, 0)).getType().equals(Material.AIR)) return true;
+            if (!world.getBlockAt(loc.clone().add(0, dist, 0)).getType().equals(Material.AIR)) return true;
+            if (!world.getBlockAt(loc.clone().add(0, -dist, 0)).getType().equals(Material.AIR)) return true;
+            if (!world.getBlockAt(loc.clone().add(0, 0, dist)).getType().equals(Material.AIR)) return true;
+            if (!world.getBlockAt(loc.clone().add(0, 0, -dist)).getType().equals(Material.AIR)) return true;
+        }
+        return false;
     }
 
     private static void applyTeamStyle(Block b, String team) {

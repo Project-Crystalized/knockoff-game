@@ -459,6 +459,7 @@ class TeamStatus {
 				for (TeamData td : Teams.team_datas) {
 					if (knockoff.getInstance().gameManager == null) {
 						cancel();
+						return;
 					} 
 					// Check if all players in the team are alive. If not set them to dead
 					update_team_status(td.name);

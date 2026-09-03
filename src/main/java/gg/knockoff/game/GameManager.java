@@ -359,7 +359,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             }
                         }
 
-                        if (knockoff.getInstance().getRandomNumber(1, 20) % 2 == 0) {
+                        if (mapSpeedPhase.isOvertime) {
                             s.sendMessage(text(" "));
                             s.sendMessage(translatable("crystalized.game.knockoff.chat.powerup").color(DARK_AQUA));
                             s.sendMessage(text(" "));

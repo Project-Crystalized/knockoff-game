@@ -327,12 +327,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (RoundCounter == mapSpeedPhase.halfTime + 10 && state == GameState.GAME &&
                         knockoff.getInstance().mapdata.isMapSwapEnabled && !mapSpeedPhase.isOvertime) {
                     Bukkit.getServer().sendMessage(
-                            text("The map will transform in 10 seconds, ").color(GOLD)
+                            text("The map will disappear in 10 seconds, ").color(GOLD)
                                     .append(text("Move to the ").color(RED))
-                                    .append(text("Purple Platforms! ").color(DARK_PURPLE))
+                                    .append(text("Crying Obsidian! ").color(DARK_PURPLE))
                     );
-                    Bukkit.getServer().showTitle(Title.title(text("Map Transforming").color(GOLD),
-                            text("Move to the ").color(RED).append(text("Purple Platforms!").color(DARK_PURPLE)),
+                    Bukkit.getServer().showTitle(Title.title(text("Map Disappearing").color(GOLD),
+                            text("Move to the ").color(RED).append(text("Crying Obsidian!").color(DARK_PURPLE)),
                             Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(4), Duration.ofMillis(500)))
                     );
                     Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {

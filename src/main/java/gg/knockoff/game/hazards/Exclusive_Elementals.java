@@ -74,7 +74,8 @@ public class Exclusive_Elementals extends hazard {
     }
 
     private miniHazards figureOutMiniHazard() {
-        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        //upgrades all old world refences to the new game world
+        World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -90,7 +91,7 @@ public class Exclusive_Elementals extends hazard {
                     )
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (b.getType().equals(Material.MAGMA_BLOCK)) {return miniHazards.eruption;}
                 else if (b.getType().equals(Material.BLUE_ICE)) {return miniHazards.sheerCold;}
                 else if (b.getType().equals(Material.SOUL_SOIL)) {return miniHazards.blockBreaker;}
@@ -118,7 +119,7 @@ public class Exclusive_Elementals extends hazard {
         );
 
         //get blocks to spawn eurptions on
-        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -126,7 +127,7 @@ public class Exclusive_Elementals extends hazard {
                     BlockVector3.at(GameManager.SectionPlaceLocationX + md.CurrentXLength, GameManager.SectionPlaceLocationY + md.CurrentYLength, GameManager.SectionPlaceLocationZ + md.CurrentZLength)
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (b.getType().equals(Material.RESIN_BRICKS)) {
                     blockList.add(b);
                 }
@@ -150,7 +151,7 @@ public class Exclusive_Elementals extends hazard {
 
                 Collections.shuffle(blockList);
                 Location loc = blockList.getFirst().getLocation().clone().add(0.5, 2, 0.5);
-                Bukkit.getWorld("world").spawn(loc, Snowball.class, entity -> {
+                knockoff.getInstance().getGameWorld().spawn(loc, Snowball.class, entity -> {
                     entity.setVelocity(new Vector(
                             knockoff.getInstance().getRandomNumber(-0.3D, 0.3D),
                             knockoff.getInstance().getRandomNumber(0.45D, 0.6D),
@@ -211,7 +212,7 @@ public class Exclusive_Elementals extends hazard {
     }
 
     private void crystalsToIce(boolean sounds) {
-        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -219,7 +220,7 @@ public class Exclusive_Elementals extends hazard {
                     BlockVector3.at(GameManager.SectionPlaceLocationX + md.CurrentXLength, GameManager.SectionPlaceLocationY + md.CurrentYLength, GameManager.SectionPlaceLocationZ + md.CurrentZLength)
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (
                         b.getType().equals(Material.WHITE_GLAZED_TERRACOTTA) ||
                                 b.getType().equals(Material.LIGHT_GRAY_GLAZED_TERRACOTTA) ||
@@ -266,7 +267,7 @@ public class Exclusive_Elementals extends hazard {
     }
 
     private void blockBreakerEffect() {
-        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -274,7 +275,7 @@ public class Exclusive_Elementals extends hazard {
                     BlockVector3.at(GameManager.SectionPlaceLocationX + md.CurrentXLength, GameManager.SectionPlaceLocationY + md.CurrentYLength, GameManager.SectionPlaceLocationZ + md.CurrentZLength)
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (
                         b.getType().equals(Material.WHITE_GLAZED_TERRACOTTA) ||
                                 b.getType().equals(Material.LIGHT_GRAY_GLAZED_TERRACOTTA) ||
@@ -326,16 +327,16 @@ public class Exclusive_Elementals extends hazard {
                 }
 
                 // spawn (breeze) wind charges in dir
-                WindCharge w = Bukkit.getWorld("world").spawn(
-                        new Location(Bukkit.getWorld("world"),
+                WindCharge w = knockoff.getInstance().getGameWorld().spawn(
+                        new Location(knockoff.getInstance().getGameWorld(),
                                 knockoff.getInstance().getRandomNumber(gm.SectionPlaceLocationX - 15, md.getCurrentXLength() + 15),
                                 knockoff.getInstance().getRandomNumber(gm.SectionPlaceLocationY + 5, md.getCurrentYLength() - 5),
                                 knockoff.getInstance().getRandomNumber(gm.SectionPlaceLocationZ - 15, md.getCurrentZLength() + 15)
                         ),
                         WindCharge.class
                 );
-                BreezeWindCharge bw = Bukkit.getWorld("world").spawn(
-                        new Location(Bukkit.getWorld("world"),
+                BreezeWindCharge bw = knockoff.getInstance().getGameWorld().spawn(
+                        new Location(knockoff.getInstance().getGameWorld(),
                                 knockoff.getInstance().getRandomNumber(gm.SectionPlaceLocationX - 15, md.getCurrentXLength() + 15),
                                 knockoff.getInstance().getRandomNumber(gm.SectionPlaceLocationY + 5, md.getCurrentYLength() - 5),
                                 knockoff.getInstance().getRandomNumber(gm.SectionPlaceLocationZ - 15, md.getCurrentZLength() + 15)
@@ -410,7 +411,7 @@ public class Exclusive_Elementals extends hazard {
         );
 
         List<Block> blockList = new ArrayList<>();
-        World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -418,7 +419,7 @@ public class Exclusive_Elementals extends hazard {
                     BlockVector3.at(GameManager.SectionPlaceLocationX + md.CurrentXLength, GameManager.SectionPlaceLocationY + md.CurrentYLength, GameManager.SectionPlaceLocationZ + md.CurrentZLength)
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (b.getType().equals(Material.TORCHFLOWER)) {
                     blockList.add(b);
                 }
@@ -447,7 +448,7 @@ public class Exclusive_Elementals extends hazard {
                         //made sure blockList.size() is - 1, as arrays and lists start at 0 index, so this will be the last valid index
                         //From java doc: IndexOutOfBoundsException – if the index is out of range (index < 0 || index >= size())
                         //Must not be equal or bigger to size, or smaller than zero.
-                        aoeEntity1 = Bukkit.getWorld("world").spawn(blockList.get(knockoff.getInstance().
+                        aoeEntity1 = knockoff.getInstance().getGameWorld().spawn(blockList.get(knockoff.getInstance().
                                 getRandomNumber(0, blockList.size() - 1)).getLocation(), ArmorStand.class, entity -> {
                             //As armor stand has taken on the entity replaced aoeEntity so it should be set correctly here
                             entity.setGravity(false);

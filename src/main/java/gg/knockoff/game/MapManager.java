@@ -55,7 +55,7 @@ public class MapManager {
                     )
             );
             for (BlockVector3 bV3 : temp) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (!b.isEmpty()) {
                     b.setType(Material.AIR);
                 }
@@ -94,7 +94,7 @@ public class MapManager {
 
     public static void turnMapIntoCrystals() {
         List<Block> blockList = new ArrayList<>();
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         MapData md = knockoff.getInstance().mapdata;
         Region region = null;
 
@@ -111,7 +111,7 @@ public class MapManager {
                     BlockVector3.at(toX, toY, toZ)
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (!b.isEmpty()) {
                     blockList.add(b);
                 }
@@ -147,7 +147,8 @@ public class MapManager {
             public void run() {
                 int i = 0;
                 if (knockoff.getInstance().gameManager == null) {
-                    stop();
+                    cancel();
+                    return;
                 }
                 for (Block b : blockListFinal) {
                     if (!b.isEmpty()) {
@@ -165,7 +166,7 @@ public class MapManager {
                         BlockVector3.at(tX, tY, tZ)
                 );
                 for (BlockVector3 bV3 : region) {
-                    Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                    Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                     if (!b.isEmpty()) {
                         b.setType(Material.AIR);
                     }
@@ -181,7 +182,7 @@ public class MapManager {
         JsonObject sectionJson = sectionData.getAsJsonObject();
         JsonArray from = sectionJson.get("from").getAsJsonArray();
         JsonArray to = sectionJson.get("to").getAsJsonArray();
-        World world = Bukkit.getWorld("world");
+        World world = knockoff.getInstance().getGameWorld();
 
         switch (GameManager.plannedDirection) {
             case GameManager.mapDirections.EAST:
@@ -223,8 +224,13 @@ public class MapManager {
         if (!knockoff.getInstance().DevMode) {
             //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this
             Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
+                //had to make it get game world and it's name using gameWorld.getName() so command could be able to work with the map/world reseting
+                World gameWorld = knockoff.getInstance().getGameWorld();
+                if (gameWorld == null) {
+                    return;
+                }
                 String a = sectionJson.get("remove_block").getAsString();
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
+                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"" + gameWorld.getName() + "\"");
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + knockoff.getInstance().gameManager.SectionPlaceLocationX + "," + knockoff.getInstance().gameManager.SectionPlaceLocationY + "," + knockoff.getInstance().gameManager.SectionPlaceLocationZ);
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
                 Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
@@ -277,7 +283,7 @@ public class MapManager {
                         p.playSound(p, "minecraft:entity.illusioner.prepare_mirror", 1 ,0.75f);
                     }
 
-                    World world = Bukkit.getWorld("world");
+                    World world = knockoff.getInstance().getGameWorld();
                     try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(BukkitAdapter.adapt(world))) {
                         CuboidRegion region = new CuboidRegion(
                                 BukkitAdapter.adapt(world),
@@ -300,8 +306,12 @@ public class MapManager {
                     if (!knockoff.getInstance().DevMode) {
                         //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this
                         Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
+                            World gameWorld = knockoff.getInstance().getGameWorld();
+                            if (gameWorld == null) {
+                                return;
+                            }
                             String a = knockoff.getInstance().mapdata.currentSection.getAsJsonObject().get("remove_block").getAsString();
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
+                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"" + gameWorld.getName() + "\"");
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + knockoff.getInstance().gameManager.SectionPlaceLocationX + "," + knockoff.getInstance().gameManager.SectionPlaceLocationY + "," + knockoff.getInstance().gameManager.SectionPlaceLocationZ);
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
                             Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");

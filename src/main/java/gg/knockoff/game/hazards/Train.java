@@ -95,7 +95,7 @@ public class Train extends hazard {
     }
 
     private static void spawnTrain(int startX, int endX, double Z, double Y, String itemModel, boolean swapXandZ) {
-        Location loc = new Location(Bukkit.getWorld("world"), startX, Y, Z, -90, 0);
+        Location loc = new Location(knockoff.getInstance().getGameWorld(), startX, Y, Z, -90, 0);
         if (swapXandZ) {
             loc = new Location(loc.getWorld(), Z, Y, startX, 0, 0);
         }

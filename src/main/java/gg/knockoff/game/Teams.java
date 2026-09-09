@@ -11,6 +11,9 @@ import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Transformation;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.logging.Level;
@@ -495,6 +498,9 @@ class CustomPlayerNametags {
 				player.getPitch());
 		TextDisplay displayfront = ploc.getWorld().spawn(ploc, TextDisplay.class, entity -> {
 			entity.setBillboard(Display.Billboard.CENTER);
+			//This is to make name tags appere higher to easier see the statististic
+			//Only moves it higher, not rotating it, and not chaning the scale. If someone else wants to adjust the height only adjust y and the first vector.
+			entity.setTransformation(new Transformation(new Vector3f(0, 0.2f, 0), new Quaternionf(), new Vector3f(1, 1, 1), new Quaternionf()));
 		});
 		player.addPassenger(displayfront);
 		player.hideEntity(knockoff.getInstance(), displayfront);

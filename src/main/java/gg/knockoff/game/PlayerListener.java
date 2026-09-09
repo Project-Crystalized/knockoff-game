@@ -59,7 +59,8 @@ public class PlayerListener implements Listener {
 		p.clearActivePotionEffects();
 
 		if (knockoff.getInstance().gameManager == null) {
-			p.teleport(knockoff.getInstance().mapdata.get_que_spawn(p.getWorld()));
+			//teleports at the spawn area in the waiting/source world
+			p.teleport(knockoff.getInstance().mapdata.get_que_spawn(knockoff.getInstance().getSourceWorld()));
 			p.getInventory().clear();
 			p.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
 			p.setHealth(20);
@@ -220,7 +221,8 @@ public class PlayerListener implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
+				//made sure it works with the game world
+				Location loc = new Location(knockoff.getInstance().getGameWorld(), knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
 						knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10,
 						knockoff.getInstance().mapdata.getCurrentMiddleZLength());
 				player.teleportAsync(loc);
@@ -242,6 +244,10 @@ public class PlayerListener implements Listener {
 
 			new BukkitRunnable() {
 				public void run() {
+					if (knockoff.getInstance().gameManager == null) {
+						cancel();
+						return;
+					}
 					player.sendActionBar(translatable("crystalized.game.knockoff.respawn1")
 							.append(Component.text(pd.getDeathtimer()))
 							.append(translatable("crystalized.game.knockoff.respawn2")));
@@ -377,6 +383,9 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void OnPlayerPickupItem(EntityPickupItemEvent event) {
 		Player player = (Player) event.getEntity();
+		if (knockoff.getInstance().gameManager == null) {
+			return;
+		}
 		PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
 		if (pd == null) return;
 		pd.powerupscollected++;
@@ -485,7 +494,7 @@ public class PlayerListener implements Listener {
             if (text == null) {return;}
             if (text.equals(text("magma"))) {
                 //create fireball for big explosion turning into magma blocks
-                Bukkit.getWorld("world").spawn(s.getLocation(), Fireball.class, fireball -> {
+                knockoff.getInstance().getGameWorld().spawn(s.getLocation(), Fireball.class, fireball -> {
                     fireball.customName(text);
                     fireball.setYield(6);
                     fireball.setVelocity(new Vector(0, -10, 0));
@@ -540,5 +549,71 @@ public class PlayerListener implements Listener {
 		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
 		//Extingishing fire before teleporting to the game area as well
 		event.getPlayer().setFireTicks(0);
+	}
+	//a fix for now when the player ends up spawning in the wall it will move the player up to the surface
+	@EventHandler
+	public void onPlayerSuffocate(EntityDamageEvent event) {
+		if (!(event.getEntity() instanceof Player p)) {
+			return;
+		}
+		//needs to be suffucating in the wall forit to count
+		if (event.getCause() != EntityDamageEvent.DamageCause.SUFFOCATION) {
+			return;
+		}
+		if (knockoff.getInstance().gameManager == null) {
+			return;
+		}
+		if (!p.getWorld().equals(knockoff.getInstance().getGameWorld())) {
+			return;
+		}
+		//gets the player location and world
+		Location loc = p.getLocation();
+		World world = loc.getWorld();
+		//gets the z and x location of the exact block, to keep the exact x abd z locatin
+		int x = loc.getBlockX();
+		int z = loc.getBlockZ();
+
+		//goes through y until the world height
+		for (int y = loc.getBlockY(); y < world.getMaxHeight() - 1; y++) {
+			//gets the block at feet, head, and the blocks below
+			Block feet = world.getBlockAt(x, y, z);
+			Block head = world.getBlockAt(x, y + 1, z);
+			Block below = world.getBlockAt(x, y - 1, z);
+			//So when head and feet are free and below has a block will teleport a player there
+			if (feet.isPassable() && head.isPassable() && !below.isPassable()) {
+				//with a little offset to put player in the middle of the block, the pitch and yawn so the player can keep looking the same direction
+				//end up slightly higher so not just in a middle of a fight straight away
+				p.teleport(new Location(world, x + 0.5, y, z + 0.5, loc.getYaw(), loc.getPitch()));
+				//slight levitation to prevent insta death
+				p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20, 0, false, true, true));
+				p.sendMessage(Component.text("You have been rescued from spawning inside a wall!").color(NamedTextColor.RED));
+				event.setCancelled(true);
+				return;
+			}
+		}
+	}
+	//Added this to prevent infinity fall before game starts for knockoff
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent e) {
+		//Ensures this happens only when game manager is null, so not during the game
+		if (knockoff.getInstance().gameManager != null) {
+			return;
+		}
+		//Gets the player
+		Player p = e.getPlayer();
+		World sourceWorld = knockoff.getInstance().getSourceWorld();
+		Location queueSpawn = knockoff.getInstance().mapdata.get_que_spawn(sourceWorld);
+		//If player's Y location is beyhond maps death limit, below 70 of the spawn y
+		//Teleports the player back to the original spawn location
+		if (p.getY() < queueSpawn.getY() - 70) {
+			//incase it became not null during it somehow
+			if (knockoff.getInstance().gameManager != null) {
+				return;
+			}
+			//teleports player back to quee spawn.
+			p.teleport(queueSpawn);
+			//makes sure fall distanse is 0
+			p.setFallDistance(0);
+		}
 	}
 }

@@ -44,7 +44,7 @@ public class Exclusive_TrialChamber extends hazard {
         List<Block> blockList = new ArrayList<>();
 
         //Check for Trial Spawners before picking random spot
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -60,7 +60,7 @@ public class Exclusive_TrialChamber extends hazard {
                     )
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (b.getType().equals(Material.TRIAL_SPAWNER)) {
                     blockList.add(b);
                 }

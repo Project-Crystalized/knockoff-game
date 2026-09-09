@@ -61,14 +61,14 @@ public class FlyingCars extends hazard {
 
     private static void spawnFlyingCar() {
         Location validLoc = getValidSpot(false);
-        Location loc = new Location(Bukkit.getWorld("world"), validLoc.getX(), knockoff.getInstance().mapdata.getCurrentYLength() + 13, validLoc.getZ());
+        Location loc = new Location(knockoff.getInstance().getGameWorld(), validLoc.getX(), knockoff.getInstance().mapdata.getCurrentYLength() + 13, validLoc.getZ());
         ItemStack item = new ItemStack(Material.CHARCOAL);
         ItemMeta meta = item.getItemMeta();
         meta.setItemModel(new NamespacedKey("crystalized", CarsList.get(knockoff.getInstance().getRandomNumber(0, CarsList.size()))));
         item.setItemMeta(meta);
 
         //No idea how to launch a fireball from the server, this is the next best thing I guess
-        ArmorStand tempentity = Bukkit.getWorld("world").spawn(loc, ArmorStand.class, entity -> {
+        ArmorStand tempentity = knockoff.getInstance().getGameWorld().spawn(loc, ArmorStand.class, entity -> {
             entity.setRotation(0, 90);
         });
 
@@ -77,7 +77,7 @@ public class FlyingCars extends hazard {
         ball.setYield(6);
         ball.setVisualFire(TriState.FALSE);
 
-        ArmorStand car = Bukkit.getWorld("world").spawn(loc, ArmorStand.class, entity -> {
+        ArmorStand car = knockoff.getInstance().getGameWorld().spawn(loc, ArmorStand.class, entity -> {
             entity.getEquipment().setHelmet(item);
             entity.setInvisible(true);
             ball.addPassenger(entity);

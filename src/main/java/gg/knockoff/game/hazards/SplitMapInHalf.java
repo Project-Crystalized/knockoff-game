@@ -37,7 +37,7 @@ public class SplitMapInHalf extends hazard {
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         List<Block> blockList = new ArrayList<>();
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
             MapData md = knockoff.getInstance().mapdata;
             int X1;
@@ -76,7 +76,7 @@ public class SplitMapInHalf extends hazard {
                             Z2)
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (!b.isEmpty()) {
                     blockList.add(b);
                 }

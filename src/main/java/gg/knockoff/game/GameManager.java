@@ -135,7 +135,8 @@ public class GameManager { //I honestly think this entire class could be optimis
         knockoff.getInstance().reloadConfig();
         Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
         state = GameState.GAME;
-        for (Entity e : Bukkit.getWorld("world").getEntities()) {
+        //changed all old world refences to the correct game world dimension
+        for (Entity e : knockoff.getInstance().getGameWorld().getEntities()) {
             if (e instanceof TextDisplay) {
                 e.remove();
             }
@@ -151,7 +152,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         // Could be optimised, Filling all this in 1 go and/or in larger spaces causes your server to most likely go out of memory or not respond for a good while
         // Plus this lags the server anyway
         Bukkit.getLogger().log(Level.INFO, "Making room for knockoff map, This may lag your server depending on how good it is");
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(1100, -30, 1100), BlockVector3.at(1000, 40, 1000));
         try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
             RandomPattern pat = new RandomPattern();
@@ -196,12 +197,11 @@ public class GameManager { //I honestly think this entire class could be optimis
                 p.setGameMode(GameMode.SPECTATOR);
             } else {
                 p.setGameMode(GameMode.ADVENTURE);
-                CustomPlayerNametags.CustomPlayerNametags(p);
+                //now happens after teleportation, as it was messing with the teleportation to game dimension
+                //CustomPlayerNametags.CustomPlayerNametags(p);
             }
             ScoreboardManager.SetPlayerScoreboard(p);
             Teams.SetPlayerDisplayNames(p);
-
-
             p.setSneaking(true);
             p.setSneaking(false);
         }
@@ -289,7 +289,10 @@ public class GameManager { //I honestly think this entire class could be optimis
         new BukkitRunnable() {
             public void run() {
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (knockoff.getInstance().gameManager == null) {cancel();}
+                    if (knockoff.getInstance().gameManager == null) {
+                        cancel();
+                        return;
+                    }
                     if (knockoff.getInstance().gameManager != null) {
                         TabMenu.SendTabMenu(p);
                     }
@@ -314,7 +317,10 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         new BukkitRunnable() {
             public void run() {
-                if (knockoff.getInstance().gameManager == null) {cancel();}
+                if (knockoff.getInstance().gameManager == null) {
+                    cancel();
+                    return;
+                }
                 if (knockoff.getInstance().DevMode) {
                     Round = 0;
                     RoundCounter = 0;
@@ -397,7 +403,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     plannedDirection = mapDirections.undecided;
                     MapData md = knockoff.getInstance().mapdata;
                     for (int i = 0; i < 8; i++) {
-                        particles.add(new MapParticles(new Location(Bukkit.getWorld("world"),
+                        particles.add(new MapParticles(new Location(knockoff.getInstance().getGameWorld(),
                                 knockoff.getInstance().getRandomNumber(SectionPlaceLocationX, md.getCurrentXLength()),
                                 knockoff.getInstance().getRandomNumber(md.getCurrentYLength() - 7, md.getCurrentYLength() + 2),
                                 knockoff.getInstance().getRandomNumber(SectionPlaceLocationZ, md.getCurrentZLength()))
@@ -444,6 +450,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     if (pd == null) continue;
                     if (knockoff.getInstance().gameManager == null) {
                         cancel();
+                        return;
                     }
                     if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
                         p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
@@ -471,18 +478,21 @@ public class GameManager { //I honestly think this entire class could be optimis
         new BukkitRunnable() {
             public void run() {
                 //Should stop this bukkitrunnable once the game ends
-                if (knockoff.getInstance().gameManager == null) {cancel();}
+                if (knockoff.getInstance().gameManager == null) {
+                    cancel();
+                    return;
+                }
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (p.getLocation().getY() < -20 && state != GameState.END) {//instantly kills the player when they get knocked into the void
-                        Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
+                        Location loc = new Location(knockoff.getInstance().getGameWorld(), knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
                         p.teleport(loc);
                         if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                             p.setHealth(0);
                         }
                     }
                 }
-                for (Entity e : Bukkit.getWorld("world").getEntities()) {
+                for (Entity e : knockoff.getInstance().getGameWorld().getEntities()) {
                     if (e instanceof Item) {
                         if (((Item) e).getItemStack().getType().equals(Material.COAL)) {
                             if (!((Item) e).getItemStack().getItemMeta().hasItemModel()) {
@@ -503,7 +513,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     } else if (e.getLocation().getY() < -20) {
                         if (e instanceof Breeze) {
                             MapData md = knockoff.getInstance().mapdata;
-                            e.teleport(new Location(Bukkit.getWorld("world"),
+                            e.teleport(new Location(knockoff.getInstance().getGameWorld(),
                                     md.getCurrentMiddleXLength() + knockoff.getInstance().getRandomNumber(-5, 5),
                                     md.CurrentYLength,
                                     md.getCurrentMiddleZLength() + knockoff.getInstance().getRandomNumber(-5, 5)
@@ -581,7 +591,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             }
                             if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 int[] i = knockoff.getInstance().mapdata.extras.podiumTP;
-                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                                p.teleport(new Location(knockoff.getInstance().getGameWorld(), i[0], i[1], i[2], i[3], i[4]));
                             }
                         }
                         Bukkit.getServer().sendMessage(text("")
@@ -593,7 +603,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             Player p = first.playerObject;
                             if (p != null && knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 int[] i = knockoff.getInstance().mapdata.extras.podium1st;
-                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                                p.teleport(new Location(knockoff.getInstance().getGameWorld(), i[0], i[1], i[2], i[3], i[4]));
                             }
                             Bukkit.getServer().sendMessage(text("   1st. ")
                                     .append(text(first.player)).color(GREEN).append(text(" ".repeat(20 - first.player.length())))
@@ -605,7 +615,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             Player p = second.playerObject;
                             if (p != null && knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 int[] i = knockoff.getInstance().mapdata.extras.podium2nd;
-                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                                p.teleport(new Location(knockoff.getInstance().getGameWorld(), i[0], i[1], i[2], i[3], i[4]));
                             }
                             Bukkit.getServer().sendMessage(text("   2nd. ")
                                     .append(text(second.player)).color(YELLOW).append(text(" ".repeat(20 - second.player.length())))
@@ -617,7 +627,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             Player p = third.playerObject;
                             if (p != null && knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 int[] i = knockoff.getInstance().mapdata.extras.podium3rd;
-                                p.teleport(new Location(Bukkit.getWorld("world"), i[0], i[1], i[2], i[3], i[4]));
+                                p.teleport(new Location(knockoff.getInstance().getGameWorld(), i[0], i[1], i[2], i[3], i[4]));
                             }
                             Bukkit.getServer().sendMessage(text("   3rd. ")
                                     .append(text(third.player)).color(YELLOW).append(text(" ".repeat(20 - third.player.length())))
@@ -652,28 +662,35 @@ public class GameManager { //I honestly think this entire class could be optimis
             }
         }.runTaskTimer(knockoff.getInstance(), 20,20);
     }
-
+    //The new force end game similiar to crystal blitz, so it can delete the current game dimension and recreate it.
+    //also gives the option to kick the player or not for self hosters.
     public static void ForceEndGame() {
-        MapData md = knockoff.getInstance().mapdata;
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"world\"");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + SectionPlaceLocationX + "," + SectionPlaceLocationY + "," + SectionPlaceLocationZ);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + md.getCurrentXLength() + "," + md.getCurrentYLength() + "," + md.getCurrentZLength());
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + LastSectionPlaceLocationX + "," + LastSectionPlaceLocationY + "," + LastSectionPlaceLocationZ);
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + (LastSectionPlaceLocationX + md.LastXLength) + "," + (LastSectionPlaceLocationY+ md.LastYLength) + "," + (LastSectionPlaceLocationZ + md.LastZLength));
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/set air");
-
+        knockoff plugin = knockoff.getInstance();
+        GameManager oldGameManager = plugin.gameManager;
+        //gets it from config
+        boolean kickPlayersAtGameEnd  = plugin.getConfig().getBoolean("kick_players_at_game_end");
+        World sourceWorld = plugin.getSourceWorld();
+        //gets where it should spawn the player in the source world
+        Location queueSpawn = plugin.mapdata.get_que_spawn(sourceWorld);
         for (Player p : Bukkit.getOnlinePlayers()) {
-            try {
-                LevelManager.giveExperience(p, 5);
-                LevelManager.giveMoney(p, 20);
-            }catch(NoClassDefFoundError e){}
-            p.kick(text(""));
-        }
+            //Removes nametags/passengers befor teleporting to the game dimension as teleportation can't happen if it has any to another dimension
+            for (Entity passenger : new ArrayList<>(p.getPassengers())) {
+                p.removePassenger(passenger);
+                passenger.remove();
+            }
+            p.leaveVehicle();
+            p.setFallDistance(0);
+            p.getInventory().clear();
+            //kicks players and gives the crystalizied awards. Needs to kick to move back to main lobby.
+            if (kickPlayersAtGameEnd ) {
+                try {
+                    LevelManager.giveExperience(p, 5);
+                    LevelManager.giveMoney(p, 20);
+                } catch (NoClassDefFoundError e) {}
 
-				// FixMe send players back to lobby
-        //This causes a bug where players stay on too long, so a new game starts and everything becomes bugged
-        /*
+                // FixMe send players back to lobby (Moved to only when kicking players)
+                //This causes a bug where players stay on too long, so a new game starts and everything becomes bugged
+                /*
 				ByteArrayDataOutput out = ByteStreams.newDataOutput();
 				out.writeUTF("Connect");
 				out.writeUTF("lobby");
@@ -681,21 +698,88 @@ public class GameManager { //I honestly think this entire class could be optimis
 						p.sendPluginMessage(knockoff.getInstance(), "crystalized:main", out.toByteArray());
 				}
                 */
-
-        for (Entity e : Bukkit.getWorld("world").getEntities()) {
-            if (e instanceof TextDisplay || e instanceof WindCharge || e instanceof BreezeWindCharge) {
-                e.remove();
+                p.kick(text(""));
+                continue;
             }
+            //For self hosting teleports player back to main world
+            p.setGameMode(GameMode.ADVENTURE);
+            boolean succesfullTelportation = p.teleport(queueSpawn);
+
+            if (!succesfullTelportation) {
+                plugin.getLogger().warning("Failed to return " + p.getName() + " to the waiting world!"
+                );
+            }
+            //Resets the score board
+            ScoreboardManager.SetPlayerScoreboard(p);
         }
+        //This is the option clean up before deleting the dimension
+        World gameWorld = plugin.getGameWorld();
+        if (gameWorld != null){
+            for (Entity e : gameWorld.getEntities()) {
+                if (e instanceof TextDisplay || e instanceof WindCharge || e instanceof BreezeWindCharge) {
+                    e.remove();
+                }
+            }
 
+        }
+        //cleares them from memory
         blocksCrystallizing.clear();
-
+        particles.clear();
+        showdownBlockList.clear();
+        //resets section locations to default values
         SectionPlaceLocationX = 1000;
         SectionPlaceLocationY = 0;
         SectionPlaceLocationZ = 1000;
-        knockoff.getInstance().gameManager.teams = null;
-        knockoff.getInstance().gameManager.hazards = null;
-        knockoff.getInstance().gameManager = null;
+        LastSectionPlaceLocationX = -1000;
+        LastSectionPlaceLocationY = 0;
+        LastSectionPlaceLocationZ = -1000;
+        //clears the teams and hazards
+        if (oldGameManager != null) {
+            oldGameManager.teams = null;
+            oldGameManager.hazards = null;
+        }
+        //The game has ended
+        plugin.gameManager = null;
+        //Waits until next tick to reset the dimension
+        Bukkit.getScheduler().runTask(plugin, () -> {
+            if (!plugin.worldManager.destroyGameWorld()) {
+                plugin.getLogger().severe("Failed to destroy the game world!");
+                return;
+            }
+            if (!plugin.worldManager.createGameWorld()) {
+                plugin.getLogger().severe("Failed to prepare the game world for the next game!");
+                return;
+            }
+            plugin.setupWorldRules(plugin.getGameWorld());
+            //when sussesfull should log that the next game is ready
+            plugin.getLogger().info("knockoff game finished. System is ready for the next game.");
+        });
+        //Resets the players tab view and score board for the waiting world.
+        if (!kickPlayersAtGameEnd ) {
+            for (Player p : Bukkit.getOnlinePlayers()) {
+                for (Player other : Bukkit.getOnlinePlayers()) {
+                    p.listPlayer(other);
+                }
+                new QueueScoreBoard(p);
+                p.sendPlayerListHeaderAndFooter(
+                        // Header
+                        text("\n")
+                                .append(text("Crystalized: ").color(NamedTextColor.LIGHT_PURPLE)
+                                        .append(text("Knockoff").color(NamedTextColor.GOLD)))
+                                .append(text("\n")),
+
+                        // Footer
+                        text(
+                                "\nIf you find any bugs please report to TotallyNoCallum on the Crystalized Discord")
+                                .append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY)));
+                p.clearActivePotionEffects();
+                p.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
+                p.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
+                //resets health to default
+                p.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
+                p.setHealth(20);
+            }
+        }
     }
 
     public static void GiveTeamItems(Player player) {
@@ -781,7 +865,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         p.setGameMode(GameMode.SPECTATOR);
         p.getInventory().clear();
         p.clearActivePotionEffects();
-        p.teleport(knockoff.getInstance().mapdata.get_que_spawn(p.getWorld()));
+        p.teleport(knockoff.getInstance().mapdata.get_que_spawn(knockoff.getInstance().getGameWorld()));
 
         WorldBorder PlayerBorder = Bukkit.getServer().createWorldBorder();
         p.setWorldBorder(PlayerBorder);
@@ -811,223 +895,6 @@ public class GameManager { //I honestly think this entire class could be optimis
 
 
         //Everything below has been commented as requsted, uncomment to go back to the old way
-        /*
-
-        if (!Teams.blue.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset , SectionPlaceLocationZ + 5),
-                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 7));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.BLUE_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.cyan.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 5),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 7));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.CYAN_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.green.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 5),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 7));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.GREEN_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.lemon.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 5),
-                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 7));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.YELLOW_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.lime.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 5),
-                    BlockVector3.at(SectionPlaceLocationX + 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 7));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.LIME_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.magenta.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 5),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 7));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.MAGENTA_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.orange.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 5),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 7));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.ORANGE_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.peach.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 15, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 5),
-                    BlockVector3.at(SectionPlaceLocationX + 17, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 7));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.PINK_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.purple.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 15),
-                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 17));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.PURPLE_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.red.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 15),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 17));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.RED_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.white.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 15),
-                    BlockVector3.at(knockoff.getInstance().mapdata.getCurrentXLength() - 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, SectionPlaceLocationZ + 17));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.WHITE_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        if (!Teams.yellow.isEmpty()) {
-            com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
-            CuboidRegion selection = new CuboidRegion(world, BlockVector3.at(SectionPlaceLocationX + 5, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 15),
-                    BlockVector3.at(SectionPlaceLocationX + 7, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 17));
-            try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
-                RandomPattern pat = new RandomPattern();
-                BlockState a = BukkitAdapter.adapt(Material.YELLOW_STAINED_GLASS.createBlockData());
-                pat.add(a, 1);
-                editSession.setBlocks((Region) selection, pat);
-            }  catch (Exception e) {
-                Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
-                e.printStackTrace();
-            }
-        }
-        for (Player p : Bukkit.getOnlinePlayers()) {
-						World w = Bukkit.getWorld("world");
-            if (Teams.GetPlayerTeam(p).equals("blue")) {
-                Location blueloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 6);
-                p.teleport(blueloc);
-            } else if (Teams.GetPlayerTeam(p).equals("cyan")) {
-                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
-                p.teleport(cyanloc);
-            } else if (Teams.GetPlayerTeam(p).equals("green")) {
-                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 6);
-                p.teleport(greenloc);
-            } else if (Teams.GetPlayerTeam(p).equals("lemon")) {
-                Location greenloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
-                p.teleport(greenloc);
-            } else if (Teams.GetPlayerTeam(p).equals("lime")) { //Yes im aware this has blueloc as its variable, I copy pasted the first 4 lol
-                Location blueloc = new Location(w, SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 6);
-                p.teleport(blueloc);
-            } else if (Teams.GetPlayerTeam(p).equals("magenta")) {
-                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
-                p.teleport(cyanloc);
-            } else if (Teams.GetPlayerTeam(p).equals("orange")) {
-                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 6);
-                p.teleport(greenloc);
-            } else if (Teams.GetPlayerTeam(p).equals("peach")) {
-                Location greenloc = new Location(w, SectionPlaceLocationX + 16, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 6);
-                p.teleport(greenloc);
-            } else if (Teams.GetPlayerTeam(p).equals("purple")) {
-                Location blueloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 16);
-                p.teleport(blueloc);
-            } else if (Teams.GetPlayerTeam(p).equals("red")) {
-                Location cyanloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
-                p.teleport(cyanloc);
-            } else if (Teams.GetPlayerTeam(p).equals("white")) {
-                Location greenloc = new Location(w, knockoff.getInstance().mapdata.getCurrentXLength() - 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, SectionPlaceLocationZ + 16);
-                p.teleport(greenloc);
-            } else if (Teams.GetPlayerTeam(p).equals("yellow")) {
-                Location greenloc = new Location(w, SectionPlaceLocationX + 6, knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 3 + offset, knockoff.getInstance().mapdata.getCurrentZLength() - 16);
-                p.teleport(greenloc);
-            } else {
-                Location loc = new Location(w, knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10 + offset, knockoff.getInstance().mapdata.getCurrentMiddleZLength());
-                p.teleport(loc);
-            }
-            p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(), knockoff.getInstance().mapdata.getCurrentMiddleYLength(), knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES);
-        }
-
-
-         */
     }
     
     void spawnSpawnPlatformAndTP(List<String> players, int breakDelay, boolean setBorder) {
@@ -1047,10 +914,14 @@ public class GameManager { //I honestly think this entire class could be optimis
             int x = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX - 5, knockoff.getInstance().mapdata.getCurrentXLength() + 5);
             int y = knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(0, 5);
             int z = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ - 5, knockoff.getInstance().mapdata.getCurrentZLength() + 5);
-            Location candidate = new Location(Bukkit.getWorld("world"), x + 0.5, y, z + 0.5);
+            Location candidate = new Location(knockoff.getInstance().getGameWorld(), x + 0.5, y, z + 0.5);
 
             boolean tooClose = false;
             for (Player p : Bukkit.getOnlinePlayers()) {
+                //Not able to compare distance between diffrent dimensions
+                if (!p.getWorld().equals(candidate.getWorld())) {
+                    continue;
+                }
                 if (p.getLocation().distance(candidate) < 10) {
                     tooClose = true;
                     break;
@@ -1065,7 +936,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
 
         if (middleLoc == null) {
-            middleLoc = new Location(Bukkit.getWorld("world"),
+            middleLoc = new Location(knockoff.getInstance().getGameWorld(),
                     knockoff.getInstance().mapdata.getCurrentMiddleXLength() + 0.5,
                     knockoff.getInstance().mapdata.getCurrentMiddleYLength(),
                     knockoff.getInstance().mapdata.getCurrentMiddleZLength() + 0.5);
@@ -1087,14 +958,29 @@ public class GameManager { //I honestly think this entire class could be optimis
             startBreakingCrystal(b, breakDelay, knockoff.getInstance().getRandomNumber(20, 30), false);
         }
 
-        Location ploc = new Location(Bukkit.getWorld("world"), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
+        Location ploc = new Location(knockoff.getInstance().getGameWorld(), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
         for (String s : players) {
             Player p = Bukkit.getPlayerExact(s);
             if (p == null || !p.isOnline()) {
                 Bukkit.getLogger().warning("Can't teleport the player of name: " + s + " due to them being offline or not existing.");
                 continue;
             }
-            p.teleport(ploc);
+            //Removes nametags/passengers befor teleporting to the game dimension as teleportation can't happen if it has any to another dimension
+            for (Entity passenger : new ArrayList<>(p.getPassengers())) {
+                p.removePassenger(passenger);
+                passenger.remove();
+            }
+            //ensures that not in vechicle either
+            p.leaveVehicle();
+            p.setFallDistance(0);
+            //when sussesfully teleported gives the custom tags
+            boolean succesfullTeleport = p.teleport(ploc);
+            if (succesfullTeleport && !Teams.GetPlayerTeam(p).equals("spectator")) {
+                CustomPlayerNametags.CustomPlayerNametags(p);
+            }
+
+            Bukkit.getLogger().info("Teleported " + p.getName() + " to world: " + ploc.getWorld().getKey() + "sussesfully? : " + succesfullTeleport);
+
             if (setBorder) {
                 WorldBorder startingBorder = p.getWorldBorder();
                 if (startingBorder != null) {
@@ -1223,17 +1109,17 @@ public class GameManager { //I honestly think this entire class could be optimis
             powerup = pu;
         }
         boolean IsValidSpot = false;
-        Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-        Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
+        Location blockloc = new Location(knockoff.getInstance().getGameWorld(), 0, 0, 0);
+        Location blockloc2 = new Location(knockoff.getInstance().getGameWorld(), 0, 0, 0);
         int attempts = 0;
         while (!IsValidSpot && knockoff.getInstance().gameManager != null && attempts < 1000) { //attempt cap prevents an infinite loop freezing the server
             attempts++;
-            blockloc = new Location(Bukkit.getWorld("world"),
+            blockloc = new Location(knockoff.getInstance().getGameWorld(),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5
             );
-            blockloc2 = new Location(Bukkit.getWorld("world"),
+            blockloc2 = new Location(knockoff.getInstance().getGameWorld(),
                     blockloc.getX(),
                     blockloc.getY() + 1,
                     blockloc.getZ()
@@ -1248,7 +1134,7 @@ public class GameManager { //I honestly think this entire class could be optimis
             knockoff.getInstance().getLogger().severe("Could not find a valid spot to spawn a powerup after 1000 attempts. Skipping.");
             return; //couldn't find a valid spot, skip the powerup instead of freezing the server
         }
-        KnockoffItem.DropPowerup(new Location(Bukkit.getWorld("world"), blockloc.getBlockX(), blockloc.getBlockY() + 1, blockloc.getBlockZ()), powerup);
+        KnockoffItem.DropPowerup(new Location(knockoff.getInstance().getGameWorld(), blockloc.getBlockX(), blockloc.getBlockY() + 1, blockloc.getBlockZ()), powerup);
     }
 
     public static void convertBlocktoCrystal(Block b) {
@@ -1351,7 +1237,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         p_loc.setPitch(0);
 
         MapData md = knockoff.getInstance().mapdata;
-        Location loc = new Location(Bukkit.getWorld("world"), md.getCurrentMiddleXLength(), md.getCurrentMiddleYLength(), md.getCurrentMiddleZLength());
+        Location loc = new Location(knockoff.getInstance().getGameWorld(), md.getCurrentMiddleXLength(), md.getCurrentMiddleYLength(), md.getCurrentMiddleZLength());
         loc.setY(0);
 
         Vector blockDirection = loc.subtract(p_loc).toVector().normalize();
@@ -1409,7 +1295,7 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     private static void showdownCrystallizeMap() {
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -1425,7 +1311,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     )
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (!b.isEmpty()) {
                     showdownBlockList.add(b);
                 }
@@ -1616,6 +1502,7 @@ class HazardsManager {
             public void run() {
                 if (knockoff.getInstance().gameManager == null || knockoff.getInstance().gameManager.state == GameState.END) {
                     cancel();
+                    return;
                 }
                 if (timer == 0 && !knockoff.getInstance().gameManager.showdownModeStarted) {
                     timer = knockoff.getInstance().getRandomNumber(30, 60);

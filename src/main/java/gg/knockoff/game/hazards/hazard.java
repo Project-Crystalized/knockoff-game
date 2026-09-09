@@ -22,17 +22,17 @@ public class hazard {
 
     public static Location getValidSpot(boolean get2loc) {
         boolean IsValidSpot = false;
-        Location blockloc = new Location(Bukkit.getWorld("world"), 0, 0, 0);
-        Location blockloc2 = new Location(Bukkit.getWorld("world"), 0, 0, 0);
+        Location blockloc = new Location(knockoff.getInstance().getGameWorld(), 0, 0, 0);
+        Location blockloc2 = new Location(knockoff.getInstance().getGameWorld(), 0, 0, 0);
         int attempts = 0;
         while (!IsValidSpot && knockoff.getInstance().gameManager != null && attempts < 1000) { //attempt cap prevents an infinite loop freezing the server
             attempts++;
-            blockloc = new Location(Bukkit.getWorld("world"),
+            blockloc = new Location(knockoff.getInstance().getGameWorld(),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationY, knockoff.getInstance().mapdata.getCurrentYLength()),
                     knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5
             );
-            blockloc2 = new Location(Bukkit.getWorld("world"),
+            blockloc2 = new Location(knockoff.getInstance().getGameWorld(),
                     blockloc.getX(),
                     blockloc.getY() + 1,
                     blockloc.getZ()

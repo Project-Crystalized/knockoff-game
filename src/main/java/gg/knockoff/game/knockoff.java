@@ -35,7 +35,8 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class knockoff extends JavaPlugin {
 
-    public final MapData mapdata = new MapData();
+    public MapData mapdata;
+    public WorldManager worldManager;
     public boolean is_force_starting = false;
     public GameManager gameManager;
     public boolean DevMode = false;
@@ -49,6 +50,9 @@ public final class knockoff extends JavaPlugin {
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
+        //Map data depends on world manager similiar to Crystal Blitz
+        worldManager = new WorldManager(this);
+        mapdata = new MapData();
         protocolmanager = ProtocolLibrary.getProtocolManager();
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new DamagePercentage(), this);
@@ -57,12 +61,6 @@ public final class knockoff extends JavaPlugin {
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "crystalized:knockoff");
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "crystalized:main");
 
-        Bukkit.getWorld("world").setGameRule(GameRules.SHOW_DEATH_MESSAGES, false);
-        Bukkit.getWorld("world").setGameRule(GameRules.RANDOM_TICK_SPEED, 0);
-        Bukkit.getWorld("world").setGameRule(GameRules.LOCATOR_BAR, false);
-        Bukkit.getWorld("world").setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
-        Bukkit.getWorld("world").setGameRule(GameRules.MOB_GRIEFING, true);
-        Bukkit.getWorld("world").setDifficulty(Difficulty.NORMAL);
 
 		try {
         if (!Lobby_plugin.getInstance().passive_mode) {
@@ -77,6 +75,11 @@ public final class knockoff extends JavaPlugin {
             configVersion = getConfig().getInt("version");
             getLogger().log(Level.SEVERE, "Invalid Version, Please update your config. Expecting 4 but found " + configVersion + ". You may experience fatal issues.");
         }
+        //sets up the world manager creates the game dimension, deletes the old one if one stayed from a crash/server restarrt.
+        worldManager.setup();
+        //makes the rules identical in worlds
+        setupWorldRules(getSourceWorld());
+        setupWorldRules(getGameWorld());
 
         //This is weird
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
@@ -311,6 +314,12 @@ public final class knockoff extends JavaPlugin {
                                             }
                                         }
                                     }
+                                    //doesn't start the game if game world is null
+                                    if(worldManager.getGameWorld() == null){
+                                        getLogger().severe("Cannot start knockoff because the game world is not loaded!");
+                                        cancel();
+                                        return;
+                                    }
                                     gameManager = new GameManager(type);
                                 }
                                 cancel();
@@ -449,5 +458,29 @@ public final class knockoff extends JavaPlugin {
 
 
         return output;
+    }
+    /*Gets the worlds, the source world is the waiting world, game world is where the game is happening and
+     * active world is where the game should take the player if the game is going on or not.
+     * */
+    public World getSourceWorld() {
+        return worldManager.getSourceWorld();
+    }
+    public World getGameWorld() {
+        return worldManager.getGameWorld();
+    }
+    public World getActiveWorld() {
+        return worldManager.getActiveWorld();
+    }
+    //sets up the rules of the world, applies to waiting/source world and the game world
+    public void setupWorldRules(World world) {
+        if (world == null) {
+            return;
+        }
+        world.setGameRule(GameRules.SHOW_DEATH_MESSAGES, false);
+        world.setGameRule(GameRules.RANDOM_TICK_SPEED, 0);
+        world.setGameRule(GameRules.LOCATOR_BAR, false);
+        world.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
+        world.setGameRule(GameRules.MOB_GRIEFING, true);
+        world.setDifficulty(Difficulty.NORMAL);
     }
 }

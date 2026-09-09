@@ -57,7 +57,7 @@ public class MapParticles {
 
                 if (isMoving) {
                     stand.lookAt(md.getCurrentMiddleXLength(), md.getCurrentMiddleYLength(), md.getCurrentMiddleZLength(), LookAnchor.EYES);
-                    moveTowardsNewSection(new Location(Bukkit.getWorld("world"), md.getCurrentMiddleXLength(), md.getCurrentMiddleYLength(), md.getCurrentMiddleZLength()));
+                    moveTowardsNewSection(new Location(knockoff.getInstance().getGameWorld(), md.getCurrentMiddleXLength(), md.getCurrentMiddleYLength(), md.getCurrentMiddleZLength()));
                     cancel();
                 }
                 if (knockoff.getInstance().gameManager == null) {

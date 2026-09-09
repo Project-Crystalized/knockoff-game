@@ -783,7 +783,9 @@ public class GameManager { //I honestly think this entire class could be optimis
     }
 
     public static void GiveTeamItems(Player player) {
-        ItemStack item = new ItemStack(Material.AMETHYST_BLOCK, 64);
+        TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
+        //sets to the block to match the team material now. So that transition is less noticable.
+        ItemStack item = new ItemStack(td.blockMaterial, 64);
         ItemMeta im = item.getItemMeta();
         PlayerInventory inv = player.getInventory();
 
@@ -791,7 +793,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         //Bukkit.getLogger().log(Level.INFO, "[GAMEMANAGER] Player " + player.getName() + "Is in Team " + Teams.GetPlayerTeam(player));
 
         if (!Teams.GetPlayerTeam(player).equals("spectator")) {
-            TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
+            //TeamData td = TeamData.get_team_data(Teams.GetPlayerTeam(player));
             im.setItemModel(td.item_model);
             inv.setChestplate(colorArmor(td.color, new ItemStack(Material.LEATHER_CHESTPLATE)));
             inv.setLeggings(colorArmor(td.color, new ItemStack(Material.LEATHER_LEGGINGS)));

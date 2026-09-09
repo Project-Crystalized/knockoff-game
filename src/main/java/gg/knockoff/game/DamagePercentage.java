@@ -40,7 +40,10 @@ public class DamagePercentage implements Listener {
                 if (source != null) {
                     Vector dir = p.getLocation().toVector().subtract(source.toVector()).setY(0);
                     dir.normalize();
-                    Vector kb = dir.multiply(strength);
+                    //nerfed the car knockback as I discovered during testing it was sending me so far on hit like I wasn't even able to see the map anymore
+                    //The strenght is being diveded by 5 to make the initial value smaler, and the maximimum extra knockback value is 2.0, as min will select the lower one
+                    //Creating a more managebel knockback rather than just being hit by a car ending up in flinged death.
+                    Vector kb = dir.multiply(Math.min(strength / 5.0, 2.0));
                     Bukkit.getScheduler().runTask(knockoff.getInstance(), () -> p.setVelocity(p.getVelocity().add(kb)));
                 }
             } else if (ds.getDamageType().equals(DamageType.MAGIC) || ds.getDamageType().equals(DamageType.WITHER)) {

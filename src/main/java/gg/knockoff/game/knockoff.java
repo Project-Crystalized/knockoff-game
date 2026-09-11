@@ -297,7 +297,7 @@ public final class knockoff extends JavaPlugin {
                                     return;
                                 } else {
                                     Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
-                                    p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
+                                    p.sendPluginMessage(knockoff.getInstance(), "crystalized:main", out.toByteArray());
                                     if (!commandStarting) {
                                         switch (Bukkit.getMaxPlayers()) {
                                             case 48 -> {

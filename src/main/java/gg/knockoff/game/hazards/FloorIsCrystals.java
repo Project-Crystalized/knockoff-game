@@ -37,6 +37,10 @@ public class FloorIsCrystals extends hazard {
         }
         new BukkitRunnable() {
             public void run() {
+                if (IsHazardOver || knockoff.getInstance().gameManager == null) {
+                    cancel();
+                    return;
+                }
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
                         Location below = p.getLocation().add(0, -1, 0);
@@ -49,9 +53,6 @@ public class FloorIsCrystals extends hazard {
                         crystal(below.clone().add(0, -1, 0).getBlock());
                         crystal(below.clone().add(0, 1, 0).getBlock());
                     }
-                }
-                if (IsHazardOver || knockoff.getInstance().gameManager == null) {
-                    cancel();
                 }
             }
             void crystal(Block b) {

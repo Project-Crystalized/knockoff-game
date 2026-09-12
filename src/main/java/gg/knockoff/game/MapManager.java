@@ -29,6 +29,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -56,7 +57,12 @@ public class MapManager {
             );
             for (BlockVector3 bV3 : temp) {
                 Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
-                if (!b.isEmpty()) {
+                if (b.isEmpty()) continue;
+                //added so it doesn't remove the player placed blocks and just makes them decay very fast
+                //eddit: Doesn't work for now until startk breaking crystals is rewritten to allow it to be overwritten.
+                if (GameManager.playerPlacdBlocks.contains(b)) {
+                    GameManager.startBreakingCrystal(b, 0, 3, false);
+                } else {
                     b.setType(Material.AIR);
                 }
             }
@@ -161,6 +167,7 @@ public class MapManager {
             }
 
             void stop() {
+                /*
                 Region region = new CuboidRegion(
                         BlockVector3.at(fX, fY, fZ),
                         BlockVector3.at(tX, tY, tZ)
@@ -169,6 +176,24 @@ public class MapManager {
                     Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                     if (!b.isEmpty()) {
                         b.setType(Material.AIR);
+                    }
+                }
+                */
+                //Goes throguh the final block list and sets it to air
+                for (Block b : blockListFinal) {
+                    if (!b.isEmpty()) {
+                        b.setType(Material.AIR);
+                    }
+                }
+                //makes the blocks in section rapdily decay
+                //doesn't work anymore so it is uses the default decaying, until they crystalizing is overwritten.
+                rapidlyDecayPlayerPlacedBlocksInRegion(fX, fY, fZ, tX, tY, tZ);
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
+                    if (pd == null) continue;
+                    //As this means the section should be consindered fully dead, so now it will only consinder the main section for distanse check
+                    if (!MapManager.isInsideCurrentSection(p.getLocation())) {
+                        pd.onlyUseCurrentSectionForBuildDistance = true;
                     }
                 }
                 cancel();
@@ -245,7 +270,8 @@ public class MapManager {
             Thread.dumpStack();
             return;
         }
-
+        //Player blocks fully cleared for shape islands, so that they wouldn't be able to cheese the system by going above the map border
+        clearAllPlayerPlacedBlocks();
         try {
             //Swap has 3 sections loaded, 1st will be replaced, fromMid/toMid will appear for short time, from2/to2 will take Mid's place
             JsonObject currentData = md.currentSection.getAsJsonObject();
@@ -350,5 +376,114 @@ public class MapManager {
             return true;
         }
         return false;
+    }
+    //Checks how far away the player got away from the map using the block location
+    public static int getDistanceOutsideCurrentSection(Location loc) {
+        MapData md = knockoff.getInstance().mapdata;
+
+        //Gets the sections cordinates
+        int minX = GameManager.SectionPlaceLocationX;
+        int maxX = md.getCurrentXLength();
+        int minY = GameManager.SectionPlaceLocationY - 20;
+        int maxY = md.getCurrentYLength();
+        int minZ = GameManager.SectionPlaceLocationZ;
+        int maxZ = md.getCurrentZLength();
+
+        //This are used to calculated diffrence
+        int dx = 0;
+        int dy = 0;
+        int dz = 0;
+
+        //Calculates the diffrence based on which way the player went.
+        if (loc.getBlockX() < minX) {
+            dx = minX - loc.getBlockX();
+        } else if (loc.getBlockX() > maxX) {
+            dx = loc.getBlockX() - maxX;
+        }
+        if (loc.getBlockY() < minY) {
+            dy = minY - loc.getBlockY();
+        } else if (loc.getBlockY() > maxY) {
+            dy = loc.getBlockY() - maxY;
+        }
+        if (loc.getBlockZ() < minZ) {
+            dz = minZ - loc.getBlockZ();
+        } else if (loc.getBlockZ() > maxZ) {
+            dz = loc.getBlockZ() - maxZ;
+        }
+        //gets the highest horizontal distanse, to use it as a refence of farness
+        int horizontalDistance = Math.max(dx, dz);
+        //Towering up is more forgiving
+        int verticalDistance = dy / 3;
+
+        //Choose the heighests distanse from the current map section
+        return Math.max(horizontalDistance, verticalDistance);
+    }
+    //Same getDistanceOutsideCurrentSection, just for the decaying section
+    public static int getDistanceOutsideDecayingSection(Location loc) {
+        //using the decaying section, the distanse calulation is the same.
+        MapData md = knockoff.getInstance().mapdata;
+        int minX = GameManager.LastSectionPlaceLocationX;
+        int maxX = GameManager.LastSectionPlaceLocationX + md.LastXLength;
+        int minY = GameManager.LastSectionPlaceLocationY - 20;
+        int maxY = GameManager.LastSectionPlaceLocationY + md.LastYLength;
+        int minZ = GameManager.LastSectionPlaceLocationZ;
+        int maxZ = GameManager.LastSectionPlaceLocationZ + md.LastZLength;
+
+        int dx = 0;
+        int dy = 0;
+        int dz = 0;
+
+        if (loc.getBlockX() < minX) {
+            dx = minX - loc.getBlockX();
+        } else if (loc.getBlockX() > maxX) {
+            dx = loc.getBlockX() - maxX;
+        }
+        if (loc.getBlockY() < minY) {
+            dy = minY - loc.getBlockY();
+        } else if (loc.getBlockY() > maxY) {
+            dy = loc.getBlockY() - maxY;
+        }
+        if (loc.getBlockZ() < minZ) {
+            dz = minZ - loc.getBlockZ();
+        } else if (loc.getBlockZ() > maxZ) {
+            dz = loc.getBlockZ() - maxZ;
+        }
+
+        int horizontalDistance = Math.max(dx, dz);
+        //Towering up is more forgiving
+        int verticalDistance = dy / 3;
+        return Math.max(horizontalDistance, verticalDistance);
+    }
+    //Makes so the blocks start decaying realy fast in the region specificly
+    /*DONE (not priority): For now this section is absolite as I made all blocks have some form of the decay, but once the decaying taks is rewriten to allow crystals
+       to decay faster it will work again so keept. */
+    public static void rapidlyDecayPlayerPlacedBlocksInRegion(int x1, int y1, int z1, int x2, int y2, int z2) {
+       //Gets the cordinates and checks which one is the bigger and smaller to make a box
+        int minX = Math.min(x1, x2);
+        int maxX = Math.max(x1, x2);
+        int minY = Math.min(y1, y2);
+        int maxY = Math.max(y1, y2);
+        int minZ = Math.min(z1, z2);
+        int maxZ = Math.max(z1, z2);
+
+        //Goes through the player placed blocks and make all of them decay extremly fast
+        for (Block b : GameManager.playerPlacdBlocks) {
+            //checks if it is inside the box/section.
+            if (b.getX() >= minX && b.getX() <= maxX && b.getY() >= minY && b.getY() <= maxY && b.getZ() >= minZ && b.getZ() <= maxZ) {
+                GameManager.startBreakingCrystal(b, 0, 3, true);
+            }
+        }
+    }
+    //This method removes all player placed blocks for map shifter
+    public static void clearAllPlayerPlacedBlocks() {
+        for (Block b : GameManager.playerPlacdBlocks) {
+            GameManager.blocksCrystallizing.remove(b);
+            //sets it to air
+            if (!b.isEmpty()) {
+                b.setType(Material.AIR);
+            }
+        }
+        //clears every single block
+        GameManager.playerPlacdBlocks.clear();
     }
 }

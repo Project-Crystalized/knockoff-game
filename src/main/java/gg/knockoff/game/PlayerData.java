@@ -37,9 +37,20 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     public int blocksbroken = 0;
     public int powerupscollected = 0;
     public int powerupsused = 0;
+    //The warning checks, to ensure that chat is not being spawned with the warnings about build limitations
+    //could have been simpler but if I did == some value check, it would sometimes spawn it multiple time anyway
+    public boolean warnedOutsideBuildLimit = false;
+    public boolean warnedFarBuildLimit = false;
+    public boolean warnedVeryFarBuildLimit = false;
+    //coold down before magma and cactuse damage applies
+    public int magmaDamageCooldown = 0;
+
 
     public int percent = 0;
     private int percentLimit = 300;
+    //This was added so it would only use the current secction for build distance check after all blocks in the previous section got deleted. Then reset when reenters
+    //the new section
+    public boolean onlyUseCurrentSectionForBuildDistance = false;
 
     public PlayerData(Player p) {
         player = p.getName();

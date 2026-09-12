@@ -549,7 +549,7 @@ class TeamData {
 
 	public static List<TeamData> create_teams() {
 		List<TeamData> list = new ArrayList<>();
-		//gave specators just white concrete. 
+		//gave specators just white concrete.
 		list.add(new TeamData("spectator", Color.fromRGB(0xFFFFFF), " ", Material.WHITE_CONCRETE));
 		//The powdered concrete is used for team block.
 		list.add(new TeamData("blue", Color.fromRGB(0x0A42BB), "\uE120 ", Material.BLUE_CONCRETE_POWDER));

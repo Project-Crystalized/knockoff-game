@@ -81,6 +81,22 @@ public class SplitMapInHalf extends hazard {
                     blockList.add(b);
                 }
             }
+            //Made the split map work with blocks that are even outside map height limits
+            //It gets the x and z cords only of the area
+            int minX = Math.min(X1, X2);
+            int maxX = Math.max(X1, X2);
+            int minZ = Math.min(Z1, Z2);
+            int maxZ = Math.max(Z1, Z2);
+
+            //After getting the cords goes through players placed blocks checking which ones fit into the x and z cords of the area
+            //and adds the ones which fit into the blcok list
+            for (Block b : GameManager.playerPlacdBlocks) {
+                if (b.getX() >= minX && b.getX() <= maxX && b.getZ() >= minZ && b.getZ() <= maxZ) {
+                    if (!blockList.contains(b)) {
+                        blockList.add(b);
+                    }
+                }
+            }
             for (Player p : Bukkit.getOnlinePlayers()) {
                 p.playSound(p, "minecraft:entity.wither.spawn", 1, 2);
             }

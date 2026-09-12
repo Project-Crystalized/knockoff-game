@@ -3,6 +3,7 @@ package gg.knockoff.game;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Bee;
@@ -49,7 +50,16 @@ public class DamagePercentage implements Listener {
             } else if (ds.getDamageType().equals(DamageType.SONIC_BOOM)) {
                 pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(25, 50);
             } else if (ds.getDamageType().equals(DamageType.HOT_FLOOR) || ds.getDamageType().equals(DamageType.CACTUS)) {
-                pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(2, 4);
+                //otherwise while standing on the magma knockback would not go through so that could have been abused same for chactos I assume
+                event.setCancelled(true);
+                if (pd.magmaDamageCooldown <= 0) {
+                    pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(2, 4);
+                    //makes it be 1 second before taking damage again
+                    pd.magmaDamageCooldown = 20;
+                    //fakes the hurt animation and soun
+                    p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_HURT, 1.0f, 1.0f);
+                    p.playHurtAnimation(0);
+                }
             } else if (ds.getDamageType().equals(DamageType.STALAGMITE)) {
                 pd.percent = pd.percent + (int) (event.getDamage() * 6);
                 //pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(5, 10);
@@ -88,8 +98,10 @@ public class DamagePercentage implements Listener {
 
             //p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
 
-            if (p.getCooledAttackStrength(5) < 0.5) {
-                return; //should hopefully prevent spam clicking
+            //maybe will prevent spam clicking as we needed to get the damager player.
+            //didn't feel good with 0.5 might be better at 0.2, but need to test with players
+            if (d.getCooledAttackStrength(5) < 0.2) {
+                return;
             }
 
             float addedVelocity = (float) ppd.percent / 24;

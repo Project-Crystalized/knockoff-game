@@ -43,6 +43,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 import org.geysermc.floodgate.api.FloodgateApi;
 
@@ -61,6 +62,8 @@ public class GameManager { //I honestly think this entire class could be optimis
     public HazardsManager hazards;
     public static List<Block> blocksCrystallizing = new ArrayList<>();
     public static List<MapParticles> particles = new ArrayList<>();
+    //keeps track of player placed blocks, as players can built out of the map limiter now, it is quite important.
+    public static final Set<Block> playerPlacdBlocks = new HashSet<>();
 
     public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;
@@ -73,6 +76,10 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static boolean showdownModeEnabled = false;
     public static boolean showdownModeStarted = false; //This is enabled when its effects actually start, above checks if its enabled in config.
     public static boolean mapMoving = false;
+
+    //Keeps track of all the breaking/crystalizing tasks for blocks, to be able to cancel them.
+    //This was added as now every default player block has some form of decay and hazards needs to still effect them
+    public static final Map<Block, BukkitTask> breakingAndCrystalizingCrystalsTasks = new HashMap<>();
 
     public enum GameTypes {
         StanderedSolos,
@@ -177,7 +184,8 @@ public class GameManager { //I honestly think this entire class could be optimis
         for (Player player : Bukkit.getOnlinePlayers()) {
             playerDatas.add(new PlayerData(player));
         }
-
+        //makes sure player placed blcoks are cleared at the start of the game, before players are spawned.
+        playerPlacdBlocks.clear();
         SetupFirstSpawns();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -452,11 +460,19 @@ public class GameManager { //I honestly think this entire class could be optimis
                         cancel();
                         return;
                     }
+                    //Counts towards custom magma damage, so it would not be continuse
+                    if (pd.magmaDamageCooldown > 0) {
+                        pd.magmaDamageCooldown--;
+                    }
                     if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
                         p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
                     }
 
                     Location loc = p.getLocation();
+                    if (MapManager.isInsideCurrentSection(loc)) {
+                        //rests it when rentered the current section, will become true when old section is fully deleted
+                        pd.onlyUseCurrentSectionForBuildDistance = false;
+                    }
                     if (MapManager.isInsideDecayingSection(loc)) {
                         p.showTitle(Title.title(
                                 text(" "),
@@ -722,10 +738,16 @@ public class GameManager { //I honestly think this entire class could be optimis
             }
 
         }
+        //canceles all the crystalizing tasks
+        for (BukkitTask task : breakingAndCrystalizingCrystalsTasks.values()) {
+            task.cancel();
+        }
+        breakingAndCrystalizingCrystalsTasks.clear();
         //cleares them from memory
         blocksCrystallizing.clear();
         particles.clear();
         showdownBlockList.clear();
+        playerPlacdBlocks.clear();
         //resets section locations to default values
         SectionPlaceLocationX = 1000;
         SectionPlaceLocationY = 0;
@@ -1188,49 +1210,63 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     public static void startBreakingCrystal(Block b, int addedDelay, int addedPeriod, boolean convert) {
         if (b.getType().equals(Material.AIR)) {return;} //dont crystallize nothing lol
-        if (blocksCrystallizing.contains(b)) {
-            return;
-        } else {
-            blocksCrystallizing.add(b);
-            new BukkitRunnable() {
-                float breaking = 0.0F;
-                int entityID = knockoff.getInstance().getRandomNumber(1, 10000);
-                public void run() {
-                    if (knockoff.getInstance().gameManager == null) {
-                        blocksCrystallizing.remove(b);
-                        cancel();
-                        return;
-                    }
-                    if (convert) {
-                        convertBlocktoCrystal(b);
-                    }
-                    FloodgateApi fApi = FloodgateApi.getInstance();
-                    if (breaking == 1F || breaking > 1F) {
-                        for (Player p : Bukkit.getOnlinePlayers()) {
-                            if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 250)) { //To prevent lagging on low end bedrock devices
-                                p.sendBlockDamage(b.getLocation(), 0, entityID);
-                            }
-                            if (!b.isEmpty() && b.getLocation().getNearbyEntities(10, 10, 10).contains(p)) {
-                                p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
-                            }
-                        }
-                        b.setType(Material.AIR);
-                        blocksCrystallizing.remove(b);
-                        cancel();
-                    }
-                    if (b.getType().equals(Material.AIR)) { //For if the blocks get broken during this
-                        blocksCrystallizing.remove(b);
-                        cancel();
-                    }
-                    for (Player p : Bukkit.getOnlinePlayers()) {
-                        if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 400)) { //To prevent lagging on low end (bedrock) devices
-                            p.sendBlockDamage(b.getLocation(), breaking, entityID);
-                        }
-                    }
-                    breaking = breaking + 0.2F;
-                }
-            }.runTaskTimer(knockoff.getInstance(), addedDelay, addedPeriod);
+        //gets the task and removes it from the list if it is there.
+        BukkitTask oldTask = breakingAndCrystalizingCrystalsTasks.remove(b);
+        //if it is not null makes sure that the task in canceled
+        if (oldTask != null) {
+            oldTask.cancel();
         }
+        //makes sure that blocks is cleared before adding it
+        blocksCrystallizing.remove(b);
+        blocksCrystallizing.add(b);
+        BukkitTask newTask  = new BukkitRunnable() {
+            float breaking = 0.0F;
+            int entityID = knockoff.getInstance().getRandomNumber(1, 10000);
+            public void run() {
+                if (knockoff.getInstance().gameManager == null) {
+                    blocksCrystallizing.remove(b);
+                    breakingAndCrystalizingCrystalsTasks.remove(b);
+                    cancel();
+                    return;
+                }
+                if (convert) {
+                    convertBlocktoCrystal(b);
+                }
+                FloodgateApi fApi = FloodgateApi.getInstance();
+                if (breaking == 1F || breaking > 1F) {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 250)) { //To prevent lagging on low end bedrock devices
+                            p.sendBlockDamage(b.getLocation(), 0, entityID);
+                        }
+                        if (!b.isEmpty() && b.getLocation().getNearbyEntities(10, 10, 10).contains(p)) {
+                            p.playSound(b.getLocation(), "minecraft:block.amethyst_block.break", 1, 1);
+                        }
+                    }
+                    //removes the player placed blocks from the set and cleares the task
+                    playerPlacdBlocks.remove(b);
+                    b.setType(Material.AIR);
+                    blocksCrystallizing.remove(b);
+                    breakingAndCrystalizingCrystalsTasks.remove(b);
+                    cancel();
+                    return;
+                }
+                if (b.getType().equals(Material.AIR)) { //For if the blocks get broken during this
+                    playerPlacdBlocks.remove(b);
+                    blocksCrystallizing.remove(b);
+                    breakingAndCrystalizingCrystalsTasks.remove(b);
+                    cancel();
+                    return;
+                }
+                for (Player p : Bukkit.getOnlinePlayers()) {
+                    if (!fApi.isFloodgatePlayer(p.getUniqueId()) && !(blocksCrystallizing.size() > 400)) { //To prevent lagging on low end (bedrock) devices
+                        p.sendBlockDamage(b.getLocation(), breaking, entityID);
+                    }
+                }
+                breaking = breaking + 0.2F;
+            }
+        }.runTaskTimer(knockoff.getInstance(), addedDelay, addedPeriod);
+        //stores the new task so it can be replaced with another hazard which relies on block decaying like map split and crystalizing floor
+        breakingAndCrystalizingCrystalsTasks.put(b, newTask);
     }
 
     private static String getMapArrowToMid(Player p) {

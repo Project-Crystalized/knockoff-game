@@ -24,13 +24,12 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.BlockData;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import java.time.Duration;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import java.util.*;
 import java.util.logging.Level;
 
 import static net.kyori.adventure.text.Component.text;
@@ -223,6 +222,14 @@ public class MapManager {
                 GameManager.SectionPlaceLocationZ = GameManager.LastSectionPlaceLocationZ;
                 break;
         }
+        //This stores the player placed blocks before the new section sets them to air, if they are in the region
+        //It is done to prevent the player block disapering issue if they entered a new section, could end up falling in the void unfairly
+        //created a new has map which tracks those exact blocks which tracks the block and blockdata it had a the moment to be able to recreate them propely
+        //Keeps the smae crystalizing task.
+        Map<Block, BlockData> playerBlocks = new HashMap<>();
+        for (Block b : GameManager.playerPlacdBlocks) {
+            playerBlocks.put(b, b.getBlockData().clone());
+        }
 
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(BukkitAdapter.adapt(world))) {
             CuboidRegion region = new CuboidRegion(
@@ -245,6 +252,13 @@ public class MapManager {
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
             e.printStackTrace();
+        }
+        //This restores the player placed blocks which were overwritten by the new section
+        //goes through the map and sets the block to the right data
+        for (Map.Entry<Block, BlockData> entry : playerBlocks.entrySet()) {
+            Block block = entry.getKey();
+            BlockData oldBlockData = entry.getValue();
+            block.setBlockData(oldBlockData, false);
         }
         if (!knockoff.getInstance().DevMode) {
             //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this

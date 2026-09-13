@@ -133,7 +133,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     public GameManager(GameTypes type) {//Start of the game
         knockoff.getInstance().reloadConfig();
-        Bukkit.getServer().sendMessage(text("Starting Game! \n(Note: the server might lag slightly)"));
+        Bukkit.getServer().sendMessage(text("crystalized.game.knockoff.chat.start"));
         state = GameState.GAME;
         //changed all old world refences to the correct game world dimension
         for (Entity e : knockoff.getInstance().getGameWorld().getEntities()) {
@@ -333,12 +333,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                 if (RoundCounter == mapSpeedPhase.halfTime + 10 && state == GameState.GAME &&
                         knockoff.getInstance().mapdata.isMapSwapEnabled && !mapSpeedPhase.isOvertime) {
                     Bukkit.getServer().sendMessage(
-                            text("The map will disappear in 10 seconds, ").color(GOLD)
-                                    .append(text("Move to the ").color(RED))
-                                    .append(text("Crying Obsidian! ").color(DARK_PURPLE))
+                            translatable("crystalized.game.knockoff.hazard.shape.disapper_in_10").color(GOLD)
+                                    .append(translatable("crystalized.game.knockoff.hazard.shape.move_to").color(RED))
+                                    .append(translatable("crystalized.game.knockoff.hazard.shape.crying_obsidian").color(DARK_PURPLE))
                     );
-                    Bukkit.getServer().showTitle(Title.title(text("Map Disappearing").color(GOLD),
-                            text("Move to the ").color(RED).append(text("Crying Obsidian!").color(DARK_PURPLE)),
+                    Bukkit.getServer().showTitle(Title.title(translatable("Map Disappearing").color(GOLD),
+                            translatable("crystalized.game.knockoff.hazard.shape.move_to").color(RED).append(translatable("crystalized.game.knockoff.hazard.shape.crying_obsidian").color(DARK_PURPLE)),
                             Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(4), Duration.ofMillis(500)))
                     );
                     Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
@@ -769,8 +769,8 @@ public class GameManager { //I honestly think this entire class could be optimis
                                 .append(text("\n")),
 
                         // Footer
-                        text(
-                                "\nIf you find any bugs please report to TotallyNoCallum on the Crystalized Discord")
+                        translatable(
+                                "crystalized.game.knockoff.chat.report_bugs")
                                 .append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY)));
                 p.clearActivePotionEffects();
                 p.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
@@ -1072,9 +1072,9 @@ public class GameManager { //I honestly think this entire class could be optimis
         switchMapPhaseIn = mapSpeedPhase.switchToNextPhaseIn;
 
         if (mapSpeedPhase.isOvertime != wasOvertime) {
-            Bukkit.getServer().sendMessage(text("Overtime has begun! The game will get much faster from here. Good luck.").color(GOLD));
+            Bukkit.getServer().sendMessage(translatable("crystalized.game.knockoff.chat.overtime").color(GOLD));
         } else {
-            Bukkit.getServer().sendMessage(text("The map speed has increased! Sections will last shorter.").color(GOLD));
+            Bukkit.getServer().sendMessage(translatable("crystalized.game.knockoff.chat.overtime.explanation").color(GOLD));
         }
     }
 
@@ -1280,15 +1280,15 @@ public class GameManager { //I honestly think this entire class could be optimis
             if (pd == null) continue;
             if (pd.lives > 1) {
                 pd.lives = 1;
-                p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(RED)); //TODO translatable
+                p.sendMessage(translatable("crystalized.game.knockoff.chat.one_life").color(RED)); //TODO translatable
                 p.playSound(p, "minecraft:block.note_block.pling", 1, 0.5f);
             }
         }
         showdownModeStarted = true;
         for (Player p : Bukkit.getOnlinePlayers()) {
             p.showTitle(Title.title(
-                    text("SHOWDOWN").color(WHITE).decoration(TextDecoration.BOLD, true), //TODO make this translatable
-                    translatable("HAS BEGUN!").color(WHITE).decoration(TextDecoration.BOLD, true),
+                    translatable("crystalized.game.knockoff.chat.showdown").color(WHITE).decoration(TextDecoration.BOLD, true), //TODO make this translatable
+                    translatable("crystalized.game.knockoff.chat.showdown.has_begun").color(WHITE).decoration(TextDecoration.BOLD, true),
                     Title.Times.times(Duration.ofSeconds(1), Duration.ofSeconds(4), Duration.ofSeconds(1)))
             );
             p.playSound(p, "minecraft:entity.lightning_bolt.thunder", 1, 1);

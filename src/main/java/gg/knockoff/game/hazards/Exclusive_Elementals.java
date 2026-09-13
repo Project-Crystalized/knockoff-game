@@ -114,7 +114,7 @@ public class Exclusive_Elementals extends hazard {
         List<Block> blockList = new ArrayList<>();
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elements (Eruption)").color(NamedTextColor.DARK_RED),
+                translatable("crystalized.game.knockoff.hazard.eruption").color(NamedTextColor.DARK_RED),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
 
@@ -174,7 +174,7 @@ public class Exclusive_Elementals extends hazard {
     private void sheerCold() {
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elements (Sheer Cold)").color(NamedTextColor.AQUA),
+                translatable("crystalized.game.knockoff.hazard.sheer_cold").color(NamedTextColor.AQUA),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -245,7 +245,7 @@ public class Exclusive_Elementals extends hazard {
     private void blockBreaker() {
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elements (Block Breaker)").color(GOLD),
+                translatable("crystalized.game.knockoff.hazard.block_breaker").color(GOLD),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -300,7 +300,7 @@ public class Exclusive_Elementals extends hazard {
         isOver = false;
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elements (Howling Wind)").color(NamedTextColor.WHITE),
+                translatable("crystalized.game.knockoff.hazard.howling_wind").color(NamedTextColor.WHITE),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         howlingWindDirections dir;
@@ -406,7 +406,7 @@ public class Exclusive_Elementals extends hazard {
     private void corruptionZone() {
         displayHazard(
                 translatable("crystalized.game.knockoff.chat.hazard").color(GOLD),
-                text("Elements (Corruption Zone)").color(NamedTextColor.GREEN),
+                translatable("crystalized.game.knockoff.hazard.corruption_zone").color(NamedTextColor.GREEN),
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
 

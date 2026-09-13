@@ -208,7 +208,7 @@ public class Teams {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (GetPlayerTeam(p) == null) {
 				spectator.add(p.getName());
-				p.sendMessage(text("[!] You weren't assigned a team, we've put you in Spectator Team."));
+				p.sendMessage(translatable("crystalized.game.knockoff.chat.no_team"));
 			}
 		}
 

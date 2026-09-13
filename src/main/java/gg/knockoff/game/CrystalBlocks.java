@@ -28,7 +28,7 @@ public class CrystalBlocks implements Listener {
 
         if (!(MapManager.isInsideCurrentSection(b.getLocation()) || MapManager.isInsideDecayingSection(b.getLocation()))) {
             event.setCancelled(true);
-            p.sendMessage(text("[!] You cannot place blocks outside the map's borders!").color(NamedTextColor.RED));
+            p.sendMessage(translatable("crystalized.game.knockoff.chat.build_out").color(NamedTextColor.RED));
             return;
         }
 

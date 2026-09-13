@@ -235,6 +235,23 @@ public class Exclusive_Elementals extends hazard {
                     }
                 }
             }
+            //goes through the player blocks as well, cause some of them might be outside of bounds, if inside well nothing would happen as it will be ice already
+            //so even if you build up insanely high or out of map bounds still will be ice
+            for (Block b : GameManager.playerPlacdBlocks) {
+                if (
+                        b.getType().equals(Material.WHITE_GLAZED_TERRACOTTA) ||
+                                b.getType().equals(Material.LIGHT_GRAY_GLAZED_TERRACOTTA) ||
+                                b.getType().equals(Material.GRAY_GLAZED_TERRACOTTA) ||
+                                b.getType().equals(Material.BLACK_GLAZED_TERRACOTTA)
+                ) {
+                    b.setType(Material.FROSTED_ICE);
+                    if (sounds) {
+                        for (Player p : Bukkit.getOnlinePlayers()) {
+                            p.playSound(p, "minecraft:entity.generic.swim", 1, 1);
+                        }
+                    }
+                }
+            }
         } catch (Exception e) {
             Bukkit.getLogger().log(Level.SEVERE, "[GAMEMANAGER] Exception occured within the worldedit API:");
             e.printStackTrace();
@@ -284,6 +301,21 @@ public class Exclusive_Elementals extends hazard {
                 ) {
                     for (Player p : Bukkit.getOnlinePlayers()) {
                         p.playSound(p, "minecraft:block.rooted_dirt.place", 1, 1); //TODO temporary
+                    }
+                    b.setType(Material.ROOTED_DIRT);
+                    GameManager.startBreakingCrystal(b, 1, 30, false);
+                }
+            }
+            //same fix as with the ice, goes through all of the blocks which are player placed and the ones out of bonds will be set to dirt as well
+            for (Block b : GameManager.playerPlacdBlocks) {
+                if (
+                        b.getType().equals(Material.WHITE_GLAZED_TERRACOTTA) ||
+                                b.getType().equals(Material.LIGHT_GRAY_GLAZED_TERRACOTTA) ||
+                                b.getType().equals(Material.GRAY_GLAZED_TERRACOTTA) ||
+                                b.getType().equals(Material.BLACK_GLAZED_TERRACOTTA)
+                ) {
+                    for (Player p : Bukkit.getOnlinePlayers()) {
+                        p.playSound(p, "minecraft:block.rooted_dirt.place", 1, 1);
                     }
                     b.setType(Material.ROOTED_DIRT);
                     GameManager.startBreakingCrystal(b, 1, 30, false);

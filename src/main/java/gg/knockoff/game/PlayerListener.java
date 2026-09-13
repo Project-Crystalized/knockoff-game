@@ -521,9 +521,10 @@ public class PlayerListener implements Listener {
 
       if (e.getNewState().equals(Vault.State.EJECTING)) {
 			List<String> powerups;
+			//moved it up so that it gets data before it becomes a crystal.
+		  	Vault data = (Vault) b.getBlockData();
 			e.setCancelled(true);
 			b.setType(Material.AMETHYST_BLOCK);
-			Vault data = (Vault) b.getBlockData();
 			if (data.isOminous()) {
 				powerups = Arrays.asList("KnockoutOrb", "ExplosiveOrb", "PoisonOrb", "TrialChamberMace");
 			} else {

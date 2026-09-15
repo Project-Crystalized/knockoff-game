@@ -556,6 +556,12 @@ public class GameManager { //I honestly think this entire class could be optimis
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (GameManager.GameType.equals(GameTypes.StanderedSolos)) {
                 Player lastPlayer = Bukkit.getPlayer(Teams.get_team_from_string(WinningTeam).getFirst());
+
+                try {
+                    LevelManager.giveExperience(lastPlayer, 5);
+                    LevelManager.giveMoney(lastPlayer, 20);
+                } catch (NoClassDefFoundError e) {}
+
                 player.showTitle(Title.title(
                         lastPlayer.displayName(),
                         translatable("crystalized.game.knockoff.win").color(YELLOW),
@@ -699,11 +705,6 @@ public class GameManager { //I honestly think this entire class could be optimis
             p.getInventory().clear();
             //kicks players and gives the crystalizied awards. Needs to kick to move back to main lobby.
             if (kickPlayersAtGameEnd ) {
-                try {
-                    LevelManager.giveExperience(p, 5);
-                    LevelManager.giveMoney(p, 20);
-                } catch (NoClassDefFoundError e) {}
-
                 // FixMe send players back to lobby (Moved to only when kicking players)
                 //This causes a bug where players stay on too long, so a new game starts and everything becomes bugged
                 /*

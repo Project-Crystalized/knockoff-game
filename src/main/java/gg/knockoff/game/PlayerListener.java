@@ -301,6 +301,10 @@ public class PlayerListener implements Listener {
 					.append(translatable("crystalized.game.knockoff.chat.eliminated")));
 			pd.isPlayerDead = true;
 			pd.isEliminated = true;
+			try {
+				LevelManager.giveExperience(player, 5);
+				LevelManager.giveMoney(player, 20);
+			} catch (NoClassDefFoundError e) {}
 		}
 	}
 
@@ -342,7 +346,6 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void OnPlayerDisconnect(PlayerConnectionCloseEvent event) {
-
 		if (knockoff.getInstance().gameManager != null) {
 			Teams.DisconnectPlayer(event.getPlayerName());
 			knockoff.getInstance().gameManager.markPlayerDisconnected(event.getPlayerName());

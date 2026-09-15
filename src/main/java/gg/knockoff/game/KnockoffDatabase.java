@@ -14,9 +14,20 @@ import org.bukkit.entity.Player;
 
 public class KnockoffDatabase {
 
+    private static String dbDir() {
+        String d = System.getenv("CRYSTALIZED_DB_DIR");
+        if (d == null || d.isBlank()) d = System.getProperty("user.home") + "/databases/test_dbs";
+        try {
+            java.nio.file.Files.createDirectories(java.nio.file.Path.of(d));
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException("Could not create database directory: " + d, e);
+        }
+        return d;
+    }
+
     //old location
     //private static final String URL = "jdbc:sqlite:./databases/knockoff_db.sql";
-    public static final String URL = "jdbc:sqlite:"+ System.getProperty("user.home")+"/databases/knockoff_db.sql";
+    public static final String URL = "jdbc:sqlite:" + dbDir() + "/knockoff_db.sql";
 
     public static void setup_databases() {
         String create_ko_games = "CREATE TABLE IF NOT EXISTS KnockoffGames ("

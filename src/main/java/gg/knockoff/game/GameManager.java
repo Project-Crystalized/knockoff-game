@@ -578,6 +578,12 @@ public class GameManager { //I honestly think this entire class could be optimis
                         text(td.symbol).append(translatable("crystalized.game.generic.team." + td.name).color(TextColor.color(td.color.asRGB()))).append(text(td.symbol))
                                 .append(text(" ")).append(translatable("crystalized.game.knockoff.win").color(YELLOW))
                 );
+                if(td.name.equals(Teams.GetPlayerTeam(player)) && !knockoff.getInstance().gameManager.getPlayerData(player).isEliminated){
+                    try {
+                        LevelManager.giveExperience(player, 5);
+                        LevelManager.giveMoney(player, 20);
+                    } catch (NoClassDefFoundError e) {}
+                }
             }
             if (Teams.GetPlayerTeam(player).equals(td.name)) {
                 player.playSound(player, "crystalized:effect.ls_game_won", 50, 1);

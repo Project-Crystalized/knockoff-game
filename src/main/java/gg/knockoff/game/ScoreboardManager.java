@@ -316,7 +316,7 @@ class QueueScoreBoard{
                             .append(Component.text("" + Bukkit.getMaxPlayers()))
                             .append(Component.text(")"))
                     );
-                    obj.getScore("4").customName(translatable("crystalized.game.knockoff.queue.playing").append(text(knockoff.getInstance().mapdata.map_name)));
+                    obj.getScore("4").customName(translatable("crystalized.game.knockoff.queue.playing").append(knockoff.getInstance().mapdata.map_name));
                 } else {
                     QueuePlayer.suffix(
                             Component.text("(")

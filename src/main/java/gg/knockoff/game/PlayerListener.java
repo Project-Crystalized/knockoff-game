@@ -85,15 +85,14 @@ public class PlayerListener implements Listener {
 							.append(text("\n")),
 
 					// Footer
-					text(
-							"\nIf you find any bugs please report to TotallyNoCallum on the Crystalized Discord")
+					translatable("crystalized.game.knockoff.chat.report_bugs")
 							.append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY)));
 			new QueueScoreBoard(p);
 
 			ItemStack leavebutton = new ItemStack(Material.COAL, 1);
 			ItemMeta leavebuttonim = leavebutton.getItemMeta();
 			leavebuttonim.setItemModel(new NamespacedKey("crystalized", "ui/leave"));
-			leavebuttonim.displayName(Component.text("Return to lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+			leavebuttonim.displayName(Component.translatable("crystalized.game.generic.to_lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
 			leavebutton.setItemMeta(leavebuttonim);
 			p.getInventory().setItem(8, leavebutton);
 
@@ -150,7 +149,7 @@ public class PlayerListener implements Listener {
             }.runTaskTimer(knockoff.getInstance(), 1, 1);
 		} else {
 			knockoff.getInstance().gameManager.addSpectator(p);
-			p.sendMessage(text("A game is currently in progress, so you have joined as a spectator.").color(NamedTextColor.GRAY));
+			p.sendMessage(translatable("crystalized.game.knockoff.chat.spec_join").color(NamedTextColor.GRAY));
 		}
 	}
 
@@ -270,7 +269,7 @@ public class PlayerListener implements Listener {
 								pd.isPlayerDead = false;
 								CustomPlayerNametags.CustomPlayerNametags(player);
 								if (pd.lives == 1) {
-									player.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED));
+									player.sendMessage(translatable("crystalized.game.knockoff.chat.one_life").color(NamedTextColor.RED));
 									player.playSound(player, "minecraft:block.note_block.pling", 1, 0.5f);
 								}
 							}
@@ -302,6 +301,10 @@ public class PlayerListener implements Listener {
 					.append(translatable("crystalized.game.knockoff.chat.eliminated")));
 			pd.isPlayerDead = true;
 			pd.isEliminated = true;
+			try {
+				LevelManager.giveExperience(player, 5);
+				LevelManager.giveMoney(player, 20);
+			} catch (NoClassDefFoundError e) {}
 		}
 	}
 
@@ -343,7 +346,6 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void OnPlayerDisconnect(PlayerConnectionCloseEvent event) {
-
 		if (knockoff.getInstance().gameManager != null) {
 			Teams.DisconnectPlayer(event.getPlayerName());
 			knockoff.getInstance().gameManager.markPlayerDisconnected(event.getPlayerName());
@@ -368,7 +370,7 @@ public class PlayerListener implements Listener {
                     //DropPowerup.DropPowerup(b.getLocation(), "TrialChamberHazardKey");
                     Entity entity = e.getDamageSource().getCausingEntity();
                     if (entity != null) {
-                        entity.sendMessage(text("[!] You killed the Big Breeze, A trial key has been dropped"));
+                        entity.sendMessage(translatable("crystalized.game.knockoff.hazard.big_breeze"));
                     }
                 }
             } else {

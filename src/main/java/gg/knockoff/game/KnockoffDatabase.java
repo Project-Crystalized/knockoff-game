@@ -9,13 +9,25 @@ import java.sql.Statement;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 
 public class KnockoffDatabase {
 
+    private static String dbDir() {
+        String d = System.getenv("CRYSTALIZED_DB_DIR");
+        if (d == null || d.isBlank()) d = System.getProperty("user.home") + "/databases/test_dbs";
+        try {
+            java.nio.file.Files.createDirectories(java.nio.file.Path.of(d));
+        } catch (java.io.IOException e) {
+            throw new IllegalStateException("Could not create database directory: " + d, e);
+        }
+        return d;
+    }
+
     //old location
     //private static final String URL = "jdbc:sqlite:./databases/knockoff_db.sql";
-    public static final String URL = "jdbc:sqlite:"+ System.getProperty("user.home")+"/databases/knockoff_db.sql";
+    public static final String URL = "jdbc:sqlite:" + dbDir() + "/knockoff_db.sql";
 
     public static void setup_databases() {
         String create_ko_games = "CREATE TABLE IF NOT EXISTS KnockoffGames ("
@@ -82,7 +94,6 @@ public class KnockoffDatabase {
 
     public static void save_game(String WinningTeam) {
         String save_game = "INSERT INTO KnockoffGames(map, winner_team, gametype, timestamp) VALUES(?, ?, ?, unixepoch())";
-        GameManager gm = knockoff.getInstance().gameManager;
 
         try (Connection conn = DriverManager.getConnection(URL)) {
             PreparedStatement game_stmt = conn.prepareStatement(save_game);
@@ -91,24 +102,29 @@ public class KnockoffDatabase {
             game_stmt.setString(3, GameManager.GameType.toString());
             game_stmt.executeUpdate();
 
-            String save_player = "INSERT INTO KoGamesPlayers(game, player_uuid, team, kills, deaths, blocks_placed, blocks_broken, items_collected, items_used, games_won) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-            PreparedStatement player_stmt = conn.prepareStatement(save_player);
-            for (Player p : Bukkit.getOnlinePlayers()) {
-                if (Teams.GetPlayerTeam(p).equals("spectator")) continue;
-                PlayerData pd = gm.getPlayerData(p);
-                if (pd == null) continue;
+            int game_id = conn.prepareStatement("SELECT last_insert_rowid();").executeQuery().getInt("last_insert_rowid()");
 
-                int game_id = conn.prepareStatement("SELECT last_insert_rowid();").executeQuery().getInt("last_insert_rowid()");
+            String save_player = "INSERT INTO KoGamesPlayers(game, player_uuid, team, kills, deaths, blocks_placed, blocks_broken, items_collected, items_used, games_won) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+            PreparedStatement player_stmt = conn.prepareStatement(save_player);
+            for (PlayerData pd : GameManager.playerDatas) {
+                if (pd == null || !pd.isParticipant) continue;
+                String team = Teams.GetPlayerTeam(pd.player);
+                if (team == null || team.equals("spectator")) {
+									Bukkit.getLogger().severe("HUH a player was a participant but has no team or is spectator??? this cant happen surely :skull: :pray:");
+									continue;
+								};
+
                 player_stmt.setInt(1, game_id);
-                player_stmt.setBytes(2, uuid_to_bytes(p));
-                player_stmt.setString(3, Teams.GetPlayerTeam(p));
+                player_stmt.setBytes(2, uuid_to_bytes(uuid_for_name(pd.player)));
+                player_stmt.setString(3, team);
                 player_stmt.setInt(4, pd.kills);
                 player_stmt.setInt(5, pd.getDeaths());
                 player_stmt.setInt(6, pd.blocksplaced);
                 player_stmt.setInt(7, pd.blocksbroken);
                 player_stmt.setInt(8, pd.powerupscollected);
                 player_stmt.setInt(9, pd.powerupsused);
-                if (WinningTeam.equals(Teams.GetPlayerTeam(p))) {
+                if (WinningTeam.equals(team)) {
                     player_stmt.setInt(10, 1);
                 } else {
                     player_stmt.setInt(10, 0);
@@ -121,9 +137,22 @@ public class KnockoffDatabase {
         }
     }
 
-    private static byte[] uuid_to_bytes(Player p) {
+    // resolves a participant name to a UUID without requiring them to be online
+    private static UUID uuid_for_name(String name) {
+        Player online = Bukkit.getPlayerExact(name);
+        if (online != null) {
+            return online.getUniqueId();
+        }
+        UUID cached = Bukkit.getPlayerUniqueId(name);
+        if (cached != null) {
+            return cached;
+        }
+        OfflinePlayer offline = Bukkit.getOfflinePlayer(name);
+        return offline.getUniqueId();
+    }
+
+    private static byte[] uuid_to_bytes(UUID uuid) {
         ByteBuffer bb = ByteBuffer.allocate(16);
-        UUID uuid = p.getUniqueId();
         bb.putLong(uuid.getMostSignificantBits());
         bb.putLong(uuid.getLeastSignificantBits());
         return bb.array();

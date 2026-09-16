@@ -17,6 +17,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.translatable;
 
 public class Teams {
 
@@ -208,7 +209,7 @@ public class Teams {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (GetPlayerTeam(p) == null) {
 				spectator.add(p.getName());
-				p.sendMessage(text("[!] You weren't assigned a team, we've put you in Spectator Team."));
+				p.sendMessage(translatable("crystalized.game.knockoff.chat.no_team"));
 			}
 		}
 
@@ -302,37 +303,41 @@ public class Teams {
 	}
 
 	public static String GetPlayerTeam(Player player) {
-		// Bukkit.getLogger().log(Level.INFO, "Figuring out " + player.getName() + "'s
+		return GetPlayerTeam(player.getName());
+	}
+
+	public static String GetPlayerTeam(String name) {
+		// Bukkit.getLogger().log(Level.INFO, "Figuring out " + name + "'s
 		// Team...");
-		if (spectator.contains(player.getName())) {
+		if (spectator.contains(name)) {
 			return "spectator";
-		} else if (blue.contains(player.getName())) {
+		} else if (blue.contains(name)) {
 			return "blue";
-		} else if (cyan.contains(player.getName())) {
+		} else if (cyan.contains(name)) {
 			return "cyan";
-		} else if (green.contains(player.getName())) {
+		} else if (green.contains(name)) {
 			return "green";
-		} else if (lemon.contains(player.getName())) {
+		} else if (lemon.contains(name)) {
 			return "lemon";
-		} else if (lime.contains(player.getName())) {
+		} else if (lime.contains(name)) {
 			return "lime";
-		} else if (magenta.contains(player.getName())) {
+		} else if (magenta.contains(name)) {
 			return "magenta";
-		} else if (orange.contains(player.getName())) {
+		} else if (orange.contains(name)) {
 			return "orange";
-		} else if (peach.contains(player.getName())) {
+		} else if (peach.contains(name)) {
 			return "peach";
-		} else if (purple.contains(player.getName())) {
+		} else if (purple.contains(name)) {
 			return "purple";
-		} else if (red.contains(player.getName())) {
+		} else if (red.contains(name)) {
 			return "red";
-		} else if (white.contains(player.getName())) {
+		} else if (white.contains(name)) {
 			return "white";
-		} else if (yellow.contains(player.getName())) {
+		} else if (yellow.contains(name)) {
 			return "yellow";
-		} else if (weak.contains(player.getName())) {
+		} else if (weak.contains(name)) {
 			return "weak";
-		} else if (strong.contains(player.getName())) {
+		} else if (strong.contains(name)) {
 			return "strong";
 		}
 

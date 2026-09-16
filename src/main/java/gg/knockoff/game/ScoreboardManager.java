@@ -153,16 +153,16 @@ public class ScoreboardManager {
 						}
 
             obj.getScore("5").setScore(5);
-            obj.getScore("5").customName(Component.text("Round"));
+            obj.getScore("5").customName(Component.translatable("crystalized.game.knockoff.round"));
 
             obj.getScore("4").setScore(4);
-            obj.getScore("4").customName(Component.text("Next Round"));
+            obj.getScore("4").customName(Component.translatable("crystalized.game.knockoff.nextround"));
 
             obj.getScore("3").setScore(3);
-            obj.getScore("3").customName(Component.text("Lives"));
+            obj.getScore("3").customName(Component.translatable("crystalized.game.knockoff.lives"));
 
             obj.getScore("2").setScore(2);
-            obj.getScore("2").customName(Component.text("Kills"));
+            obj.getScore("2").customName(Component.translatable("crystalized.game.generic.kills"));
 
             obj.getScore("1").setScore(1);
             obj.getScore("1").customName(text(" "));
@@ -310,13 +310,13 @@ class QueueScoreBoard{
             @Override
             public void run() {
                 if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
-                    obj.getScore("2").customName(Component.text("Waiting for Players: ")
+                    obj.getScore("2").customName(Component.translatable("crystalized.game.knockoff.queue.waiting")
                             .append(Component.text("(" + Bukkit.getOnlinePlayers().size()))
                             .append(Component.text("/"))
                             .append(Component.text("" + Bukkit.getMaxPlayers()))
                             .append(Component.text(")"))
                     );
-                    obj.getScore("4").customName(text("You are playing on: " + knockoff.getInstance().mapdata.map_name));
+                    obj.getScore("4").customName(translatable("crystalized.game.knockoff.queue.playing").append(text(knockoff.getInstance().mapdata.map_name)));
                 } else {
                     QueuePlayer.suffix(
                             Component.text("(")

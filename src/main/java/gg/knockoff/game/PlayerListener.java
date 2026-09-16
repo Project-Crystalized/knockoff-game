@@ -2,6 +2,7 @@ package gg.knockoff.game;
 
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import gg.crystalized.lobby.Achievement;
+import gg.crystalized.lobby.LevelManager;
 import gg.crystalized.lobby.Lobby_plugin;
 import gg.crystalized.lobby.Ranks;
 import io.papermc.paper.event.block.VaultChangeStateEvent;
@@ -301,10 +302,16 @@ public class PlayerListener implements Listener {
 					.append(translatable("crystalized.game.knockoff.chat.eliminated")));
 			pd.isPlayerDead = true;
 			pd.isEliminated = true;
-			try {
-				LevelManager.giveExperience(player, 5);
-				LevelManager.giveMoney(player, 20);
-			} catch (NoClassDefFoundError e) {}
+			//The reason it checks if it kicks players at the end of the game is because this is pretty much a checker for self hosting
+			//so if it is not a self hosting, then it should kick the players at the end of the game, hence same here it doesn't need it
+			//if it is a self hosting thing.
+			boolean kickPlayersAtGameEnd  = knockoff.getInstance().getConfig().getBoolean("kick_players_at_game_end");
+			if(kickPlayersAtGameEnd){
+				try {
+					LevelManager.giveExperience(player, 5);
+					LevelManager.giveMoney(player, 20);
+				} catch (NoClassDefFoundError e) {}
+			}
 		}
 	}
 

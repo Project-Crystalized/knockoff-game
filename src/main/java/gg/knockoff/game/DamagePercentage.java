@@ -1,9 +1,6 @@
 package gg.knockoff.game;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.damage.DamageSource;
 import org.bukkit.damage.DamageType;
 import org.bukkit.entity.Bee;
@@ -14,9 +11,12 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
 public class DamagePercentage implements Listener {
+    //The same key that knockout orb is using in crystalizied essentials
+    private static final NamespacedKey KNOCKOUT_ORB_KEY = new NamespacedKey("crystalized_essentials", "knockout_orb");
 
     @EventHandler
     public void onDamage(EntityDamageEvent event) {
@@ -35,17 +35,41 @@ public class DamagePercentage implements Listener {
                 return;
             }
             if (ds.getDamageType().equals(DamageType.EXPLOSION) || ds.getDamageType().equals(DamageType.PLAYER_EXPLOSION)) {
+                //strenght being calculated as beofre
                 int strength = (int) event.getOriginalDamage(EntityDamageEvent.DamageModifier.BASE);
                 pd.percent = pd.percent + strength;
                 Location source = ds.getSourceLocation();
                 if (source != null) {
                     Vector dir = p.getLocation().toVector().subtract(source.toVector()).setY(0);
-                    dir.normalize();
-                    //nerfed the car knockback as I discovered during testing it was sending me so far on hit like I wasn't even able to see the map anymore
-                    //The strenght is being diveded by 5 to make the initial value smaler, and the maximimum extra knockback value is 2.0, as min will select the lower one
-                    //Creating a more managebel knockback rather than just being hit by a car ending up in flinged death.
-                    Vector kb = dir.multiply(Math.min(strength / 5.0, 2.0));
-                    Bukkit.getScheduler().runTask(knockoff.getInstance(), () -> p.setVelocity(p.getVelocity().add(kb)));
+                    //Prevents normaliziation of the vector with no direction, and fall backs to upward vector.
+                    if (dir.lengthSquared() > 0) {
+                        dir.normalize();
+                    } else {
+                        dir = new Vector(0, 1, 0);
+                    }
+                    //This is specific checks to see if the explosion was caused by knockout orb
+                    Entity causingEntity = ds.getCausingEntity();
+                    boolean knockoutOrb = causingEntity != null && causingEntity.getPersistentDataContainer().has(KNOCKOUT_ORB_KEY,
+                            PersistentDataType.BYTE);
+                    if (knockoutOrb) {
+                        //The knockout orb gets progresively stronger based on players precnetage
+                        double percentKnockback = pd.percent / 50.0;
+                        //This is the base explosion force and the percentage knockbak added to it
+                        double knockbackStrength = 1.5 + percentKnockback;
+                        //multiples the knockback by strenght
+                        Vector kb = dir.multiply(knockbackStrength);
+                        //sets the new player velocity.
+                        Bukkit.getScheduler().runTask(knockoff.getInstance(), () -> p.setVelocity(p.getVelocity().add(kb)));
+                        //every other explosion
+                    } else {
+                        //nerfed the car knockback as I discovered during testing it was sending me so far on hit like
+                        // I wasn't even able to see the map anymore
+                        //The strenght is being diveded by 5 to make the initial value smaler, and the maximimum extra knockback value
+                        // is 2.0, as min will select the lower one
+                        //Creating a more managebel knockback rather than just being hit by a car ending up in flinged death.
+                        Vector kb = dir.multiply(Math.min(strength / 5.0, 2.0));
+                        Bukkit.getScheduler().runTask(knockoff.getInstance(), () -> p.setVelocity(p.getVelocity().add(kb)));
+                    }
                 }
             } else if (ds.getDamageType().equals(DamageType.MAGIC) || ds.getDamageType().equals(DamageType.WITHER)) {
                 pd.percent = pd.percent + knockoff.getInstance().getRandomNumber(5, 6);

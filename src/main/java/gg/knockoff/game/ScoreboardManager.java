@@ -316,6 +316,7 @@ class QueueScoreBoard{
                             .append(Component.text("" + Bukkit.getMaxPlayers()))
                             .append(Component.text(")"))
                     );
+                    //was an error because it didn't need to be converted to text as it already a componetnt.
                     obj.getScore("4").customName(translatable("crystalized.game.knockoff.queue.playing").append(knockoff.getInstance().mapdata.map_name));
                 } else {
                     QueuePlayer.suffix(

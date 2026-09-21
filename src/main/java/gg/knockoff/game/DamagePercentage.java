@@ -147,7 +147,7 @@ public class DamagePercentage implements Listener {
             }
 
             if (d.getInventory().getItemInMainHand().getType().equals(Material.MACE)) {
-                ppd.percent = ppd.percent + (int) e.getDamage();
+                ppd.percent = ppd.percent + 50;
             } else {
                 if (e.isCritical()) {
                     ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(5, 7);

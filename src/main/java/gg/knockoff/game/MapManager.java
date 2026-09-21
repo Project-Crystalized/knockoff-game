@@ -178,12 +178,25 @@ public class MapManager {
                     }
                 }
                 */
+                //One of the potential issues with one block at the border disapering was section overlap
+                int overlapBlocks = 0;
                 //Goes throguh the final block list and sets it to air
                 for (Block b : blockListFinal) {
+                    //added a check which makes sure that the block is not inside the currect section beffore setting them to air
+                    //might prevent the extremly hard to replicate issue which resets blocks when you are right at the edge
                     if (!b.isEmpty()) {
+                        if (isInsideCurrentSection(b.getLocation())) {
+                            overlapBlocks++;
+                            //Logs the overlap of sections and skips the overlaping blocks
+                            knockoff.getInstance().getLogger().warning("Old and current section overlap: " + b.getX() + ", " + b.getY() + ", "
+                                    + b.getZ() + " type: " + b.getType());
+                            continue;
+                        }
                         b.setType(Material.AIR);
                     }
                 }
+                //logs how many blocks have been protected from the overlaping issue
+                knockoff.getInstance().getLogger().info("Protected " + overlapBlocks + " overlapping blocks from old section cleanup");
                 //makes the blocks in section rapdily decay
                 //doesn't work anymore so it is uses the default decaying, until they crystalizing is overwritten.
                 rapidlyDecayPlayerPlacedBlocksInRegion(fX, fY, fZ, tX, tY, tZ);
@@ -261,19 +274,9 @@ public class MapManager {
             block.setBlockData(oldBlockData, false);
         }
         if (!knockoff.getInstance().DevMode) {
-            //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this
-            Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
-                //had to make it get game world and it's name using gameWorld.getName() so command could be able to work with the map/world reseting
-                World gameWorld = knockoff.getInstance().getGameWorld();
-                if (gameWorld == null) {
-                    return;
-                }
-                String a = sectionJson.get("remove_block").getAsString();
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"" + gameWorld.getName() + "\"");
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + knockoff.getInstance().gameManager.SectionPlaceLocationX + "," + knockoff.getInstance().gameManager.SectionPlaceLocationY + "," + knockoff.getInstance().gameManager.SectionPlaceLocationZ);
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
-                Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
-            }, 2);
+            //made a method which clearers out the builder blocks, so copper should not appere anymore like ever hoppefuly
+            //while player placed blocks should remain where they are to prevent falling right at the copper border.
+            removeSectionBuilderBlocks();
         }
     }
 
@@ -344,18 +347,9 @@ public class MapManager {
                         e.printStackTrace();
                     }
                     if (!knockoff.getInstance().DevMode) {
-                        //Could be optimised, this needs to use FAWE's API, but we're using commands instead since idk how the api works for this
-                        Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
-                            World gameWorld = knockoff.getInstance().getGameWorld();
-                            if (gameWorld == null) {
-                                return;
-                            }
-                            String a = knockoff.getInstance().mapdata.currentSection.getAsJsonObject().get("remove_block").getAsString();
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/world \"" + gameWorld.getName() + "\"");
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos1 " + knockoff.getInstance().gameManager.SectionPlaceLocationX + "," + knockoff.getInstance().gameManager.SectionPlaceLocationY + "," + knockoff.getInstance().gameManager.SectionPlaceLocationZ);
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/pos2 " + knockoff.getInstance().mapdata.getCurrentXLength() + "," + knockoff.getInstance().mapdata.getCurrentYLength() + "," + knockoff.getInstance().mapdata.getCurrentZLength());
-                            Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "/replace " + a + " air");
-                        }, 2);
+                        //removes all the builder blocks like copper instantly.
+                        //doesn't matter about player placed blocks cause they are cleared earlier anyway.
+                        removeSectionBuilderBlocks();
                     }
                 }
                 /// ===---
@@ -499,5 +493,52 @@ public class MapManager {
         }
         //clears every single block
         GameManager.playerPlacdBlocks.clear();
+    }
+    //this removes the blocks which have been used for building, so should elliminate copper blocks.
+    //while keeping the player placed blocks, incase player somehow build exactly where the builder placed blocks.
+    //removed the delay so now happens instantly so techincly copper blocks or other builder blcoks should not be visible
+    private static void removeSectionBuilderBlocks() {
+        //checks if it is the game world
+        World gameWorld = knockoff.getInstance().getGameWorld();
+        if (gameWorld == null) {
+            return;
+        }
+        //gets the block matereial it is supposed to remove
+        Material removeMaterial = Material.matchMaterial(knockoff.getInstance().mapdata.currentSection.getAsJsonObject()
+                        .get("remove_block").getAsString());
+
+        //if it couldn't find the material logs it, as I think we might have some issues with that on some maps.
+        if (removeMaterial == null) {
+            knockoff.getInstance().getLogger().warning("Could not find remove_block material. Update map config");
+            return;
+        }
+
+        //Same old pos 1 and pos 2 from previous world eddit commands implementation
+        int x1 = knockoff.getInstance().gameManager.SectionPlaceLocationX;
+        int y1 = knockoff.getInstance().gameManager.SectionPlaceLocationY;
+        int z1 = knockoff.getInstance().gameManager.SectionPlaceLocationZ;
+        int x2 = knockoff.getInstance().mapdata.getCurrentXLength();
+        int y2 = knockoff.getInstance().mapdata.getCurrentYLength();
+        int z2 = knockoff.getInstance().mapdata.getCurrentZLength();
+
+        //goes through all the cords ensuring that miminim and max are correct.
+        for (int x = Math.min(x1, x2); x <= Math.max(x1, x2); x++) {
+            for (int y = Math.min(y1, y2); y <= Math.max(y1, y2); y++) {
+                for (int z = Math.min(z1, z2); z <= Math.max(z1, z2); z++) {
+                    //gets the block at the cordinate
+                    Block block = gameWorld.getBlockAt(x, y, z);
+                    //Doesn't delete the player block
+                    if (block.getType() == removeMaterial) {
+                        //If it is a player block makes so it start crystalizing, instead of staying as is.
+                        if (GameManager.playerPlacdBlocks.contains(block)) {
+                            GameManager.startBreakingCrystal(block, 3 * 20, 6, true);
+                            continue;
+                        }
+                        //If it is a builder block and is not a player block removes it
+                        block.setType(Material.AIR, false);
+                    }
+                }
+            }
+        }
     }
 }

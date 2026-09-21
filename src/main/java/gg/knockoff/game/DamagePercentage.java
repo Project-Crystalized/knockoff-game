@@ -131,10 +131,15 @@ public class DamagePercentage implements Listener {
             }
 
             //p.setVelocity(d.getLocation().getDirection().multiply(ppd.percent / 12).add(new Vector(0, 0.4, 0)));
+            //Checks if the player is using the mace to attack
+            boolean usingMace = d.getInventory().getItemInMainHand().getType() == Material.MACE;
 
             //maybe will prevent spam clicking as we needed to get the damager player.
             //didn't feel good with 0.5 might be better at 0.2, but need to test with players
-            if (d.getCooledAttackStrength(5) < 0.2) {
+            //added the using mace to the rule as when you were using the mace it wasn't passing past this check
+            //due to the adjsting tick
+            //works fine for preventing crazy double knockback spam click with hands though, so keept is as it was.
+            if (!usingMace && d.getCooledAttackStrength(5) < 0.2) {
                 return;
             }
 
@@ -146,8 +151,9 @@ public class DamagePercentage implements Listener {
                 }
             }
 
-            if (d.getInventory().getItemInMainHand().getType().equals(Material.MACE)) {
-                ppd.percent = ppd.percent + 50;
+            if (usingMace) {
+                //adds the damage as it was before, so it scales with height.
+                ppd.percent = ppd.percent + (int) e.getDamage();
             } else {
                 if (e.isCritical()) {
                     ppd.percent = ppd.percent + knockoff.getInstance().getRandomNumber(5, 7);

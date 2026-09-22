@@ -26,7 +26,7 @@ public class KnockoffDatabase {
                 + "timestamp INTEGER"
                 + ");";
         String create_ko_players = "CREATE TABLE IF NOT EXISTS KoGamesPlayers ("
-                + "game INTEGER REFERENCES LiteStrikeGames(game_id),"
+                + "game INTEGER REFERENCES KnockoffGames(game_id),"
                 + "player_uuid BYTES,"
                 + "team STRING,"
                 + "kills INTEGER,"
@@ -91,7 +91,7 @@ public class KnockoffDatabase {
             game_stmt.setString(3, GameManager.GameType.toString());
             game_stmt.executeUpdate();
 
-            String save_player = "INSERT INTO KoGamesPlayers(player_uuid, team, kills, deaths, blocks_placed, blocks_broken, items_collected, items_used, games_won)"
+            String save_player = "INSERT INTO KoGamesPlayers(game, player_uuid, team, kills, deaths, blocks_placed, blocks_broken, items_collected, items_used, games_won)"
                     + " VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             PreparedStatement player_stmt = conn.prepareStatement(save_player);
             for (Player p : Bukkit.getOnlinePlayers()) {

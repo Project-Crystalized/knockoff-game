@@ -13,14 +13,13 @@ repositories {
         url = uri("https://repo.papermc.io/repository/maven-public/")
     }
     maven {
-        url = uri("https://repo.dmulloy2.net/repository/public/")
-    }
-    maven {
         url = uri("https://repo.opencollab.dev/main/")
     }
     maven {
         url = uri("https://maven.enginehub.org/repo/")
     }
+    maven { url = uri("https://repo.codemc.io/repository/maven-releases/") }
+    maven { url = uri("https://repo.codemc.io/repository/maven-snapshots/") }
 }
 
 dependencies {
@@ -29,9 +28,9 @@ dependencies {
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Core")
     compileOnly("com.fastasyncworldedit:FastAsyncWorldEdit-Bukkit")
     compileOnly("org.geysermc.floodgate:api:2.2.3-SNAPSHOT")
-    compileOnly("com.comphenix.protocol:ProtocolLib:5.3.0")
     implementation("org.xerial:sqlite-jdbc:3.47.0.0");
     implementation("gg.crystalized.lobby:Lobby_plugin:1.0-SNAPSHOT")
+    compileOnly("com.github.retrooper:packetevents-spigot:2.13.0")
 }
 
 java {

@@ -43,8 +43,8 @@ public class Exclusive_TrialChamber extends hazard {
         Location loc;
         List<Block> blockList = new ArrayList<>();
 
-        //Check for Trial Spawners beore picking random spot
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        //Check for Trial Spawners before picking random spot
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(world)) {
             MapData md = knockoff.getInstance().mapdata;
             Region region = new CuboidRegion(
@@ -60,7 +60,7 @@ public class Exclusive_TrialChamber extends hazard {
                     )
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (b.getType().equals(Material.TRIAL_SPAWNER)) {
                     blockList.add(b);
                 }
@@ -91,7 +91,7 @@ public class Exclusive_TrialChamber extends hazard {
             Location spawnLoc = loc.clone().add(0, 1, 0);
 
             public void run() {
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
                 if (timer == 0) {
@@ -114,12 +114,12 @@ public class Exclusive_TrialChamber extends hazard {
         //For entitiesSpawned
         new BukkitRunnable() {
             public void run() {
-                if (knockoff.getInstance().GameManager == null || entitiesSpawned.isEmpty()) {
+                if (knockoff.getInstance().gameManager == null || entitiesSpawned.isEmpty()) {
                     cancel();
                 }
                 try {
                     for (Breeze b : entitiesSpawned) {
-                        if (knockoff.getInstance().GameManager == null) {
+                        if (knockoff.getInstance().gameManager == null) {
                             b.remove();
                         }
                         int maxhealth = (int) b.getAttribute(Attribute.MAX_HEALTH).getBaseValue();

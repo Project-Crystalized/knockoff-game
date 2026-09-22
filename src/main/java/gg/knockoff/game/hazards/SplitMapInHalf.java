@@ -37,7 +37,7 @@ public class SplitMapInHalf extends hazard {
                 Title.Times.times(Duration.ofMillis(0), Duration.ofSeconds(3), Duration.ofMillis(1000))
         );
         List<Block> blockList = new ArrayList<>();
-        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(Bukkit.getWorld("world"));
+        com.sk89q.worldedit.world.World world = BukkitAdapter.adapt(knockoff.getInstance().getGameWorld());
         try (EditSession editSession = WorldEdit.getInstance().getEditSessionFactory().getEditSession(world, -1)) {
             MapData md = knockoff.getInstance().mapdata;
             int X1;
@@ -47,7 +47,7 @@ public class SplitMapInHalf extends hazard {
             int corruptionSize;
             int offset = knockoff.getInstance().getRandomNumber(-5, 5);
 
-            switch (knockoff.getInstance().getRandomNumber(1, 10)) {
+            switch (knockoff.getInstance().getRandomNumber(1, 11)) {
                 case 2, 4, 6, 8, 10-> {
                     //X axis
                     corruptionSize = 4; //md.CurrentXLength / 8;
@@ -76,9 +76,25 @@ public class SplitMapInHalf extends hazard {
                             Z2)
             );
             for (BlockVector3 bV3 : region) {
-                Block b = new Location(Bukkit.getWorld("world"), bV3.x(), bV3.y(), bV3.z()).getBlock();
+                Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (!b.isEmpty()) {
                     blockList.add(b);
+                }
+            }
+            //Made the split map work with blocks that are even outside map height limits
+            //It gets the x and z cords only of the area
+            int minX = Math.min(X1, X2);
+            int maxX = Math.max(X1, X2);
+            int minZ = Math.min(Z1, Z2);
+            int maxZ = Math.max(Z1, Z2);
+
+            //After getting the cords goes through players placed blocks checking which ones fit into the x and z cords of the area
+            //and adds the ones which fit into the blcok list
+            for (Block b : GameManager.playerPlacdBlocks) {
+                if (b.getX() >= minX && b.getX() <= maxX && b.getZ() >= minZ && b.getZ() <= maxZ) {
+                    if (!blockList.contains(b)) {
+                        blockList.add(b);
+                    }
                 }
             }
             for (Player p : Bukkit.getOnlinePlayers()) {

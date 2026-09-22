@@ -20,9 +20,9 @@ import java.util.logging.Level;
 public class MapData {
 
     public final double[] queue_spawn;
-    public static JsonElement currentSection;
+    public JsonElement currentSection;
 
-    public static List<JsonElement> newSectionsList = new ArrayList<>();
+    public List<JsonElement> newSectionsList = new ArrayList<>();
 
     // ===--- These change during game
     public int CurrentXLength = 0;
@@ -177,6 +177,8 @@ class MapExtraFeatures {
 
     public MapExtraFeatures(JsonObject json) {
         try {
+            //Probobly due to the config reset no longer works
+            //Fixed the config
             data = json.get("extras").getAsJsonObject();
         } catch (Exception ex) {
             return;
@@ -222,6 +224,7 @@ class MapExtraFeatures {
 
     private void setupExclusiveHazard() {
         try {
+            //Fixed the config so it works again.
             String temp = data.get("exclusiveHazard").getAsString();
             switch (temp) {
                 case "TrialChamber", "Elements" -> {

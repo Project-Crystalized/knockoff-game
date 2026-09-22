@@ -14,8 +14,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.format.TextDecoration;
-import org.bukkit.Difficulty;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -26,8 +25,7 @@ import com.google.common.io.ByteStreams;
 
 import java.util.List;
 import java.util.logging.Level;
-import org.bukkit.Bukkit;
-import org.bukkit.GameRule;
+
 import org.geysermc.floodgate.api.FloodgateApi;
 import org.geysermc.floodgate.api.player.FloodgatePlayer;
 
@@ -37,9 +35,10 @@ import static net.kyori.adventure.text.format.NamedTextColor.*;
 
 public final class knockoff extends JavaPlugin {
 
-    public final MapData mapdata = new MapData();
+    public MapData mapdata;
+    public WorldManager worldManager;
     public boolean is_force_starting = false;
-    public GameManager GameManager;
+    public GameManager gameManager;
     public boolean DevMode = false;
     public ProtocolManager protocolmanager;
     private static boolean GameCountdownStarted = false;
@@ -51,6 +50,9 @@ public final class knockoff extends JavaPlugin {
 
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
+        //Map data depends on world manager similiar to Crystal Blitz
+        worldManager = new WorldManager(this);
+        mapdata = new MapData();
         protocolmanager = ProtocolLibrary.getProtocolManager();
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new DamagePercentage(), this);
@@ -59,31 +61,33 @@ public final class knockoff extends JavaPlugin {
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "crystalized:knockoff");
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "crystalized:main");
 
-        //Bukkit.getWorld("world").setGameRule(GameRule.SPAWN_CHUNK_RADIUS, 20); //deprecated in 1.21.9
-        Bukkit.getWorld("world").setGameRule(GameRule.SHOW_DEATH_MESSAGES, false);
-        Bukkit.getWorld("world").setGameRule(GameRule.RANDOM_TICK_SPEED, 0);
-        Bukkit.getWorld("world").setGameRule(GameRule.LOCATOR_BAR, false);
-        Bukkit.getWorld("world").setGameRule(GameRule.ANNOUNCE_ADVANCEMENTS, false);
-        Bukkit.getWorld("world").setGameRule(GameRule.MOB_GRIEFING, true);
-        Bukkit.getWorld("world").setDifficulty(Difficulty.NORMAL);
 
+		try {
         if (!Lobby_plugin.getInstance().passive_mode) {
             getLogger().log(Level.SEVERE, "Please enable passive mode in the Lobby Plugin's Config. Knockoff will disable to prevent exceptions and bugs.");
         }
+				} catch (NoClassDefFoundError e) {
+			getLogger().warning("no lobby plugin found, continueing without");
+		}
 
         saveResource("config.yml", false);
         if (getConfig().getInt("version") != 4) {
             configVersion = getConfig().getInt("version");
             getLogger().log(Level.SEVERE, "Invalid Version, Please update your config. Expecting 4 but found " + configVersion + ". You may experience fatal issues.");
         }
+        //sets up the world manager creates the game dimension, deletes the old one if one stayed from a crash/server restarrt.
+        worldManager.setup();
+        //makes the rules identical in worlds
+        setupWorldRules(getSourceWorld());
+        setupWorldRules(getGameWorld());
 
         //This is weird
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             LiteralArgumentBuilder<CommandSourceStack> command = Commands.literal("knockoff");
             command.then(Commands.literal("end").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
-                if (knockoff.getInstance().GameManager != null) {
+                if (knockoff.getInstance().gameManager != null) {
                     knockoff.getInstance().DevMode = false;
-                    knockoff.getInstance().GameManager.ForceEndGame();
+                    knockoff.getInstance().gameManager.ForceEndGame();
                 } else {
                     ctx.getSource().getExecutor().sendMessage(text("[!] This command cannot be used in the queue").color(RED));
                 }
@@ -91,7 +95,7 @@ public final class knockoff extends JavaPlugin {
             }));
             command.then(Commands.literal("start").requires(sender -> sender.getSender().hasPermission("minecraft.command.op"))
                     .executes(ctx -> {
-                        if (knockoff.getInstance().GameManager == null) {
+                        if (knockoff.getInstance().gameManager == null) {
                             knockoff.getInstance().DevMode = false;
                             //knockoff.getInstance().is_force_starting = true;
                             reloadConfig();
@@ -112,7 +116,7 @@ public final class knockoff extends JavaPlugin {
                         return Command.SINGLE_SUCCESS;
                     })
                     .then(Commands.literal("force_StanderedDuos").executes(ctx -> {
-                        if (knockoff.getInstance().GameManager == null) {
+                        if (knockoff.getInstance().gameManager == null) {
                             knockoff.getInstance().DevMode = false;
                             reloadConfig();
                             if (getConfig().getBoolean("teams.enable")) {
@@ -128,7 +132,7 @@ public final class knockoff extends JavaPlugin {
                         return Command.SINGLE_SUCCESS;
                     }))
                     .then(Commands.literal("force_StanderedTrios").executes(ctx -> {
-                        if (knockoff.getInstance().GameManager == null) {
+                        if (knockoff.getInstance().gameManager == null) {
                             knockoff.getInstance().DevMode = false;
                             reloadConfig();
                             if (getConfig().getBoolean("teams.enable")) {
@@ -144,7 +148,7 @@ public final class knockoff extends JavaPlugin {
                         return Command.SINGLE_SUCCESS;
                     }))
                     .then(Commands.literal("force_StanderedSquads").executes(ctx -> {
-                        if (knockoff.getInstance().GameManager == null) {
+                        if (knockoff.getInstance().gameManager == null) {
                             knockoff.getInstance().DevMode = false;
                             reloadConfig();
                             if (getConfig().getBoolean("teams.enable")) {
@@ -197,23 +201,23 @@ public final class knockoff extends JavaPlugin {
                     .then(Commands.literal("elementals").executes(ctx -> {commandSpawnHazard(ctx.getSource().getExecutor(), "Elementals"); return Command.SINGLE_SUCCESS;}))
             );
             command.then(Commands.literal("force_showdown").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     ctx.getSource().getSender().sendMessage(text("[!] This cant be used in the waiting lobby."));
                     return Command.SINGLE_SUCCESS;
                 }
-                if (knockoff.getInstance().GameManager.showdownModeStarted) {
+                if (knockoff.getInstance().gameManager.showdownModeStarted) {
                     ctx.getSource().getSender().sendMessage(text("[!] Showdown has already started"));
                     return Command.SINGLE_SUCCESS;
                 }
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     p.sendMessage(text("[!] An Admin has forced Showdown to begin!"));
                 }
-                knockoff.getInstance().GameManager.startShowdown();
+                knockoff.getInstance().gameManager.startShowdown();
                 return Command.SINGLE_SUCCESS;
             }));
             command.then(Commands.literal("moveMap").requires(sender -> sender.getSender().hasPermission("minecraft.command.op")).executes(ctx -> {
                 Entity p = ctx.getSource().getExecutor();
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     p.sendMessage(text("[!] This cant be used in the waiting lobby."));
                     return Command.SINGLE_SUCCESS;
                 }
@@ -223,7 +227,7 @@ public final class knockoff extends JavaPlugin {
                         p.sendMessage(text("[!] This command is on cooldown for " + pl.getCooldown(Material.DIRT) + " ticks."));
                     } else {
                         pl.setCooldown(Material.DIRT, 30 * 20);
-                        knockoff.getInstance().GameManager.CloneNewMapSection();
+                        knockoff.getInstance().gameManager.CloneNewMapSection();
                     }
                 } else {
                     p.sendMessage(text("[!] Manual Map movement is disabled in config.yml, This command cannot be used unless it is enabled"));
@@ -268,7 +272,7 @@ public final class knockoff extends JavaPlugin {
 
         new BukkitRunnable() {
             public void run() {
-                if (GameManager != null) {
+                if (gameManager != null) {
                     return;
                 }
                 if (is_force_starting) {
@@ -293,7 +297,7 @@ public final class knockoff extends JavaPlugin {
                                     return;
                                 } else {
                                     Player p = (Player) Bukkit.getOnlinePlayers().toArray()[0];
-                                    p.sendPluginMessage(knockoff.getInstance(), "crystalized:knockoff", out.toByteArray());
+                                    p.sendPluginMessage(knockoff.getInstance(), "crystalized:main", out.toByteArray());
                                     if (!commandStarting) {
                                         switch (Bukkit.getMaxPlayers()) {
                                             case 48 -> {
@@ -310,7 +314,13 @@ public final class knockoff extends JavaPlugin {
                                             }
                                         }
                                     }
-                                    GameManager = new GameManager(type);
+                                    //doesn't start the game if game world is null
+                                    if(worldManager.getGameWorld() == null){
+                                        getLogger().severe("Cannot start knockoff because the game world is not loaded!");
+                                        cancel();
+                                        return;
+                                    }
+                                    gameManager = new GameManager(type);
                                 }
                                 cancel();
                             }
@@ -323,7 +333,7 @@ public final class knockoff extends JavaPlugin {
 
         new BukkitRunnable() {
             public void run() {
-                if (GameManager != null) {
+                if (gameManager != null) {
                     //do nothing, game has started
                     GameCountdownStarted = false;
                 } else {
@@ -393,7 +403,7 @@ public final class knockoff extends JavaPlugin {
     private void commandSpawnPowerup(Entity commandSource, String powerup) {
         knockoff.getInstance().reloadConfig();
         FloodgateApi floodgateapi = FloodgateApi.getInstance();
-        if (knockoff.getInstance().GameManager == null) {
+        if (knockoff.getInstance().gameManager == null) {
             commandSource.sendMessage(text("[!] This cant be used in the waiting lobby."));
         } else if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_powerup_spawning") && !knockoff.getInstance().getConfig().getBoolean("tourneys.enable")) {
             commandSource.sendMessage(text("[!] Manual Powerup Spawning is disabled in config.yml, This command cannot be used unless it is enabled"));
@@ -414,19 +424,19 @@ public final class knockoff extends JavaPlugin {
                     p.sendMessage(Component.text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
                 }
             }
-            knockoff.getInstance().GameManager.SpawnRandomPowerup(powerup);
+            knockoff.getInstance().gameManager.SpawnRandomPowerup(powerup);
         }
     }
 
     //Again, should only be called inside commands, nowhere else
     private void commandSpawnHazard(Entity commandSource, String string) {
         knockoff.getInstance().reloadConfig();
-        if (knockoff.getInstance().GameManager == null) {
+        if (knockoff.getInstance().gameManager == null) {
             commandSource.sendMessage(text("[!] This cant be used in the waiting lobby."));
         } else if (!knockoff.getInstance().getConfig().getBoolean("tourneys.manual_hazard_control") && !knockoff.getInstance().getConfig().getBoolean("tourneys.enable")) {
             commandSource.sendMessage(text("[!] Manual Hazard Control is disabled in config.yml, This command cannot be used unless it is enabled"));
         } else {
-            knockoff.getInstance().GameManager.hazards.NewHazard(knockoff.getInstance().GameManager.hazards.getHazard(string));
+            knockoff.getInstance().gameManager.hazards.NewHazard(knockoff.getInstance().gameManager.hazards.getHazard(string));
         }
     }
 
@@ -448,5 +458,29 @@ public final class knockoff extends JavaPlugin {
 
 
         return output;
+    }
+    /*Gets the worlds, the source world is the waiting world, game world is where the game is happening and
+     * active world is where the game should take the player if the game is going on or not.
+     * */
+    public World getSourceWorld() {
+        return worldManager.getSourceWorld();
+    }
+    public World getGameWorld() {
+        return worldManager.getGameWorld();
+    }
+    public World getActiveWorld() {
+        return worldManager.getActiveWorld();
+    }
+    //sets up the rules of the world, applies to waiting/source world and the game world
+    public void setupWorldRules(World world) {
+        if (world == null) {
+            return;
+        }
+        world.setGameRule(GameRules.SHOW_DEATH_MESSAGES, false);
+        world.setGameRule(GameRules.RANDOM_TICK_SPEED, 0);
+        world.setGameRule(GameRules.LOCATOR_BAR, false);
+        world.setGameRule(GameRules.SHOW_ADVANCEMENT_MESSAGES, false);
+        world.setGameRule(GameRules.MOB_GRIEFING, true);
+        world.setDifficulty(Difficulty.NORMAL);
     }
 }

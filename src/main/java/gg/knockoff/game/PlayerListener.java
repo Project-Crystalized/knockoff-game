@@ -1,9 +1,10 @@
 package gg.knockoff.game;
 
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
+import gg.crystalized.lobby.Achievement;
+import gg.crystalized.lobby.LevelManager;
 import gg.crystalized.lobby.Lobby_plugin;
 import gg.crystalized.lobby.Ranks;
-import io.papermc.paper.entity.LookAnchor;
 import io.papermc.paper.event.block.VaultChangeStateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.key.Key;
@@ -11,11 +12,11 @@ import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextDecoration;
 import net.kyori.adventure.title.Title;
+import net.kyori.adventure.util.TriState;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.type.Vault;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -55,9 +56,12 @@ public class PlayerListener implements Listener {
 		Player p = event.getPlayer();
 		FloodgateApi floodgateapi = FloodgateApi.getInstance();
 		event.joinMessage(Component.text(""));
+		//makes sure all active effects are cleared, cause I noticed strenght 2 was staying
+		p.clearActivePotionEffects();
 
-		if (knockoff.getInstance().GameManager == null) {
-			p.teleport(knockoff.getInstance().mapdata.get_que_spawn(p.getWorld()));
+		if (knockoff.getInstance().gameManager == null) {
+			//teleports at the spawn area in the waiting/source world
+			p.teleport(knockoff.getInstance().mapdata.get_que_spawn(knockoff.getInstance().getSourceWorld()));
 			p.getInventory().clear();
 			p.getAttribute(Attribute.MAX_HEALTH).setBaseValue(20);
 			p.setHealth(20);
@@ -82,15 +86,14 @@ public class PlayerListener implements Listener {
 							.append(text("\n")),
 
 					// Footer
-					text(
-							"\nIf you find any bugs please report to TotallyNoCallum on the Crystalized Discord")
+					translatable("crystalized.game.knockoff.chat.report_bugs")
 							.append(text("\n https://github.com/Project-Crystalized ").color(NamedTextColor.GRAY)));
 			new QueueScoreBoard(p);
 
 			ItemStack leavebutton = new ItemStack(Material.COAL, 1);
 			ItemMeta leavebuttonim = leavebutton.getItemMeta();
 			leavebuttonim.setItemModel(new NamespacedKey("crystalized", "ui/leave"));
-			leavebuttonim.displayName(Component.text("Return to lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
+			leavebuttonim.displayName(Component.translatable("crystalized.game.generic.to_lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
 			leavebutton.setItemMeta(leavebuttonim);
 			p.getInventory().setItem(8, leavebutton);
 
@@ -146,7 +149,8 @@ public class PlayerListener implements Listener {
                 }
             }.runTaskTimer(knockoff.getInstance(), 1, 1);
 		} else {
-			p.kick(Component.text("A game is currently is progress, try joining again later.").color(NamedTextColor.RED));
+			knockoff.getInstance().gameManager.addSpectator(p);
+			p.sendMessage(translatable("crystalized.game.knockoff.chat.spec_join").color(NamedTextColor.GRAY));
 		}
 	}
 
@@ -157,12 +161,18 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void onPlayerDeath(PlayerDeathEvent event) {
+		//When dying cleares the effects and reapllies the effects which are supposed to be there
+		//So that the player won't keep those effects
+		event.getPlayer().clearActivePotionEffects();
+		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
+		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
 		event.setCancelled(true);
 
 		Player player = event.getPlayer();
-		if (knockoff.getInstance().GameManager == null) return;
+		if (knockoff.getInstance().gameManager == null) return;
 
-		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+		PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
+		if (pd == null) return;
 		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
 			return;
 		}
@@ -186,7 +196,8 @@ public class PlayerListener implements Listener {
 					.append(translatable("crystalized.game.knockoff.chat.deathknockoff"))
 					.append(player.getKiller().displayName()));
 			Player attacker = player.getKiller();
-			PlayerData pda = knockoff.getInstance().GameManager.getPlayerData(attacker);
+			PlayerData pda = knockoff.getInstance().gameManager.getPlayerData(attacker);
+			if (pda == null) return;
 			pda.addKill(1);
 			attacker.showTitle(Title.title(text(" "), text("[\uE103] ").append(player.displayName()),
 					Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
@@ -195,6 +206,13 @@ public class PlayerListener implements Listener {
 				//p.playSound(p, "minecraft:block.anvil.place", 0.5F, 0.5f); //commented out since this is kinda annoying - Callum
 				p.playSound(player.getLocation(), "minecraft:entity.firework_rocket.blast_far", 4, 1); //TODO make actual firework
 			}
+
+			//achievements shit
+			try {
+				if (attacker.getInventory().getItemInMainHand().getType().equals(Material.GOLDEN_SWORD)) { //too lazy to properly check for a glove, this should work fine - Callum
+					Achievement.getAchievement("ko_glovekill", attacker).setProgress(100);
+				}
+			} catch (NoClassDefFoundError e) {}
 		}
 		pd.addDeath(1);
 		pd.isPlayerDead = true;
@@ -203,7 +221,8 @@ public class PlayerListener implements Listener {
 		new BukkitRunnable() {
 			@Override
 			public void run() {
-				Location loc = new Location(Bukkit.getWorld("world"), knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
+				//made sure it works with the game world
+				Location loc = new Location(knockoff.getInstance().getGameWorld(), knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
 						knockoff.getInstance().mapdata.getCurrentMiddleYLength() + 10,
 						knockoff.getInstance().mapdata.getCurrentMiddleZLength());
 				player.teleportAsync(loc);
@@ -225,6 +244,10 @@ public class PlayerListener implements Listener {
 
 			new BukkitRunnable() {
 				public void run() {
+					if (knockoff.getInstance().gameManager == null) {
+						cancel();
+						return;
+					}
 					player.sendActionBar(translatable("crystalized.game.knockoff.respawn1")
 							.append(Component.text(pd.getDeathtimer()))
 							.append(translatable("crystalized.game.knockoff.respawn2")));
@@ -240,14 +263,19 @@ public class PlayerListener implements Listener {
 						}
 						case 0 -> {
 							player.playSound(player, "crystalized:effect.knockoff_countdown", 50, 2);
-							if (GameManager.GameState.equals("game")) {
-								tpPlayersBack(player);
+						if (GameManager.state == GameState.GAME && player.isOnline()) {
+							knockoff.getInstance().gameManager.spawnSpawnPlatformAndTP(List.of(player.getName()), 4 * 20, false);
 								player.setGameMode(GameMode.SURVIVAL);
 								pd.setDeathtimer(0);
 								pd.isPlayerDead = false;
 								CustomPlayerNametags.CustomPlayerNametags(player);
+								if (pd.lives == 1) {
+									player.sendMessage(translatable("crystalized.game.knockoff.chat.one_life").color(NamedTextColor.RED));
+									player.playSound(player, "minecraft:block.note_block.pling", 1, 0.5f);
+								}
 							}
 							cancel();
+							return;
 						}
 					}
 					if (!pd.isPlayerDead) {
@@ -274,6 +302,16 @@ public class PlayerListener implements Listener {
 					.append(translatable("crystalized.game.knockoff.chat.eliminated")));
 			pd.isPlayerDead = true;
 			pd.isEliminated = true;
+			//The reason it checks if it kicks players at the end of the game is because this is pretty much a checker for self hosting
+			//so if it is not a self hosting, then it should kick the players at the end of the game, hence same here it doesn't need it
+			//if it is a self hosting thing.
+			boolean kickPlayersAtGameEnd  = knockoff.getInstance().getConfig().getBoolean("kick_players_at_game_end");
+			if(kickPlayersAtGameEnd){
+				try {
+					LevelManager.giveExperience(player, 5);
+					LevelManager.giveMoney(player, 20);
+				} catch (NoClassDefFoundError e) {}
+			}
 		}
 	}
 
@@ -282,91 +320,30 @@ public class PlayerListener implements Listener {
 		Player p = event.getPlayer();
 		event.setCancelled(true);
 		//this is dumb
-		if (knockoff.getInstance().GameManager == null) {
+		if (knockoff.getInstance().gameManager == null) {
+			try {
 			Bukkit.getServer().sendMessage(Ranks.getName(Bukkit.getOfflinePlayer(p.getName()))
 					.append(Component.text(": "))
 					.append(event.message()));
+					} catch (NoClassDefFoundError e) {
+			Bukkit.getServer().sendMessage(Component.text(p.getName())
+					.append(Component.text(": "))
+					.append(event.message()));
+			}
 		} else {
-			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
+			PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
+			if (pd == null) {
+				Bukkit.getServer().sendMessage(Component.text(p.getName())
+						.append(Component.text(": "))
+						.append(event.message()));
+				return;
+			}
 			Bukkit.getServer().sendMessage(pd.cachedRankIcon_small
 					.append(text(" "))
 					.append(p.displayName())
 					.append(Component.text(": "))
 					.append(event.message()));
 		}
-	}
-
-	private static void tpPlayersBack(Player p) {
-
-		Location middleLoc = new Location(Bukkit.getWorld("world"),
-				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX, knockoff.getInstance().mapdata.getCurrentXLength()) + 0.5,
-				knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(5, 8), // TODO temp
-				knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ, knockoff.getInstance().mapdata.getCurrentZLength()) + 0.5);
-		Location ploc = new Location(Bukkit.getWorld("world"), middleLoc.getX(), middleLoc.getY() + 2, middleLoc.getZ());
-		if (knockoff.getInstance().GameManager == null || p == null) {
-			return;
-		}
-		List<Block> tempBlockList = new ArrayList<>();
-		tempBlockList.add(middleLoc.getBlock());
-		tempBlockList.add(middleLoc.clone().add(1, 0, 0).getBlock());
-		tempBlockList.add(middleLoc.clone().add(-1, 0, 0).getBlock());
-		tempBlockList.add(middleLoc.clone().add(0, 0, 1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(1, 0, 1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(-1, 0, 1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(0, 0, -1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(1, 0, -1).getBlock());
-		tempBlockList.add(middleLoc.clone().add(-1, 0, -1).getBlock());
-
-        for (Block b : tempBlockList) {
-            switch (Teams.GetPlayerTeam(p)) {
-                case "blue", "cyan", "green", "lemon" -> {
-                    b.setType(Material.WHITE_GLAZED_TERRACOTTA);
-                }
-                case "lime", "magenta", "orange", "peach" -> {
-                    b.setType(Material.LIGHT_GRAY_GLAZED_TERRACOTTA);
-                }
-                case "purple", "white", "yellow", "red" -> {
-                    b.setType(Material.GRAY_GLAZED_TERRACOTTA);
-                }
-                case "weak", "strong" -> {
-                    b.setType(Material.BLACK_GLAZED_TERRACOTTA);
-                }
-            }
-            Directional dir = (Directional) b.getBlockData();
-
-            //set direction to match the item model's model
-            switch (Teams.GetPlayerTeam(p)) {
-                case "blue", "lime", "purple", "weak" -> {
-                    dir.setFacing(BlockFace.EAST);
-                }
-                case "cyan", "magenta", "red", "strong" -> {
-                    dir.setFacing(BlockFace.NORTH);
-                }
-                case "green", "orange", "white" -> {
-                    dir.setFacing(BlockFace.SOUTH);
-                }
-                case "lemon", "peach", "yellow" -> {
-                    dir.setFacing(BlockFace.WEST);
-                }
-            }
-
-            b.setBlockData(dir);
-            b.getState().update();
-            GameManager.startBreakingCrystal(b, 4 * 20, knockoff.getInstance().getRandomNumber(20, 30), false);
-        }
-
-		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-		if (pd.lives == 1) {
-			p.sendMessage(text("You have one life remaining and will not respawn when you die!").color(NamedTextColor.RED)); //TODO translatable
-			p.playSound(p, "minecraft:block.note_block.pling", 1, 0.5f);
-		}
-
-		middleLoc.getBlock().getState().update();
-		p.teleport(ploc);
-		p.lookAt(knockoff.getInstance().mapdata.getCurrentMiddleXLength(),
-				knockoff.getInstance().mapdata.getCurrentMiddleYLength(),
-				knockoff.getInstance().mapdata.getCurrentMiddleZLength(), LookAnchor.EYES
-        );
 	}
 
 	@EventHandler
@@ -376,16 +353,18 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void OnPlayerDisconnect(PlayerConnectionCloseEvent event) {
-		if (knockoff.getInstance().GameManager != null) {
+		if (knockoff.getInstance().gameManager != null) {
 			Teams.DisconnectPlayer(event.getPlayerName());
+			knockoff.getInstance().gameManager.markPlayerDisconnected(event.getPlayerName());
 		}
-		if (knockoff.getInstance().GameManager != null && Bukkit.getOnlinePlayers().isEmpty()) {
+		if (knockoff.getInstance().gameManager != null && Bukkit.getOnlinePlayers().isEmpty()) {
 			Bukkit.getLogger().log(Level.WARNING, "[!] All players have disconnected. The Game will now end.");
-            if (knockoff.getInstance().GameManager.GameState != "end") {
-                knockoff.getInstance().GameManager.ForceEndGame();
+            if (knockoff.getInstance().gameManager.state != GameState.END) {
+                knockoff.getInstance().gameManager.ForceEndGame();
             }
 		}
 	}
+
 
     @EventHandler
     public void onEntityDeath(EntityDeathEvent e) {
@@ -398,7 +377,7 @@ public class PlayerListener implements Listener {
                     //DropPowerup.DropPowerup(b.getLocation(), "TrialChamberHazardKey");
                     Entity entity = e.getDamageSource().getCausingEntity();
                     if (entity != null) {
-                        entity.sendMessage(text("[!] You killed the Big Breeze, A trial key has been dropped"));
+                        entity.sendMessage(translatable("crystalized.game.knockoff.hazard.big_breeze"));
                     }
                 }
             } else {
@@ -413,7 +392,11 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void OnPlayerPickupItem(EntityPickupItemEvent event) {
 		Player player = (Player) event.getEntity();
-		PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+		if (knockoff.getInstance().gameManager == null) {
+			return;
+		}
+		PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
+		if (pd == null) return;
 		pd.powerupscollected++;
 		List<Component> component = new ArrayList<>();
 		if (pd.cachedRankIcon_full.equals(text(""))) {
@@ -429,8 +412,9 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void OnPlayerItemInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
-		if (knockoff.getInstance().GameManager != null) {
-			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+		if (knockoff.getInstance().gameManager != null) {
+			PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
+			if (pd == null) return;
 			if (event.getHand() != EquipmentSlot.HAND || event.getItem() == null) {
 				return;
 			}
@@ -476,7 +460,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler
 	public void OnInventoryMoveItem(InventoryClickEvent event) {
-		if (knockoff.getInstance().GameManager == null) {
+		if (knockoff.getInstance().gameManager == null) {
 			event.setCancelled(true);
 		}
 	}
@@ -487,13 +471,13 @@ public class PlayerListener implements Listener {
 			return;
 		}
 		e.setCancelled(true);
-		if (knockoff.getInstance().GameManager == null) {return;}
+		if (knockoff.getInstance().gameManager == null) {return;}
 		e.getLocation().createExplosion(null, 1.5F, false, false);
         Component text = e.getEntity().customName();
 
         if (text == null) {
             for (Block b : e.blockList()) {
-                knockoff.getInstance().GameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(11, 16), true);
+                knockoff.getInstance().gameManager.startBreakingCrystal(b, knockoff.getInstance().getRandomNumber(0, 4), knockoff.getInstance().getRandomNumber(11, 16), true);
             }
         } else if (text.equals(text("magma"))) {
             for (Block b : e.blockList()) {
@@ -512,14 +496,14 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onSnowballHit(ProjectileHitEvent e) {
-        if (knockoff.getInstance().GameManager == null) {return;}
+        if (knockoff.getInstance().gameManager == null) {return;}
         Entity entity = e.getEntity();
         if (entity instanceof Snowball s) {
             Component text = s.customName();
             if (text == null) {return;}
             if (text.equals(text("magma"))) {
                 //create fireball for big explosion turning into magma blocks
-                Bukkit.getWorld("world").spawn(s.getLocation(), Fireball.class, fireball -> {
+                knockoff.getInstance().getGameWorld().spawn(s.getLocation(), Fireball.class, fireball -> {
                     fireball.customName(text);
                     fireball.setYield(6);
                     fireball.setVelocity(new Vector(0, -10, 0));
@@ -536,11 +520,19 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onVaultUnlock(VaultChangeStateEvent e) {
-        Player p = e.getPlayer();
-        Block b = e.getBlock().getLocation().getBlock();
-		Vault data = (Vault) b.getBlockData();
-        if (e.getNewState().equals(org.bukkit.block.data.type.Vault.State.EJECTING)) {
+    Block b = e.getBlock().getLocation().getBlock();
+		try {
+			if (e.getNewState().equals(Vault.State.UNLOCKING)) {
+				//achievement shit, p will be null if the vault state is EJECTING
+      	Player p = e.getPlayer();
+				Achievement.getAchievement("ko_unlocker", p).setProgress(100);
+			}
+		} catch (NoClassDefFoundError error) {}
+
+      if (e.getNewState().equals(Vault.State.EJECTING)) {
 			List<String> powerups;
+			//moved it up so that it gets data before it becomes a crystal.
+		  	Vault data = (Vault) b.getBlockData();
 			e.setCancelled(true);
 			b.setType(Material.AMETHYST_BLOCK);
 			if (data.isOminous()) {
@@ -553,6 +545,85 @@ public class PlayerListener implements Listener {
             }
             Collections.shuffle(powerups);
             KnockoffItem.DropPowerup(b.getLocation().clone().add(0.5, 1, 0.5), powerups.get(knockoff.getInstance().getRandomNumber(0, powerups.size())));
-        }
+      }
     }
+	//Makes sure that when teleported with a plugin all effects are cleared and needed ones reaply
+	//Fixes the bug with levitation in the lobby, and then levitating in the starter as well.
+	@EventHandler
+	public void playerTeleportEvent(PlayerTeleportEvent event){
+		if(!event.getCause().equals(PlayerTeleportEvent.TeleportCause.PLUGIN)){
+			return;
+		}
+		event.getPlayer().clearActivePotionEffects();
+		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, PotionEffect.INFINITE_DURATION, 1, false, false, true));
+		event.getPlayer().addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, PotionEffect.INFINITE_DURATION, 255, false, false, false));
+		//Extingishing fire before teleporting to the game area as well
+		event.getPlayer().setFireTicks(0);
+	}
+	//a fix for now when the player ends up spawning in the wall it will move the player up to the surface
+	@EventHandler
+	public void onPlayerSuffocate(EntityDamageEvent event) {
+		if (!(event.getEntity() instanceof Player p)) {
+			return;
+		}
+		//needs to be suffucating in the wall forit to count
+		if (event.getCause() != EntityDamageEvent.DamageCause.SUFFOCATION) {
+			return;
+		}
+		if (knockoff.getInstance().gameManager == null) {
+			return;
+		}
+		if (!p.getWorld().equals(knockoff.getInstance().getGameWorld())) {
+			return;
+		}
+		//gets the player location and world
+		Location loc = p.getLocation();
+		World world = loc.getWorld();
+		//gets the z and x location of the exact block, to keep the exact x abd z locatin
+		int x = loc.getBlockX();
+		int z = loc.getBlockZ();
+
+		//goes through y until the world height
+		for (int y = loc.getBlockY(); y < world.getMaxHeight() - 1; y++) {
+			//gets the block at feet, head, and the blocks below
+			Block feet = world.getBlockAt(x, y, z);
+			Block head = world.getBlockAt(x, y + 1, z);
+			Block below = world.getBlockAt(x, y - 1, z);
+			//So when head and feet are free and below has a block will teleport a player there
+			if (feet.isPassable() && head.isPassable() && !below.isPassable()) {
+				//with a little offset to put player in the middle of the block, the pitch and yawn so the player can keep looking the same direction
+				//end up slightly higher so not just in a middle of a fight straight away
+				p.teleport(new Location(world, x + 0.5, y, z + 0.5, loc.getYaw(), loc.getPitch()));
+				//slight levitation to prevent insta death
+				p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20, 0, false, true, true));
+				p.sendMessage(Component.text("You have been rescued from spawning inside a wall!").color(NamedTextColor.RED));
+				event.setCancelled(true);
+				return;
+			}
+		}
+	}
+	//Added this to prevent infinity fall before game starts for knockoff
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent e) {
+		//Ensures this happens only when game manager is null, so not during the game
+		if (knockoff.getInstance().gameManager != null) {
+			return;
+		}
+		//Gets the player
+		Player p = e.getPlayer();
+		World sourceWorld = knockoff.getInstance().getSourceWorld();
+		Location queueSpawn = knockoff.getInstance().mapdata.get_que_spawn(sourceWorld);
+		//If player's Y location is beyhond maps death limit, below 70 of the spawn y
+		//Teleports the player back to the original spawn location
+		if (p.getY() < queueSpawn.getY() - 70) {
+			//incase it became not null during it somehow
+			if (knockoff.getInstance().gameManager != null) {
+				return;
+			}
+			//teleports player back to quee spawn.
+			p.teleport(queueSpawn);
+			//makes sure fall distanse is 0
+			p.setFallDistance(0);
+		}
+	}
 }

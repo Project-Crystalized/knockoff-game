@@ -42,7 +42,7 @@ public class PoisonBushes extends hazard {
 
     private static void spawnBush() {
         Location blockloc2 = getValidSpot(true);
-        if (knockoff.getInstance().GameManager == null) {return;}
+        if (knockoff.getInstance().gameManager == null) {return;}
 
         blockloc2.getBlock().setType(Material.MANGROVE_LEAVES);
         for (Player p : Bukkit.getOnlinePlayers()) {

@@ -1,5 +1,7 @@
 # Crystalized: Knockoff config
 
+#For self hosting can set to false. For servers like crystalizied set to true
+kick_players_at_game_end: true
 teams:
     # When true, enables the below options to work, allowing for teams to be created manually instead of randomly generated.
     # These should be changed either when the server is shutdown, or when the game hasn't started (aka, in the waiting lobby)

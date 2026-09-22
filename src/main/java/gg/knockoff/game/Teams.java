@@ -2,21 +2,22 @@ package gg.knockoff.game;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
-import org.bukkit.Bukkit;
-import org.bukkit.Color;
-import org.bukkit.Location;
-import org.bukkit.NamespacedKey;
+import org.bukkit.*;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Transformation;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import static net.kyori.adventure.text.Component.text;
+import static net.kyori.adventure.text.Component.translatable;
 
 public class Teams {
 
@@ -208,7 +209,7 @@ public class Teams {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (GetPlayerTeam(p) == null) {
 				spectator.add(p.getName());
-				p.sendMessage(text("[!] You weren't assigned a team, we've put you in Spectator Team."));
+				p.sendMessage(translatable("crystalized.game.knockoff.chat.no_team"));
 			}
 		}
 
@@ -302,37 +303,41 @@ public class Teams {
 	}
 
 	public static String GetPlayerTeam(Player player) {
-		// Bukkit.getLogger().log(Level.INFO, "Figuring out " + player.getName() + "'s
+		return GetPlayerTeam(player.getName());
+	}
+
+	public static String GetPlayerTeam(String name) {
+		// Bukkit.getLogger().log(Level.INFO, "Figuring out " + name + "'s
 		// Team...");
-		if (spectator.contains(player.getName())) {
+		if (spectator.contains(name)) {
 			return "spectator";
-		} else if (blue.contains(player.getName())) {
+		} else if (blue.contains(name)) {
 			return "blue";
-		} else if (cyan.contains(player.getName())) {
+		} else if (cyan.contains(name)) {
 			return "cyan";
-		} else if (green.contains(player.getName())) {
+		} else if (green.contains(name)) {
 			return "green";
-		} else if (lemon.contains(player.getName())) {
+		} else if (lemon.contains(name)) {
 			return "lemon";
-		} else if (lime.contains(player.getName())) {
+		} else if (lime.contains(name)) {
 			return "lime";
-		} else if (magenta.contains(player.getName())) {
+		} else if (magenta.contains(name)) {
 			return "magenta";
-		} else if (orange.contains(player.getName())) {
+		} else if (orange.contains(name)) {
 			return "orange";
-		} else if (peach.contains(player.getName())) {
+		} else if (peach.contains(name)) {
 			return "peach";
-		} else if (purple.contains(player.getName())) {
+		} else if (purple.contains(name)) {
 			return "purple";
-		} else if (red.contains(player.getName())) {
+		} else if (red.contains(name)) {
 			return "red";
-		} else if (white.contains(player.getName())) {
+		} else if (white.contains(name)) {
 			return "white";
-		} else if (yellow.contains(player.getName())) {
+		} else if (yellow.contains(name)) {
 			return "yellow";
-		} else if (weak.contains(player.getName())) {
+		} else if (weak.contains(name)) {
 			return "weak";
-		} else if (strong.contains(player.getName())) {
+		} else if (strong.contains(name)) {
 			return "strong";
 		}
 
@@ -389,10 +394,9 @@ class TeamStatus {
 		int counter = 0;
 		for (String p_name : Teams.get_team_from_string(team)) {
 			Player p = Bukkit.getPlayer(p_name);
-			PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(p);
-			if (pd == null) {
-				return;
-			}
+			if (p == null) continue; // offline member: don't count, don't abort
+			PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
+			if (pd == null) continue; // no PlayerData: skip, don't freeze the counter
 			if (!pd.isEliminated) {
 				counter++;
 			}
@@ -415,7 +419,7 @@ class TeamStatus {
 		}
 
 		for (String loop_team : team_statuses.keySet()) {
-			if (loop_team == team) {
+			if (loop_team.equals(team)) {
 				continue;
 			}
 			if (team_statuses.get(loop_team) > 0) {
@@ -458,11 +462,23 @@ class TeamStatus {
 		new BukkitRunnable() {
 			public void run() {
 				for (TeamData td : Teams.team_datas) {
-					if (knockoff.getInstance().GameManager == null) {
+					if (knockoff.getInstance().gameManager == null) {
 						cancel();
+						return;
 					} 
 					// Check if all players in the team are alive. If not set them to dead
 					update_team_status(td.name);
+				}
+
+				// If no teams have alive players, the last players died in the same tick
+				// (or this is a bug). End the game anyway with an arbitrary winner instead of softlocking.
+				if (getAliveTeams().isEmpty() && knockoff.getInstance().gameManager != null) {
+					TeamData fallback = Teams.team_datas_without_spectator.getFirst();
+					Bukkit.getLogger().log(Level.WARNING, "[Knockoff] All teams died in the same tick (or this is a bug). Ending the game with an arbitrary winner: " + fallback.name);
+					Bukkit.getServer().sendMessage(text("All players died at the same time! Ending the game.").color(TextColor.color(0xFFAA00)));
+					GameManager.StartEndGame(fallback.name, fallback);
+					cancel();
+					return;
 				}
 
 				for (TeamData td : Teams.team_datas) {
@@ -484,18 +500,25 @@ class CustomPlayerNametags {
 				player.getPitch());
 		TextDisplay displayfront = ploc.getWorld().spawn(ploc, TextDisplay.class, entity -> {
 			entity.setBillboard(Display.Billboard.CENTER);
+			//This is to make name tags appere higher to easier see the statististic
+			//Only moves it higher, not rotating it, and not chaning the scale. If someone else wants to adjust the height only adjust y and the first vector.
+			entity.setTransformation(new Transformation(new Vector3f(0, 0.2f, 0), new Quaternionf(), new Vector3f(1, 1, 1), new Quaternionf()));
 		});
 		player.addPassenger(displayfront);
 		player.hideEntity(knockoff.getInstance(), displayfront);
 
 		new BukkitRunnable() {
 			public void run() {
-				if (knockoff.getInstance().GameManager == null || !player.isOnline()
-						|| knockoff.getInstance().GameManager.getPlayerData(player).isPlayerDead) {
+				if (knockoff.getInstance().gameManager == null || !player.isOnline()) {
 					displayfront.remove();
 					cancel();
 				} else {
-					PlayerData pd = knockoff.getInstance().GameManager.getPlayerData(player);
+					PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
+					if (pd == null) {
+						displayfront.remove();
+						cancel();
+						return;
+					}
 					if (pd.isPlayerDead) {
 						displayfront.text(text(""));
 					} else {
@@ -516,8 +539,8 @@ class CustomPlayerNametags {
 						);
 					}
 				}
-			}
-		}.runTaskTimer(knockoff.getInstance(), 1, 1);
+			} //Change to 1L as it is expecting a long (During database issues debuging) - Mish
+		}.runTaskTimer(knockoff.getInstance(), 1L, 1L);
 	}
 }
 
@@ -526,22 +549,26 @@ class TeamData {
 	public final Color color;
     public final NamespacedKey item_model;
 	public final String symbol;
+	//aded block material so that the teams can have matching color block by default so that there won't be a weird flash of purple
+	public final Material blockMaterial;
 
 	public static List<TeamData> create_teams() {
 		List<TeamData> list = new ArrayList<>();
-		list.add(new TeamData("spectator", Color.fromRGB(0xFFFFFF), " "));
-		list.add(new TeamData("blue", Color.fromRGB(0x0A42BB), "\uE120 "));
-		list.add(new TeamData("cyan", Color.fromRGB(0x157D91), "\uE121 "));
-		list.add(new TeamData("green", Color.fromRGB(0x0A971E), "\uE122 "));
-		list.add(new TeamData("lemon", Color.fromRGB(0xFFC500), "\uE128 "));
-		list.add(new TeamData("lime", Color.fromRGB(0x67E555), "\uE123 "));
-		list.add(new TeamData("magenta", Color.fromRGB(0xDA50E0), "\uE124 "));
-		list.add(new TeamData("orange", Color.fromRGB(0xFF7900), "\uE129 "));
-		list.add(new TeamData("peach", Color.fromRGB(0xFF8775), "\uE12A "));
-		list.add(new TeamData("purple", Color.fromRGB(0x7525DC), "\uE12B "));
-		list.add(new TeamData("red", Color.fromRGB(0xF74036), "\uE125 "));
-		list.add(new TeamData("white", Color.fromRGB(0xFFFFFF), "\uE126 "));
-		list.add(new TeamData("yellow", Color.fromRGB(0xFBE059), "\uE127 "));
+		//gave specators just white concrete.
+		list.add(new TeamData("spectator", Color.fromRGB(0xFFFFFF), " ", Material.WHITE_CONCRETE));
+		//The powdered concrete is used for team block.
+		list.add(new TeamData("blue", Color.fromRGB(0x0A42BB), "\uE120 ", Material.BLUE_CONCRETE_POWDER));
+		list.add(new TeamData("cyan", Color.fromRGB(0x157D91), "\uE121 ", Material.CYAN_CONCRETE_POWDER));
+		list.add(new TeamData("green", Color.fromRGB(0x0A971E), "\uE122 ", Material.GREEN_CONCRETE_POWDER));
+		list.add(new TeamData("lemon", Color.fromRGB(0xFFC500), "\uE128 ", Material.YELLOW_CONCRETE_POWDER));
+		list.add(new TeamData("lime", Color.fromRGB(0x67E555), "\uE123 ", Material.LIME_CONCRETE_POWDER));
+		list.add(new TeamData("magenta", Color.fromRGB(0xDA50E0), "\uE124 ", Material.MAGENTA_CONCRETE_POWDER));
+		list.add(new TeamData("orange", Color.fromRGB(0xFF7900), "\uE129 ", Material.ORANGE_CONCRETE_POWDER));
+		list.add(new TeamData("peach", Color.fromRGB(0xFF8775), "\uE12A ", Material.PINK_CONCRETE_POWDER));
+		list.add(new TeamData("purple", Color.fromRGB(0x7525DC), "\uE12B ", Material.PURPLE_CONCRETE_POWDER));
+		list.add(new TeamData("red", Color.fromRGB(0xF74036), "\uE125 ", Material.RED_CONCRETE_POWDER));
+		list.add(new TeamData("white", Color.fromRGB(0xFFFFFF), "\uE126 ", Material.WHITE_CONCRETE_POWDER));
+		list.add(new TeamData("yellow", Color.fromRGB(0xFBE059), "\uE127 ", Material.YELLOW_CONCRETE_POWDER));
 		//list.add(new TeamData("weak", Color.fromRGB(0xFFFFFF), "? "));
 		//list.add(new TeamData("strong", Color.fromRGB(0xFFFFFF), "? "));
 		return list;
@@ -556,10 +583,11 @@ class TeamData {
 		return null;
 	}
 
-	public TeamData(String name, Color color, String symbol) {
+	public TeamData(String name, Color color, String symbol, Material blockMaterial) {
 		this.name = name;
 		this.color = color;
         this.item_model = new NamespacedKey("crystalized", "block/nexus/" + name);
 		this.symbol = symbol;
+		this.blockMaterial = blockMaterial;
 	}
 }

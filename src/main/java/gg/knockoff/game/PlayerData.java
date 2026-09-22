@@ -1,7 +1,6 @@
 package gg.knockoff.game;
 
 import com.destroystokyo.paper.ParticleBuilder;
-import gg.crystalized.lobby.Lobby_plugin;
 import gg.crystalized.lobby.Ranks;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -33,19 +32,35 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     public int deathtimer = 0;
     public int startingDeathTimerInt = 0;
     public boolean isOnline = true;
+    public boolean isParticipant = true;
     public int blocksplaced = 0;
     public int blocksbroken = 0;
     public int powerupscollected = 0;
     public int powerupsused = 0;
+    //The warning checks, to ensure that chat is not being spawned with the warnings about build limitations
+    //could have been simpler but if I did == some value check, it would sometimes spawn it multiple time anyway
+    public boolean warnedOutsideBuildLimit = false;
+    public boolean warnedFarBuildLimit = false;
+    public boolean warnedVeryFarBuildLimit = false;
+    //coold down before magma and cactuse damage applies
+    public int magmaDamageCooldown = 0;
+
 
     public int percent = 0;
     private int percentLimit = 300;
+    //This was added so it would only use the current secction for build distance check after all blocks in the previous section got deleted. Then reset when reenters
+    //the new section
+    public boolean onlyUseCurrentSectionForBuildDistance = false;
 
     public PlayerData(Player p) {
         player = p.getName();
         playerObject = p;
-        cachedRankIcon_small = Ranks.getIcon(Bukkit.getOfflinePlayer(player));
-        cachedRankIcon_full = Ranks.getRankWithName(p);
+				try {
+        	cachedRankIcon_small = Ranks.getIcon(Bukkit.getOfflinePlayer(player));
+        	cachedRankIcon_full = Ranks.getRankWithName(p);
+				} catch (NoClassDefFoundError e) {
+					Bukkit.getLogger().warning("no lobby plugin, so no ranks");
+				}
 
         new BukkitRunnable() {
             int timer = 0;
@@ -57,21 +72,19 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 p.removePotionEffect(PotionEffectType.DARKNESS);
 
                 //percent shit
+                if (p.getGameMode().equals(GameMode.SPECTATOR)) {
+                    percent = 0;
+                }
                 if (percent > 0) {
                     if (savedPercent != percent) {
                         savedPercent = percent;
                         timer = 6 * 20;
                     } else {
-                        timer --;
+                        timer--;
                         if (timer == 0) {
                             percent--;
                             savedPercent = percent;
                             timer = 1;
-                        }
-                        else if (p.getGameMode().equals(GameMode.SPECTATOR)) {
-                            percent = 0;
-                            savedPercent = -1;
-                            timer = 0;
                         }
                     }
                 } else {
@@ -126,7 +139,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 }
                 p.setLevel(0);
 
-                if (knockoff.getInstance().GameManager == null) {
+                if (knockoff.getInstance().gameManager == null) {
                     cancel();
                 }
             }

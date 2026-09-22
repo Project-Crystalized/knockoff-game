@@ -281,7 +281,7 @@ public class KnockoffItem {
             int timer = knockoff.getInstance().getRandomNumber(31, 40) * 20;
             public void run() {
                 DroppedItem.setGravity(false);
-                if (DroppedItem.isDead() || knockoff.getInstance().GameManager == null || timer == 0) {
+                if (DroppedItem.isDead() || knockoff.getInstance().gameManager == null || timer == 0) {
                     DroppedItem.remove();
                     DroppedItemName.remove();
                     DroppedItemDesc.remove();

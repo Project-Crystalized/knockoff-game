@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
 		event.joinMessage(Component.text(""));
 		//makes sure all active effects are cleared, cause I noticed strenght 2 was staying
 		p.clearActivePotionEffects();
-
+		p.setInvisible(false);
 		if (knockoff.getInstance().gameManager == null) {
 			//teleports at the spawn area in the waiting/source world
 			p.teleport(knockoff.getInstance().mapdata.get_que_spawn(knockoff.getInstance().getSourceWorld()));
@@ -268,7 +268,7 @@ public class PlayerListener implements Listener {
 								player.setGameMode(GameMode.SURVIVAL);
 								pd.setDeathtimer(0);
 								pd.isPlayerDead = false;
-								CustomPlayerNametags.CustomPlayerNametags(player);
+								//CustomPlayerNametags.CustomPlayerNametags(player);
 								if (pd.lives == 1) {
 									player.sendMessage(translatable("crystalized.game.knockoff.chat.one_life").color(NamedTextColor.RED));
 									player.playSound(player, "minecraft:block.note_block.pling", 1, 0.5f);
@@ -302,6 +302,7 @@ public class PlayerListener implements Listener {
 					.append(translatable("crystalized.game.knockoff.chat.eliminated")));
 			pd.isPlayerDead = true;
 			pd.isEliminated = true;
+			GameManager.setSpectator(player);
 			//The reason it checks if it kicks players at the end of the game is because this is pretty much a checker for self hosting
 			//so if it is not a self hosting, then it should kick the players at the end of the game, hence same here it doesn't need it
 			//if it is a self hosting thing.

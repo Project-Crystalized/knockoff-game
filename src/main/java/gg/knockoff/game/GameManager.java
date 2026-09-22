@@ -1,11 +1,12 @@
 package gg.knockoff.game;
 
-import com.comphenix.protocol.PacketType;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedDataValue;
 import com.fastasyncworldedit.core.Fawe;
+import com.github.retrooper.packetevents.event.PacketListener;
+import com.github.retrooper.packetevents.event.PacketSendEvent;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityData;
+import com.github.retrooper.packetevents.protocol.entity.data.EntityDataTypes;
+import com.github.retrooper.packetevents.protocol.packettype.PacketType;
+import com.github.retrooper.packetevents.wrapper.play.server.WrapperPlayServerEntityMetadata;
 import com.sk89q.worldedit.EditSession;
 import com.sk89q.worldedit.WorldEdit;
 import com.sk89q.worldedit.bukkit.BukkitAdapter;
@@ -15,6 +16,8 @@ import com.sk89q.worldedit.regions.CuboidRegion;
 import com.sk89q.worldedit.regions.Region;
 import com.sk89q.worldedit.world.block.BlockState;
 import gg.crystalized.lobby.Achievement;
+import gg.crystalized.lobby.App;
+import gg.crystalized.lobby.InventoryManager;
 import gg.crystalized.lobby.LevelManager;
 import gg.knockoff.game.CustomEntities.MapParticles;
 import gg.knockoff.game.hazards.*;
@@ -202,7 +205,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
             GiveTeamItems(p);
             if (Teams.GetPlayerTeam(p).equals("spectator")) {
-                p.setGameMode(GameMode.SPECTATOR);
+                setSpectator(p);
             } else {
                 p.setGameMode(GameMode.ADVENTURE);
                 //now happens after teleportation, as it was messing with the teleportation to game dimension
@@ -310,12 +313,22 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     }
 
+    public static void setSpectator(Player p){
+        p.setGameMode(GameMode.ADVENTURE);
+        p.getInventory().clear();
+        p.setInvisible(true);
+        p.setAllowFlight(true);
+        InventoryManager.giveLobbyItems(p);
+        p.getInventory().setItem(App.BackToHub.slot, App.BackToHub.build());
+        p.getInventory().setItem(App.Requeue.slot, App.Requeue.build());
+    }
+
     private void StartGameLoop() {
         for (Player p : Bukkit.getOnlinePlayers()) {
             if (!Teams.GetPlayerTeam(p).equals("spectator")) {
                 p.setGameMode(GameMode.SURVIVAL);
             } else {
-                p.setGameMode(GameMode.SPECTATOR);
+                setSpectator(p);
                 PlayerData pd = getPlayerData(p);
                 if (pd == null) continue;
                 pd.isEliminated = true;
@@ -620,6 +633,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                             if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 int[] i = knockoff.getInstance().mapdata.extras.podiumTP;
                                 p.teleport(new Location(knockoff.getInstance().getGameWorld(), i[0], i[1], i[2], i[3], i[4]));
+                                InventoryManager.giveLobbyItems(p);
+                                p.getInventory().setItem(App.BackToHub.slot, App.BackToHub.build());
+                                p.getInventory().setItem(App.Requeue.slot, App.Requeue.build());
                             }
                         }
                         Bukkit.getServer().sendMessage(text("")
@@ -893,7 +909,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
         markEliminated(pd);
 
-        p.setGameMode(GameMode.SPECTATOR);
+        setSpectator(p);
         p.getInventory().clear();
         p.clearActivePotionEffects();
         p.teleport(knockoff.getInstance().mapdata.get_que_spawn(knockoff.getInstance().getGameWorld()));
@@ -1472,7 +1488,27 @@ class TabMenu {
     }
 }
 
-class KnockoffProtocolLib {
+class KnockoffProtocolLib implements PacketListener {
+    @Override
+    public void onPacketSend(PacketSendEvent event){
+        if(event.getPacketType() != PacketType.Play.Server.ENTITY_METADATA) {
+        return;
+        }
+        event.markForReEncode(true);
+        WrapperPlayServerEntityMetadata metaWrapper = new WrapperPlayServerEntityMetadata(event);
+        GameManager gc = knockoff.getInstance().gameManager;
+        Player updated_player = get_player_by_entity_id(metaWrapper.getEntityId());
+        if (gc == null
+              || updated_player == null
+                || !Teams.GetPlayerTeam(updated_player).equals(Teams.GetPlayerTeam(Bukkit.getPlayer(event.getUser().getUUID())))){
+           return;
+        }
+        List<EntityData<?>> data = metaWrapper.getEntityMetadata();
+        data.add(new EntityData<>(0, EntityDataTypes.BYTE, ((Integer) 0x40).byteValue()));
+        metaWrapper.setEntityMetadata(data);
+    }
+
+    /*
 
     public static PacketAdapter make_allys_glow() {
         return new PacketAdapter(knockoff.getInstance(), PacketType.Play.Server.ENTITY_METADATA) {
@@ -1497,7 +1533,11 @@ class KnockoffProtocolLib {
                 }
             }
         };
+
+
     }
+
+     */
 
     private static Player get_player_by_entity_id(int id) {
         for (Player player : Bukkit.getOnlinePlayers()) {

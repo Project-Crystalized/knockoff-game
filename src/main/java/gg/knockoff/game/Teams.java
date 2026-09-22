@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import gg.crystalized.lobby.Nametag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
@@ -495,7 +496,18 @@ class TeamStatus {
 
 class CustomPlayerNametags {
 	public static void CustomPlayerNametags(Player player) {
-
+		PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
+		Component[] content = new Component[2];
+		content[1] = player.displayName();
+		if (pd != null) {
+			content[0] = text("KB: ")
+					.append(text(pd.percent))
+					.append(text("% | "))
+					.append(text(pd.getLives()))
+					.append(text("x \uE12C"));
+		}
+		final Nametag tag = Nametag.reloadNametag(player, content);
+		/*
 		Location ploc = new Location(player.getWorld(), player.getX(), player.getY(), player.getZ(), player.getYaw(),
 				player.getPitch());
 		TextDisplay displayfront = ploc.getWorld().spawn(ploc, TextDisplay.class, entity -> {
@@ -507,39 +519,40 @@ class CustomPlayerNametags {
 		player.addPassenger(displayfront);
 		player.hideEntity(knockoff.getInstance(), displayfront);
 
+		 */
+
 		new BukkitRunnable() {
 			public void run() {
 				if (knockoff.getInstance().gameManager == null || !player.isOnline()) {
-					displayfront.remove();
+					Nametag.disconnect(player);
 					cancel();
-				} else {
-					PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
-					if (pd == null) {
-						displayfront.remove();
-						cancel();
-						return;
-					}
-					if (pd.isPlayerDead) {
-						displayfront.text(text(""));
-					} else {
-						Component rankDisplay;
-						if (pd.cachedRankIcon_full.equals(text(""))) {
-							rankDisplay = text("");
-						} else {
-							rankDisplay = pd.cachedRankIcon_full.append(text("\n"));
-						}
-
-						displayfront.text(rankDisplay
-								.append(player.displayName())
-								.append(text("\nKB: "))
-								.append(text(pd.percent))
-								.append(text("% | "))
-								.append(text(pd.getLives()))
-								.append(text("x \uE12C"))
-						);
-					}
+					return;
 				}
-			} //Change to 1L as it is expecting a long (During database issues debuging) - Mish
+				PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
+				if (pd == null) {
+					Nametag.disconnect(player);
+					cancel();
+					return;
+				}
+				if (pd.isPlayerDead) {
+					tag.updateContent(new Component[]{text("")});
+				} else {
+					Component rankDisplay;
+					if (pd.cachedRankIcon_full.equals(text(""))) {
+						rankDisplay = text("");
+					} else {
+						rankDisplay = pd.cachedRankIcon_full;
+					}
+					content[1] = rankDisplay.append(player.displayName());
+					content[0] = text("KB: ")
+							.append(text(pd.percent))
+							.append(text("% | "))
+							.append(text(pd.getLives()))
+							.append(text("x \uE12C"));
+					tag.updateContent(content);
+				}
+			}
+			 //Change to 1L as it is expecting a long (During database issues debuging) - Mish
 		}.runTaskTimer(knockoff.getInstance(), 1L, 1L);
 	}
 }

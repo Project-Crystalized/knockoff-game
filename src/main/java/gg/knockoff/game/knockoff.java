@@ -1,12 +1,14 @@
 package gg.knockoff.game;
 
-import com.comphenix.protocol.ProtocolLibrary;
-import com.comphenix.protocol.ProtocolManager;
+import com.github.retrooper.packetevents.PacketEvents;
+import com.github.retrooper.packetevents.event.EventManager;
+import com.github.retrooper.packetevents.event.PacketListenerPriority;
 import com.mojang.brigadier.Command;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import gg.crystalized.lobby.Lobby_plugin;
 import gg.knockoff.game.hazards.hazard;
+import io.github.retrooper.packetevents.factory.spigot.SpigotPacketEventsBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
@@ -40,7 +42,6 @@ public final class knockoff extends JavaPlugin {
     public boolean is_force_starting = false;
     public GameManager gameManager;
     public boolean DevMode = false;
-    public ProtocolManager protocolmanager;
     private static boolean GameCountdownStarted = false;
 
     private int PlayerStartLimit = 3;
@@ -48,12 +49,21 @@ public final class knockoff extends JavaPlugin {
     private GameManager.GameTypes type;
     static boolean commandStarting = false;
 
+    @Override
+    public void onLoad(){
+        PacketEvents.setAPI(SpigotPacketEventsBuilder.build(this));
+        PacketEvents.getAPI().getSettings().reEncodeByDefault(false).checkForUpdates(true).bStats(false);
+        PacketEvents.getAPI().load();
+        EventManager events = PacketEvents.getAPI().getEventManager();
+        events.registerListener(new KnockoffProtocolLib(), PacketListenerPriority.NORMAL);
+    }
+
     @Override @SuppressWarnings("deprication") //FAWE has deprecation notices from WorldEdit that's printed in console when compiled
     public void onEnable() {
         //Map data depends on world manager similiar to Crystal Blitz
         worldManager = new WorldManager(this);
         mapdata = new MapData();
-        protocolmanager = ProtocolLibrary.getProtocolManager();
+        PacketEvents.getAPI().init();
         this.getServer().getPluginManager().registerEvents(new PlayerListener(), this);
         this.getServer().getPluginManager().registerEvents(new DamagePercentage(), this);
         this.getServer().getPluginManager().registerEvents(new CrystalBlocks(), this);
@@ -80,7 +90,7 @@ public final class knockoff extends JavaPlugin {
         //makes the rules identical in worlds
         setupWorldRules(getSourceWorld());
         setupWorldRules(getGameWorld());
-
+        Lobby_plugin.getInstance().doNametagsDespitePassive = true;
         //This is weird
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             LiteralArgumentBuilder<CommandSourceStack> command = Commands.literal("knockoff");
@@ -348,8 +358,6 @@ public final class knockoff extends JavaPlugin {
                 }
             }
         }.runTaskTimer(knockoff.getInstance(), 1, 20);
-
-        protocolmanager.addPacketListener(KnockoffProtocolLib.make_allys_glow());
         getLogger().log(Level.INFO, "KnockOff Plugin Enabled!");
 
     }
@@ -383,6 +391,7 @@ public final class knockoff extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        PacketEvents.getAPI().terminate();
         getLogger().log(Level.INFO, "Knockoff Plugin Disabling. If this is a reload, We highly recommend restarting instead");
     }
 

@@ -506,7 +506,7 @@ class CustomPlayerNametags {
 					.append(text(pd.getLives()))
 					.append(text("x \uE12C"));
 		}
-		final Nametag tag = Nametag.reloadNametag(player, content);
+		Nametag tag = Nametag.reloadNametag(player, content);
 		/*
 		Location ploc = new Location(player.getWorld(), player.getX(), player.getY(), player.getZ(), player.getYaw(),
 				player.getPitch());

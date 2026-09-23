@@ -58,7 +58,7 @@ public class PlayerListener implements Listener {
 		event.joinMessage(Component.text(""));
 		//makes sure all active effects are cleared, cause I noticed strenght 2 was staying
 		p.clearActivePotionEffects();
-		p.setInvisible(false);
+		GameManager.unsetSpectator(p);
 		if (knockoff.getInstance().gameManager == null) {
 			//teleports at the spawn area in the waiting/source world
 			p.teleport(knockoff.getInstance().mapdata.get_que_spawn(knockoff.getInstance().getSourceWorld()));
@@ -565,6 +565,11 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void onPlayerSuffocate(EntityDamageEvent event) {
 		if (!(event.getEntity() instanceof Player p)) {
+			return;
+		}
+
+		if(p.getGameMode() == GameMode.ADVENTURE){
+			event.setCancelled(true);
 			return;
 		}
 		//needs to be suffucating in the wall forit to count

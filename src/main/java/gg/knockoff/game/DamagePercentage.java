@@ -26,6 +26,11 @@ public class DamagePercentage implements Listener {
         Entity e = event.getEntity();
         if (e instanceof Player) {
             Player p = (Player) e;
+            if(p.getGameMode() == GameMode.ADVENTURE){
+                event.setCancelled(true);
+                return;
+            }
+
             PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
             if (pd == null) return;
 
@@ -117,7 +122,10 @@ public class DamagePercentage implements Listener {
             if (ppd == null) return;
             Player d = (Player) e.getDamager();
             GameManager gm = knockoff.getInstance().gameManager;
-
+            if(d.getGameMode() == GameMode.ADVENTURE){
+                e.setCancelled(true);
+                return;
+            }
             if (gm.teams.GetPlayerTeam(p).equals(gm.teams.GetPlayerTeam(d))) {
                 e.setCancelled(true);
                 return;

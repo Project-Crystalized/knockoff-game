@@ -644,9 +644,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 int[] i = knockoff.getInstance().mapdata.extras.podiumTP;
                                 p.teleport(new Location(knockoff.getInstance().getGameWorld(), i[0], i[1], i[2], i[3], i[4]));
-                                InventoryManager.giveLobbyItems(p);
-                                p.getInventory().setItem(App.BackToHub.slot, App.BackToHub.build());
-                                p.getInventory().setItem(App.Requeue.slot, App.Requeue.build());
+                                setSpectator(p);
                             }
                         }
                         Bukkit.getServer().sendMessage(text("")

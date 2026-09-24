@@ -413,6 +413,10 @@ public class PlayerListener implements Listener {
 	@EventHandler
 	public void OnPlayerItemInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		if (knockoff.getInstance().gameManager != null && player.getGameMode() == GameMode.ADVENTURE && event.getClickedBlock() != null) {
+			event.setCancelled(true);
+			return;
+		}
 		if (knockoff.getInstance().gameManager != null) {
 			PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
 			if (pd == null) return;
@@ -630,6 +634,23 @@ public class PlayerListener implements Listener {
 			p.teleport(queueSpawn);
 			//makes sure fall distanse is 0
 			p.setFallDistance(0);
+		}
+	}
+
+	//prevents picking up of items by spectating players.
+	@EventHandler
+	public void onSpectatorPickup(EntityPickupItemEvent e) {
+		if (e.getEntity() instanceof Player p && knockoff.getInstance().gameManager != null && p.getGameMode() == GameMode.ADVENTURE) {
+			e.setCancelled(true);
+		}
+	}
+
+	//prevents dropping items while player is a spectator.
+	@EventHandler
+	public void onSpectatorDrop(PlayerDropItemEvent e) {
+		Player p = e.getPlayer();
+		if (knockoff.getInstance().gameManager != null && p.getGameMode() == GameMode.ADVENTURE) {
+			e.setCancelled(true);
 		}
 	}
 }

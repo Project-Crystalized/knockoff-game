@@ -324,6 +324,17 @@ public class GameManager { //I honestly think this entire class could be optimis
         InventoryManager.giveLobbyItems(p);
         p.getInventory().setItem(App.BackToHub.slot, App.BackToHub.build());
         p.getInventory().setItem(App.Requeue.slot, App.Requeue.build());
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            //skips itself
+            if (player.equals(p)) {
+                continue;
+            }
+            //Only the current playing players will not know that the spectator exists
+            if (player.getGameMode() == GameMode.SURVIVAL) {
+                player.hidePlayer(knockoff.getInstance(), p);
+            }
+        }
     }
 
     public static void unsetSpectator(Player p){
@@ -332,6 +343,9 @@ public class GameManager { //I honestly think this entire class could be optimis
         p.setAllowFlight(false);
         p.setFlying(false);
         p.setCollidable(true);
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            player.showPlayer(knockoff.getInstance(), p);
+        }
     }
 
     private void StartGameLoop() {

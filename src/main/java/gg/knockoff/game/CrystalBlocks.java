@@ -22,6 +22,10 @@ public class CrystalBlocks implements Listener {
         Player p = event.getPlayer();
         Block b = event.getBlock();
         if (knockoff.getInstance().gameManager == null) return;
+        if(p.getGameMode() == GameMode.ADVENTURE){
+            event.setCancelled(true);
+            return;
+        }
         PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
         if (pd == null) return;
         ItemStack itemUsed;
@@ -178,6 +182,10 @@ public class CrystalBlocks implements Listener {
         Player player = event.getPlayer();
         Block block = player.getTargetBlock(null ,5);
         if (knockoff.getInstance().gameManager != null && event.getAction() == Action.LEFT_CLICK_BLOCK) {
+            if(player.getGameMode() == GameMode.ADVENTURE){
+                event.setCancelled(true);
+                return;
+            }
             //Gets the player's starter border
             WorldBorder startingBorder = player.getWorldBorder();
 

@@ -324,6 +324,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         InventoryManager.giveLobbyItems(p);
         p.getInventory().setItem(App.BackToHub.slot, App.BackToHub.build());
         p.getInventory().setItem(App.Requeue.slot, App.Requeue.build());
+        p.getInventory().setItem(6, new ItemStack(Material.COMPASS));
 
         for (Player player : Bukkit.getOnlinePlayers()) {
             //skips itself

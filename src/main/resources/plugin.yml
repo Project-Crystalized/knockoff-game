@@ -3,7 +3,7 @@ version: '1.0.0'
 main: gg.knockoff.game.knockoff
 #Updated the API to the latest version
 api-version: '26.2'
-depend: [FastAsyncWorldEdit, Crystalized_Essentials, ProtocolLib, floodgate]
+depend: [Lobby_plugin, FastAsyncWorldEdit, Crystalized_Essentials, ProtocolLib, floodgate, packetevents]
 authors: [Project Crystalized Team, Callum_Is_Bad]
 prefix: Knockoff
 description: Recreation of TubNet's Knockout! Now open source and remade by Project Crystalized

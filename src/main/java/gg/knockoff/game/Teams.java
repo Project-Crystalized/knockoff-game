@@ -4,10 +4,12 @@ import gg.crystalized.lobby.Nametag;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.*;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Display;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TextDisplay;
+import org.bukkit.event.block.BlockFadeEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Transformation;
 import org.joml.Quaternionf;
@@ -562,26 +564,24 @@ class TeamData {
 	public final Color color;
     public final NamespacedKey item_model;
 	public final String symbol;
-	//aded block material so that the teams can have matching color block by default so that there won't be a weird flash of purple
 	public final Material blockMaterial;
+	public final BlockFace facing;
 
 	public static List<TeamData> create_teams() {
 		List<TeamData> list = new ArrayList<>();
-		//gave specators just white concrete.
-		list.add(new TeamData("spectator", Color.fromRGB(0xFFFFFF), " ", Material.WHITE_CONCRETE));
-		//The powdered concrete is used for team block.
-		list.add(new TeamData("blue", Color.fromRGB(0x0A42BB), "\uE120 ", Material.BLUE_CONCRETE_POWDER));
-		list.add(new TeamData("cyan", Color.fromRGB(0x157D91), "\uE121 ", Material.CYAN_CONCRETE_POWDER));
-		list.add(new TeamData("green", Color.fromRGB(0x0A971E), "\uE122 ", Material.GREEN_CONCRETE_POWDER));
-		list.add(new TeamData("lemon", Color.fromRGB(0xFFC500), "\uE128 ", Material.YELLOW_CONCRETE_POWDER));
-		list.add(new TeamData("lime", Color.fromRGB(0x67E555), "\uE123 ", Material.LIME_CONCRETE_POWDER));
-		list.add(new TeamData("magenta", Color.fromRGB(0xDA50E0), "\uE124 ", Material.MAGENTA_CONCRETE_POWDER));
-		list.add(new TeamData("orange", Color.fromRGB(0xFF7900), "\uE129 ", Material.ORANGE_CONCRETE_POWDER));
-		list.add(new TeamData("peach", Color.fromRGB(0xFF8775), "\uE12A ", Material.PINK_CONCRETE_POWDER));
-		list.add(new TeamData("purple", Color.fromRGB(0x7525DC), "\uE12B ", Material.PURPLE_CONCRETE_POWDER));
-		list.add(new TeamData("red", Color.fromRGB(0xF74036), "\uE125 ", Material.RED_CONCRETE_POWDER));
-		list.add(new TeamData("white", Color.fromRGB(0xFFFFFF), "\uE126 ", Material.WHITE_CONCRETE_POWDER));
-		list.add(new TeamData("yellow", Color.fromRGB(0xFBE059), "\uE127 ", Material.YELLOW_CONCRETE_POWDER));
+		list.add(new TeamData("spectator", Color.fromRGB(0xFFFFFF), " ", null, null));
+		list.add(new TeamData("blue", Color.fromRGB(0x0A42BB), "\uE120 ", Material.WHITE_GLAZED_TERRACOTTA, BlockFace.EAST));
+		list.add(new TeamData("cyan", Color.fromRGB(0x157D91), "\uE121 ", Material.WHITE_GLAZED_TERRACOTTA, BlockFace.NORTH));
+		list.add(new TeamData("green", Color.fromRGB(0x0A971E), "\uE122 ", Material.WHITE_GLAZED_TERRACOTTA, BlockFace.SOUTH));
+		list.add(new TeamData("lemon", Color.fromRGB(0xFFC500), "\uE128 ", Material.WHITE_GLAZED_TERRACOTTA, BlockFace.WEST));
+		list.add(new TeamData("lime", Color.fromRGB(0x67E555), "\uE123 ", Material.LIGHT_GRAY_GLAZED_TERRACOTTA, BlockFace.EAST));
+		list.add(new TeamData("magenta", Color.fromRGB(0xDA50E0), "\uE124 ", Material.LIGHT_GRAY_GLAZED_TERRACOTTA, BlockFace.NORTH));
+		list.add(new TeamData("orange", Color.fromRGB(0xFF7900), "\uE129 ", Material.LIGHT_GRAY_GLAZED_TERRACOTTA, BlockFace.SOUTH));
+		list.add(new TeamData("peach", Color.fromRGB(0xFF8775), "\uE12A ", Material.LIGHT_GRAY_GLAZED_TERRACOTTA, BlockFace.WEST));
+		list.add(new TeamData("purple", Color.fromRGB(0x7525DC), "\uE12B ", Material.GRAY_GLAZED_TERRACOTTA, BlockFace.EAST));
+		list.add(new TeamData("red", Color.fromRGB(0xF74036), "\uE125 ", Material.GRAY_GLAZED_TERRACOTTA, BlockFace.NORTH));
+		list.add(new TeamData("white", Color.fromRGB(0xFFFFFF), "\uE126 ", Material.GRAY_GLAZED_TERRACOTTA, BlockFace.SOUTH));
+		list.add(new TeamData("yellow", Color.fromRGB(0xFBE059), "\uE127 ", Material.GRAY_GLAZED_TERRACOTTA, BlockFace.WEST));
 		//list.add(new TeamData("weak", Color.fromRGB(0xFFFFFF), "? "));
 		//list.add(new TeamData("strong", Color.fromRGB(0xFFFFFF), "? "));
 		return list;
@@ -596,11 +596,12 @@ class TeamData {
 		return null;
 	}
 
-	public TeamData(String name, Color color, String symbol, Material blockMaterial) {
+	public TeamData(String name, Color color, String symbol, Material blockMaterial, BlockFace facing) {
 		this.name = name;
 		this.color = color;
         this.item_model = new NamespacedKey("crystalized", "block/nexus/" + name);
 		this.symbol = symbol;
 		this.blockMaterial = blockMaterial;
+		this.facing = facing;
 	}
 }

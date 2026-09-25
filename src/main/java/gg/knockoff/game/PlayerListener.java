@@ -1,10 +1,7 @@
 package gg.knockoff.game;
 
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
-import gg.crystalized.lobby.Achievement;
-import gg.crystalized.lobby.LevelManager;
-import gg.crystalized.lobby.Lobby_plugin;
-import gg.crystalized.lobby.Ranks;
+import gg.crystalized.lobby.*;
 import io.papermc.paper.event.block.VaultChangeStateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import net.kyori.adventure.key.Key;
@@ -151,6 +148,7 @@ public class PlayerListener implements Listener {
 		} else {
 			knockoff.getInstance().gameManager.addSpectator(p);
 			p.sendMessage(translatable("crystalized.game.knockoff.chat.spec_join").color(NamedTextColor.GRAY));
+			CustomPlayerNametags.CustomPlayerNametags(p);
 		}
 	}
 

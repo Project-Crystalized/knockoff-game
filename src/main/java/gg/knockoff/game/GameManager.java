@@ -932,8 +932,6 @@ public class GameManager { //I honestly think this entire class could be optimis
             playerDatas.add(pd);
         }
         markEliminated(pd);
-
-        setSpectator(p);
         p.getInventory().clear();
         p.clearActivePotionEffects();
         p.teleport(knockoff.getInstance().mapdata.get_que_spawn(knockoff.getInstance().getGameWorld()));
@@ -942,6 +940,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         p.setWorldBorder(PlayerBorder);
         PlayerBorder.setCenter(p.getX() + 0.5, p.getZ() + 0.5);
         PlayerBorder.setSize(3);
+        setSpectator(p);
 
         Bukkit.getLogger().info("[Knockoff] " + p.getName() + " joined mid-game as a spectator.");
     }

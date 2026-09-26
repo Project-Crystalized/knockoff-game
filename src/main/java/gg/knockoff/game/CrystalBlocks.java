@@ -42,7 +42,6 @@ public class CrystalBlocks implements Listener {
             int decayingDistance = MapManager.getDistanceOutsideDecayingSection(b.getLocation());
             outsideDistance = Math.min(currentDistance, decayingDistance);
         }
-        //checker to see if inside the map or not
         boolean insideMap = MapManager.isInsideCurrentSection(b.getLocation()) || MapManager.isInsideDecayingSection(b.getLocation());
         //This is the final build limit which prevents the building when outside distanse becomes more than a 100
         if (outsideDistance > 100) {
@@ -110,13 +109,6 @@ public class CrystalBlocks implements Listener {
             GameManager.startBreakingCrystal(b, 15 * 20, 20, false);
 
         }
-        /*
-        OLD LOGIC:
-        if (!(MapManager.isInsideCurrentSection(b.getLocation()) || MapManager.isInsideDecayingSection(b.getLocation()))) {
-            event.setCancelled(true);
-            p.sendMessage(translatable("crystalized.game.knockoff.chat.build_out").color(NamedTextColor.RED));
-            return;
-        }*/
 
         itemUsed = event.getItemInHand();
         Bukkit.getScheduler().runTaskLater(knockoff.getInstance(), () -> {
@@ -164,9 +156,12 @@ public class CrystalBlocks implements Listener {
                 }
             }
 
+            for (Player pl : knockoff.getInstance().getActiveWorld().getPlayers()) {
+                //TODO idk how to stop the glazed terracotta place sound, stopping the generic stone sound doens't work - Callum
+                pl.playSound(b.getLocation(), "minecraft:block.amethyst_block.place", 1, 1);
+            }
             b.setBlockData(dir);
             b.getState().update();
-            //adds it to the player placed blocks list
             GameManager.playerPlacdBlocks.add(b);
             pd.blocksplaced++;
         }

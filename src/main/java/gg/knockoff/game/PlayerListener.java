@@ -1,10 +1,7 @@
 package gg.knockoff.game;
 
 import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
-import gg.crystalized.lobby.Achievement;
-import gg.crystalized.lobby.LevelManager;
-import gg.crystalized.lobby.Lobby_plugin;
-import gg.crystalized.lobby.Ranks;
+import gg.crystalized.lobby.*;
 import io.papermc.paper.event.block.VaultChangeStateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
 import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
@@ -123,6 +120,7 @@ public class PlayerListener implements Listener {
 					player1.unlistPlayer(player2);
 				}
 			}
+			CustomPlayerNametags.CustomPlayerNametags(p);
 		}
 		//must happen regardless as all players should be consindered, otherwise if spectator becomes a player again they won't jump
 		//tested with kicking off. 

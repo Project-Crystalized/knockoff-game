@@ -35,10 +35,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.SideChaining;
+import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.block.data.type.Shelf;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BlockDataMeta;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -879,6 +882,9 @@ public class GameManager { //I honestly think this entire class could be optimis
             im.lore(lore);
             PersistentDataContainer pdc = im.getPersistentDataContainer();
             pdc.set(new NamespacedKey("knockoff", "iscrystal"), PersistentDataType.BOOLEAN, true);
+            Directional placedAs = (Directional) td.blockMaterial.createBlockData();
+            placedAs.setFacing(td.facing);
+            ((BlockDataMeta) im).setBlockData(placedAs);
             item.setItemMeta(im);
             player.getInventory().addItem(item);
         }

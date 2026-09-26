@@ -504,7 +504,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         pd.magmaDamageCooldown--;
                     }
                     if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
+                        if (p.getGameMode().equals(GameMode.SURVIVAL)) {
+                            p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false,
+                                    true, true));
+                        }
                     }
 
                     Location loc = p.getLocation();

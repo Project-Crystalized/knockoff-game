@@ -331,10 +331,9 @@ public class GameManager { //I honestly think this entire class could be optimis
             if (player.equals(p)) {
                 continue;
             }
-            //Only the current playing players will not know that the spectator exists
-            if (player.getGameMode() == GameMode.SURVIVAL) {
-                player.hidePlayer(knockoff.getInstance(), p);
-            }
+            //No players will see the spectators except the spectator.
+            player.hidePlayer(knockoff.getInstance(), p);
+
         }
     }
 
@@ -752,6 +751,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             p.leaveVehicle();
             p.setFallDistance(0);
             p.getInventory().clear();
+            //unsets spectator before kicking/sending back to main world.
+            unsetSpectator(p);
             //kicks players and gives the crystalizied awards. Needs to kick to move back to main lobby.
             if (kickPlayersAtGameEnd ) {
                 // FixMe send players back to lobby (Moved to only when kicking players)

@@ -5,6 +5,7 @@ import gg.knockoff.game.knockoff;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.TNTPrimed;
@@ -34,7 +35,7 @@ public class TNT extends hazard {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
                     if (pd == null) continue;
-                    if (!pd.isPlayerDead) {
+                    if (!pd.isPlayerDead  && player.getGameMode() == GameMode.SURVIVAL) {
                         Location loc = new Location(player.getWorld(), player.getX(), player.getY() + 10, player.getZ(), player.getYaw(), player.getPitch());
                         TNTPrimed TNT = player.getWorld().spawn(loc, TNTPrimed.class, entity -> {
 

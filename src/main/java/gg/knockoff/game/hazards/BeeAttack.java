@@ -58,7 +58,7 @@ public class BeeAttack extends hazard {
                 //get random player
                 List<Player> playerList = new ArrayList<>();
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                    if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                         playerList.add(p);
                     }
                 }

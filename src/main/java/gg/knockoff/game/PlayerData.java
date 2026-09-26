@@ -72,7 +72,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 p.removePotionEffect(PotionEffectType.DARKNESS);
 
                 //percent shit
-                if (p.getGameMode().equals(GameMode.SPECTATOR)) {
+                if (!p.getGameMode().equals(GameMode.SURVIVAL)) {
                     percent = 0;
                 }
                 if (percent > 0) {
@@ -126,7 +126,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
                 }
 
                 //percent on actionbar
-                if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                     //p.sendActionBar(text("" + percent + "% | T:" + timer + " SP:" + savedPercent));
                     p.sendActionBar(text(percentToFont(percent + "%")).color(percentColour()));
                     float exp = (float) percent / 100;

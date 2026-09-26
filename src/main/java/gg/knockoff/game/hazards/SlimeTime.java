@@ -4,6 +4,7 @@ import gg.knockoff.game.knockoff;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.title.Title;
 import org.bukkit.Bukkit;
+import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -23,7 +24,9 @@ public class SlimeTime extends hazard {
     @Override
     public void start() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 12 * 20, 2, false, false, true));
+            if (player.getGameMode() == GameMode.SURVIVAL) {
+                player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, 12 * 20, 2, false, false, true));
+            }
             player.playSound(player, "minecraft:block.conduit.activate", 50, 1);
         }
         displayHazard(

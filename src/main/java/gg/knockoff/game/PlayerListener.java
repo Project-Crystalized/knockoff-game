@@ -111,48 +111,55 @@ public class PlayerListener implements Listener {
 			} else {
 				p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
 			}
-
-            new BukkitRunnable() {
-                int padCooldown = 0; //in ticks
-                public void run() {
-                    if (!p.isOnline()) {
-                        cancel();
-                    }
-
-                    //launch/effect pads
-                    if (padCooldown == 0) {
-						//Prevents adventure spectators launch while game is going on
-                        if (!p.getGameMode().equals(GameMode.SPECTATOR) && (p.getGameMode().equals(GameMode.ADVENTURE) ||
-								knockoff.getInstance().gameManager == null)) {
-                            Block block_under = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
-                            switch (block_under.getType()) {
-                                case Material.COPPER_BLOCK -> {
-                                    p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
-                                    p.setVelocity(p.getLocation().getDirection().multiply(1.5));
-                                    padCooldown = 20;
-                                }
-                                case Material.CHISELED_COPPER -> {
-                                    p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
-                                    p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, (20), 7));
-                                    padCooldown = 20;
-                                }
-                                case Material.CUT_COPPER -> {
-                                    p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
-                                    p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 40, 6));
-                                    padCooldown = 35;
-                                }
-                            }
-                        }
-                    } else {
-                        padCooldown--;
-                    }
-                }
-            }.runTaskTimer(knockoff.getInstance(), 1, 1);
 		} else {
 			knockoff.getInstance().gameManager.addSpectator(p);
 			p.sendMessage(translatable("crystalized.game.knockoff.chat.spec_join").color(NamedTextColor.GRAY));
+			//Hides tab like in Crystal Blitz
+			for (Player player1 : Bukkit.getOnlinePlayers()) {
+				for (Player player2 : Bukkit.getOnlinePlayers()) {
+					player1.unlistPlayer(player2);
+				}
+			}
 			CustomPlayerNametags.CustomPlayerNametags(p);
 		}
+		//must happen regardless as all players should be consindered, otherwise if spectator becomes a player again they won't jump
+		//tested with kicking off. 
+		new BukkitRunnable() {
+			int padCooldown = 0; //in ticks
+			public void run() {
+				if (!p.isOnline()) {
+					cancel();
+					return;
+				}
+
+				//launch/effect pads
+				if (padCooldown == 0) {
+					//Prevents adventure spectators launch while game is going on
+					if (knockoff.getInstance().gameManager == null || p.getGameMode() == GameMode.SURVIVAL) {
+						Block block_under = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
+						switch (block_under.getType()) {
+							case Material.COPPER_BLOCK -> {
+								p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
+								p.setVelocity(p.getLocation().getDirection().multiply(1.5));
+								padCooldown = 20;
+							}
+							case Material.CHISELED_COPPER -> {
+								p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, (20), 7));
+								padCooldown = 20;
+							}
+							case Material.CUT_COPPER -> {
+								p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 40, 6));
+								padCooldown = 35;
+							}
+						}
+					}
+				} else {
+					padCooldown--;
+				}
+			}
+		}.runTaskTimer(knockoff.getInstance(), 1, 1);
 	}
 
 	@EventHandler

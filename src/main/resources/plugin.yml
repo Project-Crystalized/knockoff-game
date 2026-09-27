@@ -1,4 +1,4 @@
-name: knockoff-game
+name: knockoff
 version: '1.0.0'
 main: gg.knockoff.game.knockoff
 #Updated the API to the latest version

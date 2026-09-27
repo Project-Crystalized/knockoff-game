@@ -4,6 +4,7 @@ import com.destroystokyo.paper.event.player.PlayerConnectionCloseEvent;
 import gg.crystalized.lobby.*;
 import io.papermc.paper.event.block.VaultChangeStateEvent;
 import io.papermc.paper.event.player.AsyncChatEvent;
+import io.papermc.paper.event.player.PrePlayerAttackEntityEvent;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.sound.Sound;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -110,46 +111,55 @@ public class PlayerListener implements Listener {
 			} else {
 				p.sendMessage(text(" ".repeat(55)).decoration(TextDecoration.STRIKETHROUGH,  true));
 			}
-
-            new BukkitRunnable() {
-                int padCooldown = 0; //in ticks
-                public void run() {
-                    if (!p.isOnline()) {
-                        cancel();
-                    }
-
-                    //launch/effect pads
-                    if (padCooldown == 0) {
-                        if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
-                            Block block_under = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
-                            switch (block_under.getType()) {
-                                case Material.COPPER_BLOCK -> {
-                                    p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
-                                    p.setVelocity(p.getLocation().getDirection().multiply(1.5));
-                                    padCooldown = 20;
-                                }
-                                case Material.CHISELED_COPPER -> {
-                                    p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
-                                    p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, (20), 7));
-                                    padCooldown = 20;
-                                }
-                                case Material.CUT_COPPER -> {
-                                    p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
-                                    p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 40, 6));
-                                    padCooldown = 35;
-                                }
-                            }
-                        }
-                    } else {
-                        padCooldown--;
-                    }
-                }
-            }.runTaskTimer(knockoff.getInstance(), 1, 1);
 		} else {
 			knockoff.getInstance().gameManager.addSpectator(p);
 			p.sendMessage(translatable("crystalized.game.knockoff.chat.spec_join").color(NamedTextColor.GRAY));
+			//Hides tab like in Crystal Blitz
+			for (Player player1 : Bukkit.getOnlinePlayers()) {
+				for (Player player2 : Bukkit.getOnlinePlayers()) {
+					player1.unlistPlayer(player2);
+				}
+			}
 			CustomPlayerNametags.CustomPlayerNametags(p);
 		}
+		//must happen regardless as all players should be consindered, otherwise if spectator becomes a player again they won't jump
+		//tested with kicking off. 
+		new BukkitRunnable() {
+			int padCooldown = 0; //in ticks
+			public void run() {
+				if (!p.isOnline()) {
+					cancel();
+					return;
+				}
+
+				//launch/effect pads
+				if (padCooldown == 0) {
+					//Prevents adventure spectators launch while game is going on
+					if (knockoff.getInstance().gameManager == null || p.getGameMode() == GameMode.SURVIVAL) {
+						Block block_under = p.getLocation().getBlock().getRelative(BlockFace.DOWN);
+						switch (block_under.getType()) {
+							case Material.COPPER_BLOCK -> {
+								p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
+								p.setVelocity(p.getLocation().getDirection().multiply(1.5));
+								padCooldown = 20;
+							}
+							case Material.CHISELED_COPPER -> {
+								p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.JUMP_BOOST, (20), 7));
+								padCooldown = 20;
+							}
+							case Material.CUT_COPPER -> {
+								p.playSound(p, "crystalized:effect.hazard_positive", 1, 1);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 40, 6));
+								padCooldown = 35;
+							}
+						}
+					}
+				} else {
+					padCooldown--;
+				}
+			}
+		}.runTaskTimer(knockoff.getInstance(), 1, 1);
 	}
 
 	@EventHandler
@@ -171,7 +181,7 @@ public class PlayerListener implements Listener {
 
 		PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(player);
 		if (pd == null) return;
-		if (player.getGameMode().equals(GameMode.SPECTATOR)) {
+		if (!player.getGameMode().equals(GameMode.SURVIVAL)) {
 			return;
 		}
 		for (Player p : Bukkit.getOnlinePlayers()) {
@@ -470,6 +480,11 @@ public class PlayerListener implements Listener {
 		if (knockoff.getInstance().gameManager == null) {
 			event.setCancelled(true);
 		}
+		//Prevents the spectator from moving items around in inventory.
+		if (knockoff.getInstance().gameManager != null && event.getWhoClicked() instanceof Player p && p.getGameMode() == GameMode.ADVENTURE) {
+			event.setCancelled(true);
+			return;
+		}
 	}
 
 	@EventHandler
@@ -504,6 +519,11 @@ public class PlayerListener implements Listener {
     @EventHandler
     public void onSnowballHit(ProjectileHitEvent e) {
         if (knockoff.getInstance().gameManager == null) {return;}
+		//makes sure projectiles don't hit players in adventure spectator
+		if (e.getHitEntity() instanceof Player p && p.getGameMode() == GameMode.ADVENTURE) {
+			e.setCancelled(true);
+			return;
+		}
         Entity entity = e.getEntity();
         if (entity instanceof Snowball s) {
             Component text = s.customName();
@@ -644,6 +664,30 @@ public class PlayerListener implements Listener {
 	public void onSpectatorDrop(PlayerDropItemEvent e) {
 		Player p = e.getPlayer();
 		if (knockoff.getInstance().gameManager != null && p.getGameMode() == GameMode.ADVENTURE) {
+			e.setCancelled(true);
+		}
+	}
+
+	//Prevents spectators from being targeted by mobs
+	@EventHandler
+	public void onSpectatorTarget(EntityTargetLivingEntityEvent e) {
+		if (e.getTarget() instanceof Player p && p.getGameMode() == GameMode.ADVENTURE && knockoff.getInstance().gameManager != null) {
+			e.setCancelled(true);
+			e.setTarget(null);
+		}
+	}
+	//Prevents any attacks by spectattors like fire balls should not be deflectable at all.
+	//client sided may look like deflection has happened, but on everyones elses fire ball travels normaly
+	@EventHandler
+	public void onSpectatorAttack(PrePlayerAttackEntityEvent e) {
+		if (e.getPlayer().getGameMode() == GameMode.ADVENTURE && knockoff.getInstance().gameManager != null) {
+			e.setCancelled(true);
+		}
+	}
+	//Prevents any inteaction with entities
+	@EventHandler
+	public void onSpectatorEntityInteract(PlayerInteractEntityEvent e) {
+		if (knockoff.getInstance().gameManager != null && e.getPlayer().getGameMode() == GameMode.ADVENTURE) {
 			e.setCancelled(true);
 		}
 	}

@@ -35,10 +35,13 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.block.data.BlockData;
 import org.bukkit.block.data.Directional;
 import org.bukkit.block.data.SideChaining;
+import org.bukkit.block.data.type.NoteBlock;
 import org.bukkit.block.data.type.Shelf;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.BlockDataMeta;
+import org.bukkit.inventory.meta.BlockStateMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.persistence.PersistentDataContainer;
@@ -331,10 +334,9 @@ public class GameManager { //I honestly think this entire class could be optimis
             if (player.equals(p)) {
                 continue;
             }
-            //Only the current playing players will not know that the spectator exists
-            if (player.getGameMode() == GameMode.SURVIVAL) {
-                player.hidePlayer(knockoff.getInstance(), p);
-            }
+            //No players will see the spectators except the spectator.
+            player.hidePlayer(knockoff.getInstance(), p);
+
         }
     }
 
@@ -504,7 +506,10 @@ public class GameManager { //I honestly think this entire class could be optimis
                         pd.magmaDamageCooldown--;
                     }
                     if (p.getLocation().clone().add(0,-1,0).getBlock().getType().equals(Material.MANGROVE_LEAVES)) {
-                        p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false, true, true));
+                        if (p.getGameMode().equals(GameMode.SURVIVAL)) {
+                            p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 5 * 20, 0, false,
+                                    true, true));
+                        }
                     }
 
                     Location loc = p.getLocation();
@@ -707,6 +712,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                             if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 p.getInventory().clear();
                                 p.setGameMode(GameMode.ADVENTURE);
+                                unsetSpectator(p);
                             }
 
                             if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
@@ -749,6 +755,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             p.leaveVehicle();
             p.setFallDistance(0);
             p.getInventory().clear();
+            //unsets spectator before kicking/sending back to main world.
+            unsetSpectator(p);
             //kicks players and gives the crystalizied awards. Needs to kick to move back to main lobby.
             if (kickPlayersAtGameEnd ) {
                 // FixMe send players back to lobby (Moved to only when kicking players)
@@ -875,6 +883,9 @@ public class GameManager { //I honestly think this entire class could be optimis
             im.lore(lore);
             PersistentDataContainer pdc = im.getPersistentDataContainer();
             pdc.set(new NamespacedKey("knockoff", "iscrystal"), PersistentDataType.BOOLEAN, true);
+            Directional placedAs = (Directional) td.blockMaterial.createBlockData();
+            placedAs.setFacing(td.facing);
+            ((BlockDataMeta) im).setBlockData(placedAs);
             item.setItemMeta(im);
             player.getInventory().addItem(item);
         }

@@ -389,6 +389,10 @@ public class Exclusive_Elementals extends hazard {
                 }
 
                 for (Player p : Bukkit.getOnlinePlayers()) {
+                    //skips everyone who is not in survivial
+                    if (p.getGameMode() != GameMode.SURVIVAL) {
+                        continue;
+                    }
                     p.setVelocity(p.getVelocity().add(dir.entity_dir));
                 }
             }
@@ -616,7 +620,7 @@ public class Exclusive_Elementals extends hazard {
                             continue;
                         }
                         //Makes sure that players who are in spectator are ignored
-                        if(player.getGameMode() == GameMode.SPECTATOR){
+                        if(player.getGameMode() != GameMode.SURVIVAL) {
                             continue;
                         }
                         //The radius in which the effect will be applied

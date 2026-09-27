@@ -51,7 +51,7 @@ public class Train extends hazard {
         //If we want this hazard to be actually effective and not go some random direction nobody is at, we should try to target 1 player
         List<Player> playerList = new ArrayList<>();
         for (Player p : Bukkit.getOnlinePlayers()) {
-            if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+            if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                 playerList.add(p);
             }
             p.playSound(p, "crystalized:effect.ambient.train_horn", 1, 1);

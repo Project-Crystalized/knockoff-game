@@ -42,7 +42,7 @@ public class FloorIsCrystals extends hazard {
                     return;
                 }
                 for (Player p : Bukkit.getOnlinePlayers()) {
-                    if (!p.getGameMode().equals(GameMode.SPECTATOR)) {
+                    if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                         Location below = p.getLocation().add(0, -1, 0);
                         //This is dumb, but this should make the radius bigger than 1 singular block
                         crystal(below.getBlock());

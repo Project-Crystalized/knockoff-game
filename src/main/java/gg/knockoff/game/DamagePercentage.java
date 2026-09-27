@@ -105,7 +105,16 @@ public class DamagePercentage implements Listener {
             e.setCancelled(true);
             return;
         }
-
+        //Prevents any damage caused by adventure players.
+        if (damager instanceof Player p && p.getGameMode() == GameMode.ADVENTURE) {
+            e.setCancelled(true);
+            return;
+        }
+        //prevents any damaged caused to spectators by mobs etc
+        if (entity instanceof  Player p && p.getGameMode() == GameMode.ADVENTURE) {
+            e.setCancelled(true);
+            return;
+        }
         //player to player
         if (entity instanceof Player && damager instanceof Player) {
             Player p = (Player) e.getEntity();

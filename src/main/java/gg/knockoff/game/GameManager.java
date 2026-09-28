@@ -997,7 +997,8 @@ public class GameManager { //I honestly think this entire class could be optimis
         while (attempts < 1000) {
             attempts++;
             int x = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationX - 5, knockoff.getInstance().mapdata.getCurrentXLength() + 5);
-            int y = knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(0, 5);
+            //elevated the spawning area
+            int y = knockoff.getInstance().mapdata.getCurrentMiddleYLength() + knockoff.getInstance().getRandomNumber(2, 8);
             int z = knockoff.getInstance().getRandomNumber(GameManager.SectionPlaceLocationZ - 5, knockoff.getInstance().mapdata.getCurrentZLength() + 5);
             Location candidate = new Location(knockoff.getInstance().getGameWorld(), x + 0.5, y, z + 0.5);
 
@@ -1015,6 +1016,8 @@ public class GameManager { //I honestly think this entire class could be optimis
             if (tooClose) continue;
 
             if (!hasNearbyTerrain(candidate)) continue;
+            //player should not sufficate anymore.
+            if (!hasClearSpawnPlatformSpace(candidate)) continue;
 
             middleLoc = candidate;
             break;
@@ -1082,6 +1085,38 @@ public class GameManager { //I honestly think this entire class could be optimis
             );
         }
     }
+    //checks for space for the spawn platform
+    //I decided to make it so that it should not touch the ground, and should have clear blocks above it.
+    private static boolean hasClearSpawnPlatformSpace(Location middleLoc) {
+        //world null check
+        World world = middleLoc.getWorld();
+        if (world == null) {
+            return false;
+        }
+        //the location of the middle block
+        int centerX = middleLoc.getBlockX();
+        int centerY = middleLoc.getBlockY();
+        int centerZ = middleLoc.getBlockZ();
+
+        //basicly scans a 9 by 9 area area around the platform which needs to be clear.
+        //The platform is 3 by 3, and also it should not have any blocks within the 3 blocks of itself in horizontal direction
+        //As well as checks below and above to make sure that the player would not be in the terrain and that the player has enough space above.
+        //so it is not simple to get on to the platform for enemies.
+        for (int x = -4; x <= 4; x++) {
+            for (int z = -4; z <= 4; z++) {
+                //must have 3 blocks below air and 4 blocks above
+                for (int y = -3; y <= 4; y++) {
+                    //if there are any blocks which are not passible in this area makes so it will not spawn there.
+                    if (!world.getBlockAt(centerX + x, centerY + y, centerZ + z).isPassable()) {
+                        return false;
+                    }
+                }
+            }
+        }
+        //If it reached to this point means the platform is cleared and can be spawned.
+        return true;
+    }
+
 
     private static boolean hasNearbyTerrain(Location loc) {
         World world = loc.getWorld();

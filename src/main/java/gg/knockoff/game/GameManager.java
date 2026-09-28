@@ -714,7 +714,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                         for (Player p : Bukkit.getOnlinePlayers()) {
                             if (knockoff.getInstance().mapdata.extras.podiumEnabled) {
                                 p.getInventory().clear();
-                                p.setGameMode(GameMode.ADVENTURE);
+                                p.setGameMode(GameMode.SURVIVAL);
                                 unsetSpectator(p);
                             }
 

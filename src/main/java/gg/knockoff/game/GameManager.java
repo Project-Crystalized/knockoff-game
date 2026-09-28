@@ -70,6 +70,8 @@ public class GameManager { //I honestly think this entire class could be optimis
     public static List<MapParticles> particles = new ArrayList<>();
     //keeps track of player placed blocks, as players can built out of the map limiter now, it is quite important.
     public static final Set<Block> playerPlacdBlocks = new HashSet<>();
+    //The blocks which were spawned when the spawning platform appered
+    public static final Set<Block> spawnPlatformBlocks = new HashSet<>();
 
     public static int SectionPlaceLocationX = 1000;
     public static int SectionPlaceLocationY = 0;
@@ -192,6 +194,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         }
         //makes sure player placed blcoks are cleared at the start of the game, before players are spawned.
         playerPlacdBlocks.clear();
+        spawnPlatformBlocks.clear();
         SetupFirstSpawns();
 
         for (Player p : Bukkit.getOnlinePlayers()) {
@@ -803,6 +806,7 @@ public class GameManager { //I honestly think this entire class could be optimis
         particles.clear();
         showdownBlockList.clear();
         playerPlacdBlocks.clear();
+        spawnPlatformBlocks.clear();
         //resets section locations to default values
         SectionPlaceLocationX = 1000;
         SectionPlaceLocationY = 0;
@@ -1036,6 +1040,8 @@ public class GameManager { //I honestly think this entire class could be optimis
 
         for (Block b : tempBlockList) {
             applyTeamStyle(b, team);
+            //keeps track of spawn platform breaks so they don't break immiditely on map swap or dissaper under people etc.
+            spawnPlatformBlocks.add(b);
             startBreakingCrystal(b, breakDelay, knockoff.getInstance().getRandomNumber(20, 30), false);
         }
 
@@ -1301,6 +1307,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                     }
                     //removes the player placed blocks from the set and cleares the task
                     playerPlacdBlocks.remove(b);
+                    spawnPlatformBlocks.remove(b);
                     b.setType(Material.AIR);
                     blocksCrystallizing.remove(b);
                     breakingAndCrystalizingCrystalsTasks.remove(b);
@@ -1309,6 +1316,7 @@ public class GameManager { //I honestly think this entire class could be optimis
                 }
                 if (b.getType().equals(Material.AIR)) { //For if the blocks get broken during this
                     playerPlacdBlocks.remove(b);
+                    spawnPlatformBlocks.remove(b);
                     blocksCrystallizing.remove(b);
                     breakingAndCrystalizingCrystalsTasks.remove(b);
                     cancel();

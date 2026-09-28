@@ -201,6 +201,7 @@ public class CrystalBlocks implements Listener {
                     block.getWorld().playSound(block.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_BREAK, 1.0f, 1.0f);
                     //removes it from the player placed blocks set if it is in it.
                     GameManager.playerPlacdBlocks.remove(block);
+                    GameManager.spawnPlatformBlocks.remove(block);
                     if (block.getType().equals(Material.FROSTED_ICE)) {
                         block.setType(Material.AIR);
                     } else {

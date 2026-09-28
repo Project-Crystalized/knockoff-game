@@ -58,8 +58,8 @@ public class MapManager {
                 Block b = new Location(knockoff.getInstance().getGameWorld(), bV3.x(), bV3.y(), bV3.z()).getBlock();
                 if (b.isEmpty()) continue;
                 //added so it doesn't remove the player placed blocks and just makes them decay very fast
-                //eddit: Doesn't work for now until startk breaking crystals is rewritten to allow it to be overwritten.
-                if (GameManager.playerPlacdBlocks.contains(b)) {
+                //made it work with spawn platforms as well.
+                if (GameManager.playerPlacdBlocks.contains(b) || GameManager.spawnPlatformBlocks.contains(b)) {
                     GameManager.startBreakingCrystal(b, 0, 3, false);
                 } else {
                     b.setType(Material.AIR);
@@ -198,7 +198,6 @@ public class MapManager {
                 //logs how many blocks have been protected from the overlaping issue
                 knockoff.getInstance().getLogger().info("Protected " + overlapBlocks + " overlapping blocks from old section cleanup");
                 //makes the blocks in section rapdily decay
-                //doesn't work anymore so it is uses the default decaying, until they crystalizing is overwritten.
                 rapidlyDecayPlayerPlacedBlocksInRegion(fX, fY, fZ, tX, tY, tZ);
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     PlayerData pd = knockoff.getInstance().gameManager.getPlayerData(p);
@@ -239,9 +238,13 @@ public class MapManager {
         //It is done to prevent the player block disapering issue if they entered a new section, could end up falling in the void unfairly
         //created a new has map which tracks those exact blocks which tracks the block and blockdata it had a the moment to be able to recreate them propely
         //Keeps the smae crystalizing task.
-        Map<Block, BlockData> playerBlocks = new HashMap<>();
+        //made it work with spawn platform blocks as well
+        Map<Block, BlockData> protectedBlocks = new HashMap<>();
         for (Block b : GameManager.playerPlacdBlocks) {
-            playerBlocks.put(b, b.getBlockData().clone());
+            protectedBlocks.put(b, b.getBlockData().clone());
+        }
+        for (Block b : GameManager.spawnPlatformBlocks) {
+            protectedBlocks.put(b, b.getBlockData().clone());
         }
 
         try (EditSession editSession = Fawe.instance().getWorldEdit().newEditSession(BukkitAdapter.adapt(world))) {
@@ -268,7 +271,7 @@ public class MapManager {
         }
         //This restores the player placed blocks which were overwritten by the new section
         //goes through the map and sets the block to the right data
-        for (Map.Entry<Block, BlockData> entry : playerBlocks.entrySet()) {
+        for (Map.Entry<Block, BlockData> entry : protectedBlocks.entrySet()) {
             Block block = entry.getKey();
             BlockData oldBlockData = entry.getValue();
             block.setBlockData(oldBlockData, false);
@@ -286,6 +289,11 @@ public class MapManager {
             knockoff.getInstance().getLogger().warning("mapSwap() was called when it shouldn't be called.");
             Thread.dumpStack();
             return;
+        }
+        //store the spawn platforms to give spawning players a chance of survival.
+        Map<Block, BlockData> spawnBlocks = new HashMap<>();
+        for (Block b : GameManager.spawnPlatformBlocks) {
+            spawnBlocks.put(b, b.getBlockData().clone());
         }
         //Player blocks fully cleared for shape islands, so that they wouldn't be able to cheese the system by going above the map border
         clearAllPlayerPlacedBlocks();
@@ -345,6 +353,18 @@ public class MapManager {
                     } catch (Exception e) {
                         Bukkit.getLogger().log(Level.SEVERE, "[MapManager] Exception occured within the worldedit API:");
                         e.printStackTrace();
+                    }
+                    //restores spawn platforms which were destroyed by the map swap, and makes them decay really fast
+                    //to still give just spawned players a chance but they need to react quickly.
+                    for (Map.Entry<Block, BlockData> entry : spawnBlocks.entrySet()) {
+                        Block block = entry.getKey();
+                        //If platform blocks are gone will not recreate them. Fixed: Ecountered that bud during testing.
+                        if (!GameManager.spawnPlatformBlocks.contains(block)) {
+                            continue;
+                        }
+                        BlockData oldBlockData = entry.getValue();
+                        block.setBlockData(oldBlockData, false);
+                        GameManager.startBreakingCrystal(block, 0, 3, true);
                     }
                     if (!knockoff.getInstance().DevMode) {
                         //removes all the builder blocks like copper instantly.
@@ -481,6 +501,12 @@ public class MapManager {
                 GameManager.startBreakingCrystal(b, 0, 3, true);
             }
         }
+        //Makes any spawning platforms still in the dead section decay extramly fast as well.
+        for (Block b : GameManager.spawnPlatformBlocks) {
+            if (b.getX() >= minX && b.getX() <= maxX && b.getY() >= minY && b.getY() <= maxY && b.getZ() >= minZ && b.getZ() <= maxZ) {
+                GameManager.startBreakingCrystal(b, 0, 3, true);
+            }
+        }
     }
     //This method removes all player placed blocks for map shifter
     public static void clearAllPlayerPlacedBlocks() {
@@ -529,8 +555,8 @@ public class MapManager {
                     Block block = gameWorld.getBlockAt(x, y, z);
                     //Doesn't delete the player block
                     if (block.getType() == removeMaterial) {
-                        //If it is a player block makes so it start crystalizing, instead of staying as is.
-                        if (GameManager.playerPlacdBlocks.contains(block)) {
+                        //If it is a player block makes so it start crystalizing, instead of staying as is. Same for spawn platforms.
+                        if (GameManager.playerPlacdBlocks.contains(block) || GameManager.spawnPlatformBlocks.contains(block)) {
                             GameManager.startBreakingCrystal(block, 3 * 20, 6, true);
                             continue;
                         }

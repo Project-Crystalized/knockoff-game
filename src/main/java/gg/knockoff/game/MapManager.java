@@ -290,11 +290,6 @@ public class MapManager {
             Thread.dumpStack();
             return;
         }
-        //store the spawn platforms to give spawning players a chance of survival.
-        Map<Block, BlockData> spawnBlocks = new HashMap<>();
-        for (Block b : GameManager.spawnPlatformBlocks) {
-            spawnBlocks.put(b, b.getBlockData().clone());
-        }
         //Player blocks fully cleared for shape islands, so that they wouldn't be able to cheese the system by going above the map border
         clearAllPlayerPlacedBlocks();
         try {
@@ -330,6 +325,12 @@ public class MapManager {
 
                 /// ===--- Copied from placeNewSection() for method arguments and to make sure it places in the exact same position
                 void place(int[] from, int[] to) {
+                    //store the spawn platforms to give spawning players a chance of survival. Every time place happens
+                    //otherwise as I tested it could happened that platform spawned between the places and it would just get deleted lmao.
+                    Map<Block, BlockData> spawnBlocks = new HashMap<>();
+                    for (Block b : GameManager.spawnPlatformBlocks) {
+                        spawnBlocks.put(b, b.getBlockData().clone());
+                    }
                     for (Player p : Bukkit.getOnlinePlayers()) {
                         p.playSound(p, "minecraft:entity.illusioner.prepare_mirror", 1 ,0.75f);
                     }
@@ -364,7 +365,7 @@ public class MapManager {
                         }
                         BlockData oldBlockData = entry.getValue();
                         block.setBlockData(oldBlockData, false);
-                        GameManager.startBreakingCrystal(block, 0, 3, true);
+                        GameManager.startBreakingCrystal(block, 0, 8, true);
                     }
                     if (!knockoff.getInstance().DevMode) {
                         //removes all the builder blocks like copper instantly.

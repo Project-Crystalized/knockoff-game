@@ -620,15 +620,16 @@ public class PlayerListener implements Listener {
 			//gets the block at feet, head, and the blocks below
 			Block feet = world.getBlockAt(x, y, z);
 			Block head = world.getBlockAt(x, y + 1, z);
-			Block below = world.getBlockAt(x, y - 1, z);
+			//Block below = world.getBlockAt(x, y - 1, z);
 			//So when head and feet are free and below has a block will teleport a player there
-			if (feet.isPassable() && head.isPassable() && !below.isPassable()) {
+			//if (feet.isPassable() && head.isPassable() && !below.isPassable())
+			if (feet.isPassable() && head.isPassable()) {
 				//with a little offset to put player in the middle of the block, the pitch and yawn so the player can keep looking the same direction
 				//end up slightly higher so not just in a middle of a fight straight away
 				p.teleport(new Location(world, x + 0.5, y, z + 0.5, loc.getYaw(), loc.getPitch()));
 				//slight levitation to prevent insta death
-				p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20, 0, false, true, true));
-				p.sendMessage(Component.text("You have been rescued from spawning inside a wall!").color(NamedTextColor.RED));
+				//p.addPotionEffect(new PotionEffect(PotionEffectType.LEVITATION, 20, 0, false, true, true));
+				p.sendMessage(Component.text("You have been rescured from being inside a wall!").color(NamedTextColor.RED));
 				event.setCancelled(true);
 				return;
 			}

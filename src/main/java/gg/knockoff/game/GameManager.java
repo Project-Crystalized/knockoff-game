@@ -642,6 +642,9 @@ public class GameManager { //I honestly think this entire class could be optimis
                 	if (pd2 != null && pd2.lives == 5) {
                     	Achievement.getAchievement("ko_flawlesswin", player).setProgress(100);
                 	}
+                	if (pd2 != null && pd2.kills == 0 && !pd2.isEliminated) {
+                    	Achievement.getAchievement("ko_pacifist", player).setProgress(100);
+                	}
 								} catch (NoClassDefFoundError e) {}
             } else {
                 player.playSound(player, "crystalized:effect.ls_game_lost", 50, 1);

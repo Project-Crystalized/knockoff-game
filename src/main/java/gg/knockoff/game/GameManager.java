@@ -148,7 +148,7 @@ public class GameManager { //I honestly think this entire class could be optimis
 
     public GameManager(GameTypes type) {//Start of the game
         knockoff.getInstance().reloadConfig();
-        Bukkit.getServer().sendMessage(text("crystalized.game.knockoff.chat.start"));
+        Bukkit.getServer().sendMessage(translatable("crystalized.game.knockoff.chat.start"));
         state = GameState.GAME;
         //changed all old world refences to the correct game world dimension
         for (Entity e : knockoff.getInstance().getGameWorld().getEntities()) {

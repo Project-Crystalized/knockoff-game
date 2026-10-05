@@ -143,8 +143,8 @@ public class KnockoffItem {
         ItemMeta launch_im = LaunchTotem.getItemMeta();
         launch_im.customName(translatable("crystalized.totem.launch.name").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.WHITE));
         List<Component> launchlore = new ArrayList<>();
-        launchlore.add(Component.translatable("crystalized.totme.launch.desc1").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
-        launchlore.add(Component.translatable("crystalized.totme.launch.desc2").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
+        launchlore.add(Component.translatable("crystalized.totem.launch.desc1").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
+        launchlore.add(Component.translatable("crystalized.totem.launch.desc2").decoration(TextDecoration.ITALIC, false).color(NamedTextColor.DARK_GRAY));
         launch_im.lore(launchlore);
         launch_im.setItemModel(new NamespacedKey("crystalized", "launch_totem"));
         LaunchTotem.setItemMeta(launch_im);

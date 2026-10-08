@@ -28,6 +28,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     public boolean isEliminated = false;
     public int lives = 5;
     public int kills = 0;
+    public int killsThisLife = 0;
     public int deaths = 0;
     public int deathtimer = 0;
     public int startingDeathTimerInt = 0;

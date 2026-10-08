@@ -207,6 +207,15 @@ public class PlayerListener implements Listener {
 			PlayerData pda = knockoff.getInstance().gameManager.getPlayerData(attacker);
 			if (pda == null) return;
 			pda.addKill(1);
+			pda.killsThisLife++;
+			try {
+				if (pda.killsThisLife >= 5 && "TrialChamber".equals(knockoff.getInstance().mapdata.extras.exclusiveHazard)) {
+					Achievement metaldeer = Achievement.getAchievement("ko_metaldeer", attacker);
+					if (metaldeer != null) {
+						metaldeer.setProgress(100);
+					}
+				}
+			} catch (NoClassDefFoundError e) {}
 			attacker.showTitle(Title.title(text(" "), text("[\uE103] ").append(player.displayName()),
 					Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
 			attacker.playSound(attacker, "crystalized:effect.enemy_kill", 50, 1);
@@ -223,6 +232,7 @@ public class PlayerListener implements Listener {
 			} catch (NoClassDefFoundError e) {}
 		}
 		pd.addDeath(1);
+		pd.killsThisLife = 0;
 		pd.isPlayerDead = true;
 
 		// Next best thing to delaying a task ig

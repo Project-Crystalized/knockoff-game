@@ -169,7 +169,7 @@ public class PlayerData { //This class probably isn't optimised, but it works so
     }
 
     private TextColor percentColour() {
-        //I hope theres a better way of doing this - Callum
+        //I hope theres a better way of doing this
         if (percent > 200) {
             return TextColor.color(0xBF6242);
         } else if (percent > 100) {

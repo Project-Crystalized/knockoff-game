@@ -383,7 +383,7 @@ public class MapManager {
 
 
     //For these 2 booleans, I dont think theres a better way of doing these
-    //We could make a worldedit region and do shit with that, but I feel like making worldedit actions everytime this is called is stupid - Callum
+    //We could make a worldedit region and do shit with that, but I feel like making worldedit actions everytime this is called is stupid
     public static boolean isInsideCurrentSection(Location loc) {
         if (!(
                 loc.getBlockY() > knockoff.getInstance().mapdata.getCurrentYLength() || loc.getBlockY() < (knockoff.getInstance().gameManager.SectionPlaceLocationY - 20)

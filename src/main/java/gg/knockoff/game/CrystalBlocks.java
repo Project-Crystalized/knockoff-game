@@ -157,7 +157,7 @@ public class CrystalBlocks implements Listener {
             }
 
             for (Player pl : knockoff.getInstance().getActiveWorld().getPlayers()) {
-                //TODO idk how to stop the glazed terracotta place sound, stopping the generic stone sound doens't work - Callum
+                //TODO idk how to stop the glazed terracotta place sound, stopping the generic stone sound doens't work
                 pl.playSound(b.getLocation(), "minecraft:block.amethyst_block.place", 1, 1);
             }
             b.setBlockData(dir);

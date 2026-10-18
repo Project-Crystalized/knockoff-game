@@ -6,7 +6,6 @@ Recreation of TubNet Knockout
 You are dropped onto a map with generated sections, your goal is to punch other players off and be the last person standing.
 
 ## Contributors
-TotallyNoCallum - did almost everything lol <br>
 Cooltexture - Programming help
 
 ## How to use

@@ -68,7 +68,7 @@ public class Teams {
 		weak.clear();
 		strong.clear();
 
-		//idk if this is good, but better than what I had before this ig - Callum
+		//idk if this is good, but better than what I had before this ig
 		try {
 			switch (type) {
 				case GameManager.GameTypes.Custom -> {

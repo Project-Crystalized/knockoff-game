@@ -220,13 +220,13 @@ public class PlayerListener implements Listener {
 					Title.Times.times(Duration.ofMillis(250), Duration.ofSeconds(1), Duration.ofMillis(250))));
 			attacker.playSound(attacker, "crystalized:effect.enemy_kill", 50, 1);
 			for (Player p : Bukkit.getOnlinePlayers()) {
-				//p.playSound(p, "minecraft:block.anvil.place", 0.5F, 0.5f); //commented out since this is kinda annoying - Callum
+				//p.playSound(p, "minecraft:block.anvil.place", 0.5F, 0.5f); //commented out since this is kinda annoying
 				p.playSound(player.getLocation(), "minecraft:entity.firework_rocket.blast_far", 4, 1); //TODO make actual firework
 			}
 
 			//achievements shit
 			try {
-				if (attacker.getInventory().getItemInMainHand().getType().equals(Material.GOLDEN_SWORD)) { //too lazy to properly check for a glove, this should work fine - Callum
+				if (attacker.getInventory().getItemInMainHand().getType().equals(Material.GOLDEN_SWORD)) { //too lazy to properly check for a glove, this should work fine
 					Achievement.getAchievement("ko_glovekill", attacker).setProgress(100);
 				}
 			} catch (NoClassDefFoundError e) {}

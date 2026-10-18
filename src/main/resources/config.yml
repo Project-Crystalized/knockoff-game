@@ -10,9 +10,9 @@ teams:
     # Configure Teams here
     # These values will be read when the game starts, no need for a server restart.
     # When adding Bedrock players, make sure to include the floodgate prefix ("." by default) to their username.
-    spectator: ["iCorrosion", "Delieve"]
-    blue: ["Callum_Is_Bad"]
-    cyan: [".CallumIsBad6502"]
+    spectator: ["Spec", "Spec2"]
+    blue: ["Username"]
+    cyan: [".BedrockUser"]
     green: []
     lemon: []
     lime: []
@@ -29,10 +29,10 @@ tourneys:
     enable: false
 
     # When true, allows for Spectators (with op) to use "/knockoff spawn_powerup" to spawn powerups anytime during the game.
-    manual_powerup_spawning: true
+    manual_powerup_spawning: false
     
     # When true, allows for Spectators (with op) to use "/knockoff spawn_hazard" to spawn hazards anytime during the game.
-    manual_hazard_control: true
+    manual_hazard_control: false
     
     # When true, allows for Spectators (with op) to use "/knockoff moveMap" to manually start the map decaying anytime during the game.
     # NOTE: There is a cooldown of 30 * 20 ticks to prevent bugs

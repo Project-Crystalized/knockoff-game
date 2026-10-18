@@ -19,7 +19,7 @@ public class ScoreboardManager {
         Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
         //This should run after Teams.java is initalized and has sorted the teams
-        //Fuck this part also, took me a while to figure out, and the same code copy pasted 12 times isn't helping it being shit - Callum
+        //Fuck this part also, took me a while to figure out, and the same code copy pasted 12 times isn't helping it being shit
         Team sbblue = scoreboard.registerNewTeam("sbblue");
         sbblue.color(NamedTextColor.DARK_BLUE);
         sbblue.setAllowFriendlyFire(false);
@@ -134,11 +134,6 @@ public class ScoreboardManager {
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
 
         if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
-            /*
-            As far as I know, Bedrock/Geyser doesn't really support text translations that change based on your
-            game's language, So we write the text in English manually. Plus the Scoreboard on TubNet was
-            different on Bedrock compared to Java so we're keeping the same tradition - Callum
-            */
 
             obj.getScore("7").setScore(7);
             obj.getScore("7").customName(Component.text("  "));

@@ -93,7 +93,7 @@ public class PlayerListener implements Listener {
 			leavebuttonim.setItemModel(new NamespacedKey("crystalized", "ui/leave"));
 			leavebuttonim.displayName(Component.translatable("crystalized.game.generic.to_lobby").color(NamedTextColor.RED).decoration(TextDecoration.ITALIC, false));
 			leavebutton.setItemMeta(leavebuttonim);
-			p.getInventory().setItem(8, leavebutton);
+			p.getInventory().setItem(App.BackToHub.slot, leavebutton);
 
 			if (floodgateapi.isFloodgatePlayer(p.getUniqueId())) {
 				p.sendMessage(text("-".repeat(40)));

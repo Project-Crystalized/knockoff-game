@@ -1,5 +1,6 @@
 package gg.knockoff.game;
 
+import io.papermc.paper.scoreboard.numbers.NumberFormat;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.format.TextColor;
@@ -132,6 +133,7 @@ public class ScoreboardManager {
         Component title = text("\uE12E ").color(NamedTextColor.WHITE).append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD));
         Objective obj = scoreboard.registerNewObjective("main", Criteria.DUMMY, title);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        obj.numberFormat(NumberFormat.blank());
 
         if (floodgateapi.isFloodgatePlayer(player.getUniqueId())) {
 
@@ -270,6 +272,7 @@ class QueueScoreBoard{
         Component title = text("\uE12E ").color(NamedTextColor.WHITE).append(translatable("crystalized.game.knockoff.name").color(NamedTextColor.GOLD));
         Objective obj = scoreboard.registerNewObjective("main", Criteria.DUMMY, title);
         obj.setDisplaySlot(DisplaySlot.SIDEBAR);
+        obj.numberFormat(NumberFormat.blank());
 
         obj.getScore("5").setScore(5);
         obj.getScore("5").customName(text("  "));

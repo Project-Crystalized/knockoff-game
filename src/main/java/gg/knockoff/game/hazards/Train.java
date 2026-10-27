@@ -56,6 +56,9 @@ public class Train extends hazard {
             }
             p.playSound(p, "crystalized:effect.ambient.train_horn", 1, 1);
         }
+        if (playerList.isEmpty()) {
+            return;
+        }
         Player randomPlayer = playerList.get(knockoff.getInstance().getRandomNumber(0, playerList.size()));
         if (randomPlayer == null) {
             return; //90% of times this shouldn't happen, but this might be the case if everyone is dead and respawning.

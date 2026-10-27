@@ -53,6 +53,7 @@ public class BeeAttack extends hazard {
                     loc.getBlock().setType(Material.AIR);
                     loc2.getBlock().setType(Material.AIR);
                     cancel();
+                    return;
                 }
 
                 //get random player
@@ -61,6 +62,9 @@ public class BeeAttack extends hazard {
                     if (p.getGameMode().equals(GameMode.SURVIVAL)) {
                         playerList.add(p);
                     }
+                }
+                if (playerList.isEmpty()) {
+                    return;
                 }
                 Player randomPlayer = playerList.get(knockoff.getInstance().getRandomNumber(0, playerList.size()));
 
